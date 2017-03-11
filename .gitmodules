@@ -1,0 +1,53 @@
+[submodule "epoe"]
+	path = epoe
+	url = https://github.com/Metastruct/EPOE
+[submodule "luadev"]
+	path = luadev
+	url = https://github.com/Noiwex/luadev
+[submodule "glib"]
+	path = glib
+	url = https://github.com/notcake/glib
+[submodule "gooey"]
+	path = gooey
+	url = https://github.com/notcake/gooey
+[submodule "gcodec"]
+	path = gcodec
+	url = https://github.com/notcake/gcodec
+[submodule "vfs"]
+	path = vfs
+	url = https://github.com/notcake/vfs
+[submodule "gcompute"]
+	path = gcompute
+	url = https://github.com/notcake/gcompute
+
+
+[submodule "gvote"]
+	path = gvote
+	url = https://github.com/notcake/gvote
+[submodule "garrysmod-chatsounds"]
+	path = garrysmod-chatsounds
+	url = https://github.com/Metastruct/garrysmod-chatsounds
+[submodule "pac3"]
+	path = pac3
+	url = https://github.com/Metastruct/pac3
+[submodule "sit-anywhere"]
+	path = sit-anywhere
+	url = https://github.com/Xerasin/Sit-Anywhere
+[submodule "wire"]
+	path = wire
+	url = https://github.com/wiremod/wire
+[submodule "gm-mediaplayer"]
+	path = gm-mediaplayer
+	url = https://github.com/pixeltailgames/gm-mediaplayer
+[submodule "ctp"]
+	path = ctp
+	url = https://github.com/CapsAdmin/customisable_thirdperson/
+[submodule "advdupe2"]
+	path = advdupe2
+	url = https://github.com/wiremod/advdupe2
+[submodule "chat-substitute"]
+	path = chat-substitute
+	url = https://github.com/CaveeJohnson/gmod-xp-chat
+[submodule "mingeban2"]
+	path = mingeban2
+	url = https://github.com/Re-Dream/mingeban2
