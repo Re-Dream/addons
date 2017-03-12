@@ -5,23 +5,6 @@ if CLIENT then
 
 	team.SetUp(1001, "Unassigned", Color(129, 171, 213)) -- custom chat color
 
-	hook.Add("ChatText", tag .. "_nojoinleave" , function(_, _, _, typ)
-		if typ == "joinleave" then return true end
-	end)
-
-	gameevent.Listen("player_connect")
-	gameevent.Listen("player_discconnect")
-
-	local bullet = "•"
-	hook.Add("player_connect", tag, function(data)
-		local ent = Entity(data.index)
-
-		chat.AddText(Color(127, 255, 127), bullet, team.GetColor(ent:Team()), " ", data.name, color_white, " is joining the server!")
-	end)
-	hook.Add("player_disconnect", tag, function(data)
-
-	end)
-
 end
 
 if SERVER then
