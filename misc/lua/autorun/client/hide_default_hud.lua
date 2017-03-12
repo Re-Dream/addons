@@ -4,6 +4,9 @@ local tag = "hide_default_hud"
 local lply = LocalPlayer()
 local drawCrosshair = false
 local fn = 0
+
+local cl_crosshair = CreateClientConVar("cl_crosshair", "1")
+
 hook.Add("HUDShouldDraw", tag, function(elem)
 
 	if not IsValid(lply) then lply = LocalPlayer() return end
@@ -13,15 +16,13 @@ hook.Add("HUDShouldDraw", tag, function(elem)
 		return false
 	end
 
-	if elem == "CHudCrosshair" then
-
+	if elem == "CHudCrosshair" and cl_crosshair:GetBool() then
 		local wep = lply:GetActiveWeapon()
 		if IsValid(wep) and wep:IsWeapon() then
 			if isfunction(wep.DoDrawCrosshair) then
 				drawCrosshair = false
 				return
 			end
-
 		end
 
 		drawCrosshair = true
@@ -35,7 +36,6 @@ local function drawCircle(x, y, radius, seg, poly)
 	local cir
 
 	if poly and (poly.prevX ~= x or poly.prevY ~= y) or not poly then
-
 		radius = radius * 0.5
 
 		cir = {}
@@ -51,11 +51,8 @@ local function drawCircle(x, y, radius, seg, poly)
 
 		cir.prevX = x
 		cir.prevY = y
-
 	else
-
 		cir = poly
-
 	end
 
 	surface.DrawPoly(cir)
@@ -85,6 +82,7 @@ end, "cl_crosshairquality_change")
 local eyeDistAlpha = 0
 hook.Add("HUDPaint", tag, function()
 
+	if not cl_crosshair:GetBool() then return end
 	if not IsValid(lply) then lply = LocalPlayer() return end
 	if not lply:Alive() or lply:Health() == 0 then return end
 
@@ -94,6 +92,7 @@ hook.Add("HUDPaint", tag, function()
 	end
 
 	if not drawCrosshair then return end
+	if ctp and ctp:IsEnabled() and not ctp:IsCrosshairEnabled() then return end
 
 	local trace = lply:GetEyeTrace()
 	local dist = lply:EyePos():Distance(trace.HitPos)
@@ -128,6 +127,20 @@ hook.Add("HUDPaint", tag, function()
 	surface.SetAlphaMultiplier(1)
 
 end)
+
+if ctp then
+
+	ctp._DrawCrosshair = ctp.DrawCrosshair
+
+	function ctp:DrawCrosshair(...)
+
+		if cl_crosshair:GetBool() then return false end
+
+		return ctp._DrawCrosshair(...)
+
+	end
+
+end
 
 hook.Add("PostRender", tag, function()
 
