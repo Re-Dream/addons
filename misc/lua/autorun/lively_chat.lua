@@ -45,7 +45,7 @@ if SERVER then
 		},
 		{
 			message = {
-				w, "Thanks for joining ", g, "Re-Dream", w, ", we hope you have a good time on there!"
+				w, "Thanks for joining ", g, "Re-Dream", w, ", we hope you have a good time on here!"
 			},
 			time = 900
 		},
