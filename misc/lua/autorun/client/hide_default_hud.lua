@@ -35,13 +35,6 @@ local function drawCircle(x, y, radius, seg, poly)
 	local cir
 
 	if poly and (poly.prevX ~= x or poly.prevY ~= y) or not poly then
-		if false and poly then
-			print("PREVIOUS:")
-			print(poly.prevX, poly.prevY)
-			print("NOW:")
-			print(x, y)
-			print("====================================")
-		end
 
 		radius = radius * 0.5
 
@@ -112,10 +105,15 @@ hook.Add("HUDPaint", tag, function()
 
 	surface.SetAlphaMultiplier(eyeDistAlpha)
 
-	-- local x, y = ScrW() * 0.5, ScrH() * 0.5
-	local trace = util.QuickTrace(lply:GetShootPos(), lply:EyeAngles():Forward() * 16384, lply)
-	local scrPos = trace.HitPos:ToScreen()
-	local x, y = math.Round(scrPos.x), math.Round(scrPos.y)
+	local x, y
+	if lply:ShouldDrawLocalPlayer() then
+		local trace = util.QuickTrace(lply:GetShootPos(), lply:EyeAngles():Forward() * 16384, lply)
+		local scrPos = trace.HitPos:ToScreen()
+		x, y = scrPos.x, scrPos.y
+	else
+		x, y = ScrW() * 0.5, ScrH() * 0.5
+	end
+	x, y = math.Round(x), math.Round(y)
 
 	draw.NoTexture()
 	local alpha = cl_crosshaircolor_a:GetInt()
