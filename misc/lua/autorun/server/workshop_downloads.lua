@@ -4,6 +4,8 @@ local addons = {
 }
 local maps = {
 	["gm_bluehills_test3"] = 243902601,
+	["gm_freespace_09_extended"] = 278492798,
+	["gm_freespace_13"] = 115510325,
 }
 
 for name, id in next, addons do
