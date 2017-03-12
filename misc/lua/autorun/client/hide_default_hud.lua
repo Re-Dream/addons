@@ -83,9 +83,9 @@ local eyeDistAlpha = 0
 hook.Add("HUDPaint", tag, function()
 
 	if not cl_crosshair:GetBool() then return end
+	if ctp and ctp:IsEnabled() and not ctp:IsCrosshairEnabled() then return end
 	if not IsValid(lply) then lply = LocalPlayer() return end
 	if not lply:Alive() or lply:Health() == 0 then return end
-	if ctp.IsEnabled and ctp:IsEnabled() then return end
 
 	local wep = lply:GetActiveWeapon()
 	if wep.DrawCrosshair == false then
@@ -93,7 +93,6 @@ hook.Add("HUDPaint", tag, function()
 	end
 
 	if not drawCrosshair then return end
-	if ctp and ctp:IsEnabled() and not ctp:IsCrosshairEnabled() then return end
 
 	local trace = lply:GetEyeTrace()
 	local dist = lply:EyePos():Distance(trace.HitPos)
