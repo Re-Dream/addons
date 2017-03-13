@@ -19,8 +19,6 @@
 [submodule "gcompute"]
 	path = gcompute
 	url = https://github.com/notcake/gcompute
-
-
 [submodule "gvote"]
 	path = gvote
 	url = https://github.com/notcake/gvote
@@ -48,6 +46,6 @@
 [submodule "mingeban2"]
 	path = mingeban2
 	url = https://github.com/Re-Dream/mingeban2
-[submodule "gm-mediaplayer"]
-	path = gm-mediaplayer
-	url = https://github.com/Metastruct/gm-mediaplayer
+[submodule "mediaplayer"]
+	path = mediaplayer
+	url = https://github.com/CaveeJohnson/gm-mediaplayer
