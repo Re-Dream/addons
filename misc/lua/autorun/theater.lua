@@ -3,13 +3,13 @@ theater = {screen = reload}
 
 theater.locations = {
 	gm_bluehills_test3 = {
-		offset = Vector(7.5, 31, 39),
+		offset = Vector(0, 0, 0),
 		angle  = Angle(-90, 90, 0),
-		height = 350,
+		height = 352,
 		width  = 704,
 		mins   = Vector(353, 81, -35),
 		maxs   = Vector(1184, 1184, 434),
-		mpos   = Vector(446.4, 1175.6, 313),
+		mpos   = Vector(416.03125, 1175.3011474609, 351.95498657227),
 		mang   = Angle(0, -90, 0),
 	},
 }
@@ -21,7 +21,6 @@ easylua.StartEntity("theater_screen")
 	ENT.PrintName = "Theater Screen"
 	ENT.Base = "mediaplayer_base"
 	ENT.Type = "point"
-	ENT.RenderGroup = RENDERGROUP_OTHER
 
 	ENT.PlayerConfig = l
 	ENT.IsMediaPlayerEntity = true
@@ -42,9 +41,6 @@ easylua.StartEntity("theater_screen")
 
 				self:SetListeners(listeners)
 			end
-		end
-	else
-		function ENT:Draw()
 		end
 	end
 easylua.EndEntity()
