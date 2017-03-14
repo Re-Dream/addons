@@ -76,4 +76,5 @@ else
 
 	if reload then theater.spawn() end
 	hook.Add("InitPostEntity", "theater", theater.spawn)
+	hook.Add("PostCleanupMap", "theater", theater.spawn)
 end
