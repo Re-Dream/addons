@@ -1,17 +1,18 @@
 
-DImage._SetImage = DImage._SetImage or DImage.SetImage
-function DImage:SetImage(path, backup)
-	if type(path) == "IMaterial" then
-		self:SetMaterial(path)
-	else
-		DImage._SetImage(self, path, backup)
-	end
-end
-
-local mat = Material("icon32/zoom_extend.png")
 hook.Add("HUDPaint", "_ctp_cmenu", function()
 	-- If you're wondering why I'm doing all this;
 	-- Not ass looking icon. Why not?
+
+	DImage._SetImage = DImage._SetImage or DImage.SetImage
+	function DImage:SetImage(path, backup)
+		if type(path) == "IMaterial" then
+			self:SetMaterial(path)
+		else
+			DImage._SetImage(self, path, backup)
+		end
+	end
+
+	local mat = Material("icon32/zoom_extend.png")
 
 	local TEXTURE_FLAGS_CLAMP_S = 0x0004
 	local TEXTURE_FLAGS_CLAMP_T = 0x0008
