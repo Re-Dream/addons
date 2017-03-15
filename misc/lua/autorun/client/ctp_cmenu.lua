@@ -78,7 +78,7 @@ hook.Add("HUDPaint", "_ctp_cmenu", function()
 
 			surface.SetMaterial(mat)
 			surface.SetDrawColor(Color(255, 255, 255, 255))
-			surface.DrawTexturedRect(16, 16, 32, 32)
+			surface.DrawTexturedRect(18, 20, 32, 32)
 
 		cam.End2D()
 		render.SetViewPort(0, 0, oldW, oldH)
