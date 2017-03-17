@@ -8,7 +8,6 @@ local trace = {
 	filter = nil
 }
 local function IsStuck(ply)
-
 	trace.start = ply:GetPos()
 	trace.endpos = t.start
 	trace.filter = ply

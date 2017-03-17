@@ -15,7 +15,9 @@ local function Log(event, ply, ...)
 	Msg("\n")
 end
 
+local prev
 local function LogProp(ply, model, entity)
+	if prev == "duplicator" then return end
 	Log("SPAWN prop", ply, White, entity:GetModel(), Grey, " (" .. tostring(entity) .. " @ " .. tostring(entity:GetPos()) .. ")")
 end
 
@@ -31,8 +33,15 @@ local function LogVehicle(ply, entity)
 	Log("SPAWN vehicle", ply, White, entity.VehicleTable.Name, Grey, " (" .. tostring(entity) .. ")")
 end
 
+local ignoreTools = {
+	paint = true,
+	inflator = true,
+}
 local function LogTool(ply, tr, tool)
+	if ignoreTools[tool] then return end
 	Log("TOOL", ply, White, tool, Grey, " " .. tostring(tr.Entity) .. " @ " .. tostring(tr.HitPos))
+	prev = tool
+	timer.Simple(0, function() prev = nil end)
 end
 
 hook.Add("PlayerSpawnedProp", "sandbox_logger", LogProp)

@@ -74,14 +74,8 @@ if CLIENT then
 		local info = net.ReadTable()
 
 		if not info.reason then
-			local ent = Entity(info.index)
-			if IsValid(ent) then
-				local t = ent:Team()
-				local tcol = team.GetColor(t)
-				chat.AddText(Color(127, 255, 127), bullet, " ", tcol, info.name, Color(127, 127, 127), " (" .. info.steamid .. ") ", Color(210, 210, 225), "is ", Color(127, 255, 127), "joining", Color(210, 210, 225), " the server!")
-			else
-				chat.AddText(Color(127, 255, 127), bullet, " ", Color(210, 210, 225), info.name, Color(127, 127, 127), " (" .. info.steamid .. ") ", Color(210, 210, 225), "is ", Color(127, 255, 127), "joining", Color(210, 210, 225), " the server!")
-			end
+			local tcol = team.GetColor(1001)
+			chat.AddText(Color(127, 255, 127), bullet, " ", tcol, info.name, Color(127, 127, 127), " (" .. info.steamid .. ") ", Color(210, 210, 225), "is ", Color(127, 255, 127), "joining", Color(210, 210, 225), " the server!")
 		else
 			chat.AddText(Color(255, 127, 127), bullet, " ", Color(210, 210, 225), info.name, Color(127, 127, 127), " (" .. info.steamid .. ") ", Color(255, 127, 127), "left", Color(210, 210, 225), " the server!", Color(127, 127, 127), " (" .. info.reason .. ")")
 		end
