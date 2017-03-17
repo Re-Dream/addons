@@ -1,3 +1,13 @@
+
+--[[
+
+Player [1][TrashAlert] ERR: addons/misc/lua/autorun/engine_protection.lua:92: table index is nil
+  1. unknown - addons/misc/lua/autorun/engine_protection.lua:92
+
+]]
+
+do return end
+
 local maxidx = 5
 local tbl = hook.Hooks
 

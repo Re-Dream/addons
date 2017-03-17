@@ -35,3 +35,5 @@ aowl.AddCommand = function(name, callback, group)
 	end
 end
 
+hook.Run("AowlInitialized")
+
