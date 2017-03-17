@@ -9,7 +9,7 @@ local trace = {
 }
 local function IsStuck(ply)
 	trace.start = ply:GetPos()
-	trace.endpos = t.start
+	trace.endpos = trace.start
 	trace.filter = ply
 
 	return util.TraceEntity(trace, ply).StartSolid
