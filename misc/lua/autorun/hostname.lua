@@ -8,11 +8,11 @@ if CLIENT then
 else
 
 	local prefix = "Re-Dream: "
-	local titles =
-	[[We do shit better
-	blox
-	nibba]]
-	-------------------------------------->            max hostname size i believe
+	local titles = -- STOP INDENTING IT, IT BREAKS.
+[[We do shit better
+blox
+nibba]]
+-------------------------------------->            max hostname size i believe
 
 	titles = string.Split(titles, "\n")
 	for key, title in next, titles do
