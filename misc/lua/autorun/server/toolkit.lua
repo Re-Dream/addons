@@ -1,3 +1,5 @@
+do return end
+
 -- Remove this when a proper admin mod comes about
 
 toolkit = {}
