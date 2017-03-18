@@ -2,7 +2,8 @@
 local addons = {
 	["prone-mod"] = 775573383,
 	["notifications"] = 650064006, -- to be redone by ourselves
-	["jumppads"] = 431422041,
+	-- ["jumppads"] = 431422041,
+	["physgun-info"] = 679051121
 }
 local maps = {
 	["gm_bluehills_test3"] = 243902601,
