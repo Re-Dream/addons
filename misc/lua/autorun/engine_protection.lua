@@ -6,7 +6,7 @@ Player [1][TrashAlert] ERR: addons/misc/lua/autorun/engine_protection.lua:92: ta
 
 ]]
 
-do return end
+--do return end
 
 local maxidx = 5
 local tbl = hook.Hooks
@@ -83,23 +83,28 @@ function hook.Run(name, ...)
 	return hook.Call(name, gmod and gmod.GetGamemode(), ...)
 end
 
-if not hook.oldCall then
-	local _R = debug.getregistry()
-	local hookCall
-	local lookingFor = "lua/includes/modules/hook.lua"
-	local maxRegScan = 2^14
+function hook.overwriteRegistry()
+	if not hook.oldCall then
+		local _R = debug.getregistry()
+		local hookCall
 
-	for i = 1, maxRegScan do
-		local v = _R[i]
-		local info = isfunction(v) and debug.getinfo(v).short_src
-		if info == lookingFor then hookCall = i break end
+		local lookingFor = "lua/includes/modules/hook.lua"
+		local maxRegScan = 2^16
+
+		for i = 1, maxRegScan do
+			local v = _R[i]
+			local info = isfunction(v) and debug.getinfo(v).short_src
+			if info == lookingFor then hookCall = i break end
+		end
+
+		if not hookCall then return end
+		print("Found hook.Call in registry at index", hookCall)
+
+		hook.oldCall = _R[hookCall]
+		hook.oldCallIndex = hookCall
+		_R[hookCall] = hook.Call
 	end
-
-	print("Found hook.Call in registry at index", hookCall)
-
-	hook.oldCall = _R[hookCall]
-	hook.oldCallIndex = hookCall
-	_R[hookCall] = hook.Call
-elseif hook.oldCallIndex then
-	_R[hook.oldCallIndex] = hook.Call
 end
+
+hook.overwriteRegistry()
+timer.Simple(0, hook.overwriteRegistry)
