@@ -10,8 +10,14 @@ else
 	local prefix = "Re-Dream: "
 	local titles = -- STOP INDENTING IT, IT BREAKS.
 [[We do shit better
-blox
-nibba]]
+:blox:
+We have hookers and blackjacks
+gcompute inside
+come fuck around and build stupid shit
+pac4 when?
+better than outfitter
+trust no one, not even the workshop
+it was too late when doing this]]
 -------------------------------------->            max hostname size i believe
 
 	titles = string.Split(titles, "\n")
