@@ -36,4 +36,8 @@ aowl.AddCommand = function(name, callback, group)
 end
 
 hook.Run("AowlInitialized")
+function aowlMsg(cmd, line)
+	MsgC(Color(127, 255, 255), "[mingeban]" .. (cmd and " " .. cmd or "") .. " ")
+	Msg(line)
+end
 
