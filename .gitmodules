@@ -49,3 +49,6 @@
 [submodule "gm-mediaplayer"]
 	path = gm-mediaplayer
 	url = https://github.com/pixeltailgames/gm-mediaplayer
+[submodule "patch-protect"]
+	path = patch-protect
+	url = https://github.com/Patcher56/PatchProtect
