@@ -19,11 +19,12 @@ end
 local function goto(from, to)
 	if not IsValid(from) then return end
 
-	local ent = isentity(to) and to or mingeban.utils.findEntity(to, false)[1]
+	local ent = to
+	if not isentity(to) and not isvector(to) then
+		ent = mingeban.utils.findEntity(to, false)[1]
+	end
 
-	if not IsValid(ent) then return end
-
-	if ent then
+	if isentity(ent) and IsValid(ent) then
 		local pos = ent:GetPos()
 		local oldPos = from:GetPos()
 		local goodPos
@@ -60,10 +61,19 @@ local function goto(from, to)
 			end
 			from:EmitSound("buttons/button15.wav")
 		end
+	elseif isvector(ent) then
+		from:SetPos(ent)
+		from:LookAt(ent, 0.6)
+		from:EmitSound("buttons/button15.wav")
+	else
+		return false, "Invalid location!"
 	end
 end
 
-local go = mingeban.CreateCommand({"go", "goto"}, function(caller, line, pos)
+local go = mingeban.CreateCommand({"go", "goto"}, function(caller, line, pos, y, z)
+	if caller:IsAdmin() and y and z then
+		pos = Vector(tonumber(pos), tonumber(y), tonumber(z))
+	end
 	return goto(caller, pos)
 end)
 go:AddArgument(ARGTYPE_VARARGS)
