@@ -44,14 +44,12 @@ if CLIENT then
 
 	net.Receive(tag, function()
 		local pos
-		local succ = pcall(function()
-			pos = Entity(net.ReadInt(16))
+		local succ, err = pcall(function()
+			pos = net.ReadType()
+			if isnumber(pos) then
+				pos = Entity(pos)
+			end
 		end)
-		if not succ then
-			succ = pcall(function()
-				pos = net.ReadVector()
-			end)
-		end
 		local length = net.ReadFloat()
 
 		startAng = LocalPlayer():EyeAngles()
@@ -68,15 +66,18 @@ end
 if SERVER then
 
 	local PLAYER = FindMetaTable("Player")
+
 	util.AddNetworkString(tag)
+
 	function PLAYER:LookAt(pos, length)
 		assert(isvector(pos) or isentity(pos), "bad argument #1 to 'LookAt' (Vector/Entity expected, got " .. type(pos) .. ")")
 
 		net.Start(tag)
-			if isentity(pos) then
-				net.WriteInt(pos:EntIndex(), 16)
+			if isentity(pos) and (pos:IsNPC() or pos:IsPlayer() or (pos.IsBot and pos:IsBot() or false)) then
+				net.WriteType(pos:EntIndex(), 16)
 			else
-				net.WriteVector(pos)
+				local pos = isvector(pos) and pos or pos:GetPos()
+				net.WriteType(pos)
 			end
 			net.WriteFloat(length)
 		net.Send(self)
