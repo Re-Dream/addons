@@ -24,6 +24,10 @@ local function goto(from, to)
 		ent = mingeban.utils.findEntity(to, false)[1]
 	end
 
+	if not from:Alive() then
+		from:Spawn()
+	end
+
 	if isentity(ent) and IsValid(ent) then
 		local pos = ent:GetPos()
 		local oldPos = from:GetPos()
@@ -84,4 +88,8 @@ local bring = mingeban.CreateCommand("bring", function(caller, line, pos)
 end)
 bring:AddArgument(ARGTYPE_PLAYER)
 	:SetName("target")
+
+local kill = mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
+	caller:Kill()
+end)
 
