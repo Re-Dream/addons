@@ -1,7 +1,7 @@
 local t = SysTime
 crash_protection = crash_protection or {}
 
-crash_protection.maxExecTime = 5
+crash_protection.maxExecTime = 10
 crash_protection.instructionInterval = 2^24
 
 crash_protection.lastChecked = t()
