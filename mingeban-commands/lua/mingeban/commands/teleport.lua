@@ -26,7 +26,7 @@ local go = mingeban.CreateCommand({"go", "goto"}, function(caller, line, pos)
 		local goodPos
 		local ang = Angle(0, ent:EyeAngles().y, 0)
 		local right = false
-		if pos:Distance(oldPos) <= 80 then
+		if pos:Distance(oldPos) <= 130 then
 			right = true
 		else
 			for i = 0, 7 do
