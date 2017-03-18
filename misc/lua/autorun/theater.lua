@@ -12,10 +12,26 @@ theater.locations = {
 		mpos   = Vector(416.03125, 1175.3011474609, 351.95498657227),
 		mang   = Angle(0, -90, 0),
 	},
+	["gm_abstraction_ex-sunset"] = {
+		offset = Vector(0, 0, 0),
+		angle  = Angle(-90, 90, 0),
+		height = 200,
+		width  = 320,
+		mins   = Vector(-764, -2142, 0),
+		maxs   = Vector(-145, -1507, 914),
+		mpos   = Vector(-720, -2080, 249),
+		mang   = Angle(0, 0, 0),
+	},
 }
 
+theater.locations["gm_abstraction_ex-night"] = theater.locations["gm_abstraction_ex-sunset"]
+
 local l = theater.locations[game.GetMap()]
-if not l then return end
+if not l then
+	theater.spawn = function() ErrorNoHalt("No theater location for this map! " .. game.GetMap() .. "\n") end
+
+	return
+end
 
 easylua.StartEntity("theater_screen")
 	ENT.PrintName = "Theater Screen"
