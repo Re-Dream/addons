@@ -14,8 +14,21 @@ local alias =
 }
 
 aowl = {}
+
+--[[ this might not be needed
+local handle = {
+	vote = function(cmd)
+		cmd:AddArgument(ARGTYPE_VARARGS)
+	end
+}
+]]
 aowl.AddCommand = function(name, callback, group)
-	mingeban.CreateCommand(name, callback)
+	local cmd = mingeban.CreateCommand(name, callback)
+	cmd:AddArgument(ARGTYPE_VARARGS)
+		:SetName("any")
+	-- if handle[name] then handle[name](cmd) end
+
+	if not group then group = "players" end
 	for _, rank in next, mingeban.ranks do
 		if alias[group] == rank:GetName() then
 			if istable(name) then
