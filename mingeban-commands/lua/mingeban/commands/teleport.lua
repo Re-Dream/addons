@@ -41,7 +41,7 @@ local function goto(from, to)
 				ang.y = ang.y + 360 * (i / 7)
 				goodPos = pos + ang:Forward() * 80 + Vector(0, 0, 8)
 				from:SetPos(goodPos)
-				if IsStuck(from) then
+				if from:GetMoveType() ~= MOVETYPE_NOCLIP and IsStuck(from) then
 					for i = 1, 8 do
 						goodPos = pos + ang:Forward() * (80 + 16 * i) + Vector(0, 0, 8)
 						from:SetPos(goodPos)
@@ -61,13 +61,13 @@ local function goto(from, to)
 			return false, "Couldn't find a position without getting you stuck"
 		else
 			if from:IsPlayer() then
-				from:LookAt(ent, 0.6)
+				from:LookAt(ent, 0.25)
 			end
 			from:EmitSound("buttons/button15.wav")
 		end
 	elseif isvector(ent) then
 		from:SetPos(ent)
-		from:LookAt(ent, 0.6)
+		from:LookAt(ent, 0.25)
 		from:EmitSound("buttons/button15.wav")
 	else
 		return false, "Invalid location!"
