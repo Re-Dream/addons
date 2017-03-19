@@ -29,7 +29,7 @@ aowl.AddCommand = function(name, callback, group)
 	-- if handle[name] then handle[name](cmd) end
 
 	if not group then group = "players" end
-	for _, rank in next, mingeban.ranks do
+	for _, rank in next, mingeban:GetRanks() do
 		if alias[group] == rank:GetName() then
 			if istable(name) then
 				for _, name in next, name do

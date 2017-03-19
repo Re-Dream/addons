@@ -1,6 +1,8 @@
 
 local tag = "lively_chat"
 
+local prefix = mingeban and mingeban.utils.CmdPrefix or "^[%$%.!/]"
+
 if CLIENT then
 
 	team.SetUp(1001, "Unassigned", Color(129, 171, 213)) -- custom chat color
@@ -33,6 +35,7 @@ if SERVER then
 			time = 900
 		},
 	}
+
 	local curMsg = 1
 	lively_chat = {}
 	function lively_chat.PrintNextAnnouncement()
@@ -45,7 +48,16 @@ if SERVER then
 
 		timer.Adjust(tag .. "_announcements", msgs[curMsg].time, 0, lively_chat.PrintNextAnnouncement)
 	end
-	timer.Create(tag .. "_announcements", msgs[1].time, 0, lively_chat.PrintNextAnnouncement)
+	function lively_chat.StartAnnouncements()
+		curMsg = 1
+		timer.Create(tag .. "_announcements", msgs[1].time, 0, lively_chat.PrintNextAnnouncement)
+	end
+	-- lively_chat.StartAnnouncements()
+
+	hook.Add("PreChatSoundsSay", tag, function(ply, txt)
+		if txt:match(prefix) then return false end
+	end)
 
 end
+
 
