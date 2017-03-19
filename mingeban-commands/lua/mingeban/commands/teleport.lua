@@ -72,6 +72,7 @@ local function goto(from, to)
 	else
 		return false, "Invalid location!"
 	end
+
 end
 
 local go = mingeban.CreateCommand({"go", "goto"}, function(caller, line, pos, y, z)
@@ -88,8 +89,4 @@ local bring = mingeban.CreateCommand("bring", function(caller, line, pos)
 end)
 bring:AddArgument(ARGTYPE_PLAYER)
 	:SetName("target")
-
-local kill = mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
-	caller:Kill()
-end)
 
