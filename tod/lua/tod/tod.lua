@@ -166,7 +166,7 @@ end
 
 if CLIENT then
 	do -- texture collector
-		local bsp = requirex("bsp")
+		local bsp = require("bsp")
 
 		local map_data = bsp.Open()
 		local found = map_data:ReadLumpTextDataStringData()
