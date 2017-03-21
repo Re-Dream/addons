@@ -7,6 +7,154 @@ if CLIENT then
 
 	team.SetUp(1001, "Unassigned", Color(129, 171, 213)) -- custom chat color
 
+	local gray = Color(192, 212, 222)
+
+	local luaPatterns = {
+		[2]  = "([%a_][%w_]*)", -- keyword or text
+		[4]  = "(\".-\")", -- string
+		[5]  = "([%d]+%.?%d*)", -- number
+		[6]  = "([%+%-%*/%%%(%)%.,<>~=#:;{}%[%]])", -- operator
+		[7]  = "(//[^\n]*)", -- c comment
+		[8]  = "(/%*.-%*/)", -- c multiline comment
+		[9]  = "(%-%-[^%[][^\n]*)", -- lua comment
+		[10] = "(%-%-%[%[.-%]%])", -- lua multiline comment
+		[11] = "(%[%[.-%]%])", -- odd string
+		[12] = "('.-')", -- quote string
+		[13] = "(!+)", -- c not
+	}
+
+	local defCol 	  = Color(192, 197, 206)
+	local keywordCol  = Color(180, 142, 173)
+	local strCol 	  = Color(163, 190, 140)
+	local numberCol   = Color(208, 135, 112)
+	local operatorCol = defCol
+	local commentCol  = Color(153, 157, 164)
+	local colors = {
+		Color(255, 255, 255), -- unused
+		keywordCol,
+		defCol,
+		strCol,
+		numberCol,
+		operatorCol,
+		commentCol,
+		commentCol,
+		commentCol,
+		commentCol,
+		strCol,
+		strCol,
+		Color(255,   0,   0), -- c not
+	}
+
+	local keywords = {
+		["local"]    = true,
+		["function"] = true,
+		["return"]   = true,
+		["break"]    = true,
+		["continue"] = true,
+		["end"]      = true,
+		["if"]       = true,
+		["not"]      = true,
+		["while"]    = true,
+		["for"]      = true,
+		["repeat"]   = true,
+		["until"]    = true,
+		["do"]       = true,
+		["then"]     = true,
+		["true"]     = true,
+		["false"]    = true,
+		["nil"]      = true,
+		["in"]       = true
+	}
+
+	local function syntax_highlight(code) -- borrowed from Meta, made by Morten
+		local output = {}
+		local finds = {}
+		local types = {}
+		local startPos, lastPos, type = 0, 0, 0
+
+		while true do
+			local temp = {}
+
+			for type, pattern in pairs(luaPatterns) do
+				local startPos, endPos = code:find(pattern, lastPos + 1)
+				if startPos then
+					table.insert(temp, {type, startPos, endPos})
+				end
+			end
+
+			-- nothing to see
+			if #temp == 0 then break end
+
+			-- pick the first detected pattern
+			table.sort(temp, function(a, b) return (a[2] == b[2]) and (a[3] > b[3]) or (a[2] < b[2]) end)
+
+			-- we will use these in the next loop and to determine if we're using a keyword
+			type, startPos, lastPos = unpack(temp[1])
+
+			table.insert(finds, startPos)
+			table.insert(finds, lastPos)
+
+			-- are we a keyword?
+			table.insert(types, type == 2 and (keywords[code:sub(startPos, lastPos)] and 2 or 3) or type)
+		end
+
+		-- this fixes stuff, apparently
+		for i = 1, #finds - 1 do
+			local fix = (i - 1) % 2
+			local sub = code:sub(finds[i] + fix, finds[i + 1] - fix)
+
+			table.insert(output, fix == 0 and colors[types[1 + (i - 1) / 2]] or Color(0, 0, 0, 255)) -- add color
+			table.insert(output, (fix == 1 and sub:find("^%s+$")) and sub:gsub("%s", " ") or sub) -- add text
+			-- not sure what the fix is for here, but let's keep it
+		end
+
+		return output
+	end
+
+	local client = Color(103, 215, 220)
+	local server = Color(114, 241, 129)
+	local shared = Color(210, 161, 141)
+
+	local states = {
+		["l"]   = { c = server, n = "server",  a = "ran"     },
+		["p"]   = { c = server, n = "server",  a = "printed" },
+		["lm"]  = { c = client, n = "self",    a = "ran"     },
+		["pm2"] = { c = client, n = "self",    a = "printed" },
+		["ls"]  = { c = shared, n = "shared",  a = "ran"     },
+		["ps"]  = { c = shared, n = "shared",  a = "printed" },
+		["lb"]  = { c = shared, n = "both",    a = "ran"     },
+		["lc"]  = { c = client, n = "clients", a = "ran"     },
+		["pc"]  = { c = client, n = "clients", a = "printed" },
+		["lsc"] = { c = client, a = "ran"},
+	}
+
+	hook.Add("OnPlayerChat", tag .. "-syntax", function(ply, txt, tc, dead)
+		local prefix = txt:match(prefix)
+		if prefix then
+			local method = txt:lower():match("^" .. prefix .. "(%w+)%s?")
+			local methodInfo = states[method]
+			if not methodInfo then return end
+
+			local code = txt:sub(prefix:len() + 1 + method:len() + 1)
+			local name = methodInfo.n
+			if method == "lsc" then
+				name = code:Split(",")[1] or "no one"
+				name = name:Trim()
+				code = code:sub(name:len() + 2)
+			end
+
+			local stuff = { team.GetColor(ply:Team()), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
+			local highlight = syntax_highlight(code)
+			for _, thing in next, highlight do
+				stuff[#stuff + 1] = thing
+			end
+			chat.AddText(unpack(stuff))
+
+			return true
+		end
+
+	end)
+
 end
 
 if SERVER then

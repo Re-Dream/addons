@@ -1,54 +1,54 @@
 [submodule "epoe"]
-	path = epoe
+	path = submodules/epoe
 	url = https://github.com/Metastruct/EPOE
 [submodule "luadev"]
-	path = luadev
+	path = submodules/luadev
 	url = https://github.com/Noiwex/luadev
 [submodule "glib"]
-	path = glib
+	path = submodules/glib
 	url = https://github.com/notcake/glib
 [submodule "gooey"]
-	path = gooey
+	path = submodules/gooey
 	url = https://github.com/notcake/gooey
 [submodule "gcodec"]
-	path = gcodec
+	path = submodules/gcodec
 	url = https://github.com/notcake/gcodec
 [submodule "vfs"]
-	path = vfs
+	path = submodules/vfs
 	url = https://github.com/notcake/vfs
 [submodule "gcompute"]
-	path = gcompute
+	path = submodules/gcompute
 	url = https://github.com/notcake/gcompute
 [submodule "gvote"]
-	path = gvote
+	path = submodules/gvote
 	url = https://github.com/notcake/gvote
 [submodule "garrysmod-chatsounds"]
-	path = garrysmod-chatsounds
+	path = submodules/garrysmod-chatsounds
 	url = https://github.com/Metastruct/garrysmod-chatsounds
 [submodule "pac3"]
-	path = pac3
+	path = submodules/pac3
 	url = https://github.com/Metastruct/pac3
 [submodule "sit-anywhere"]
-	path = sit-anywhere
+	path = submodules/sit-anywhere
 	url = https://github.com/Xerasin/Sit-Anywhere
 [submodule "wire"]
-	path = wire
+	path = submodules/wire
 	url = https://github.com/wiremod/wire
 [submodule "ctp"]
-	path = ctp
+	path = submodules/ctp
 	url = https://github.com/CapsAdmin/customisable_thirdperson/
 [submodule "advdupe2"]
-	path = advdupe2
+	path = submodules/advdupe2
 	url = https://github.com/wiremod/advdupe2
 [submodule "chat-substitute"]
-	path = chat-substitute
+	path = submodules/qchat
 	url = https://github.com/CaveeJohnson/gmod-xp-chat
 [submodule "mingeban2"]
-	path = mingeban2
+	path = submodules/mingeban2
 	url = https://github.com/Re-Dream/mingeban2
 [submodule "gm-mediaplayer"]
-	path = gm-mediaplayer
+	path = submodules/mediaplayer
 	url = https://github.com/pixeltailgames/gm-mediaplayer
 [submodule "patch-protect"]
-	path = patch-protect
+	path = submodules/patch-protect
 	url = https://github.com/Patcher56/PatchProtect

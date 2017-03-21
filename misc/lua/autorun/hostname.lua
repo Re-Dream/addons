@@ -17,7 +17,7 @@ come fuck around and build stupid shit
 pac4 when?
 better than outfitter
 trust no one, not even the workshop
-it was too late when doing this]]
+addons can be requested]]
 -------------------------------------->            max hostname size i believe
 
 	titles = string.Split(titles, "\n")
