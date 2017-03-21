@@ -321,4 +321,4 @@ function methods:GetTranslatedTextDataStringTable()
 	return data
 end
 
-return {Open = OpenBSP}
+bsp = {Open = OpenBSP}
