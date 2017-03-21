@@ -164,6 +164,7 @@ if SERVER then
 	end
 end
 
+AddCSLuaFile("tod/bsp.lua")
 if CLIENT then
 	do -- texture collector
 		include("tod/bsp.lua")
