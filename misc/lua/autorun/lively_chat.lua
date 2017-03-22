@@ -103,7 +103,16 @@ if CLIENT then
 			local fix = (i - 1) % 2
 			local sub = code:sub(finds[i] + fix, finds[i + 1] - fix)
 
-			table.insert(output, fix == 0 and colors[types[1 + (i - 1) / 2]] or Color(0, 0, 0, 255)) -- add color
+			local i2 = 1
+			local before = output[#output - i2]
+			while isstring(before) and before:Trim() == "" do
+				i2 = i2 + 1
+				before = output[#output - i2]
+			end
+			local col = colors[types[1 + (i - 1) / 2]]
+			if sub:Trim() ~= "" and before and before ~= col then
+				table.insert(output, fix == 0 and col or Color(0, 0, 0, 255))
+			end -- add color
 			table.insert(output, (fix == 1 and sub:find("^%s+$")) and sub:gsub("%s", " ") or sub) -- add text
 			-- not sure what the fix is for here, but let's keep it
 		end
@@ -144,10 +153,17 @@ if CLIENT then
 			end
 
 			local stuff = { team.GetColor(ply:Team()), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
+			stuff[#stuff + 1] = code
+
+			--[[ until new chathud.
+
 			local highlight = syntax_highlight(code)
 			for _, thing in next, highlight do
 				stuff[#stuff + 1] = thing
 			end
+
+			]]
+
 			chat.AddText(unpack(stuff))
 
 			return true

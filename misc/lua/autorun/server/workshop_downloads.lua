@@ -2,7 +2,7 @@
 local addons = {
 	["prone-mod"] = 775573383,
 	["notifications"] = 650064006, -- to be redone by ourselves
-	["flybysounds"] = 167809847,
+	-- ["flybysounds"] = 167809847,
 }
 local maps = {
 	["gm_bluehills_test3"] = 243902601,

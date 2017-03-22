@@ -16,10 +16,11 @@ local function IsStuck(ply)
 
 end
 
-local function goto(from, to)
+local function goto(from, to, istp)
 	if not IsValid(from) then return end
 
 	local ent = to
+	if not ent then return end
 	if not isentity(to) and not isvector(to) then
 		ent = mingeban.utils.findEntity(to, false)[1]
 	end
@@ -58,7 +59,7 @@ local function goto(from, to)
 		end
 		if not right then
 			from:SetPos(oldPos)
-			return false, "Couldn't find a position without getting you stuck"
+			return false, "Couldn't teleport you without getting you stuck"
 		else
 			if from:IsPlayer() then
 				from:LookAt(ent, 0.25)
@@ -67,8 +68,12 @@ local function goto(from, to)
 		end
 	elseif isvector(ent) then
 		from:SetPos(ent)
-		from:LookAt(ent, 0.25)
-		from:EmitSound("buttons/button15.wav")
+		if not istp then
+			from:LookAt(ent, 0.25)
+			from:EmitSound("buttons/button15.wav")
+		else
+			from:EmitSound("player/jumplanding" .. (math.random(1, 2) == 1 and math.random(0, 5) or "") .. ".wav")
+		end
 	else
 		return false, "Invalid location!"
 	end
@@ -89,4 +94,54 @@ local bring = mingeban.CreateCommand("bring", function(caller, line, pos)
 end)
 bring:AddArgument(ARGTYPE_PLAYER)
 	:SetName("target")
+
+local tp = mingeban.CreateCommand({"tp", "teleport", "blink"}, function(caller)
+	local traceData = util.GetPlayerTrace(caller)
+	traceData.mask = bit.bor(CONTENTS_PLAYERCLIP, MASK_PLAYERSOLID_BRUSHONLY, MASK_SHOT_HULL)
+
+	local plyTrace = util.TraceLine(traceData)
+	local start = caller:GetPos() + Vector(0, 0, 1)
+	local endPos = plyTrace.HitPos
+	local wasInWorld = util.IsInWorld(start)
+
+	local dist = start - endPos
+	local length = dist:Length()
+	length = length > 100 and 100 or length
+	dist:Normalize()
+	dist = dist * length
+
+	if not wasInWorld and util.IsInWorld(endPos - plyTrace.HitNormal * 120) then
+		plyTrace.HitNormal = -plyTrace.HitNormal
+	end
+	start = endPos + plyTrace.HitNormal * 120
+
+	local traceData = {
+		start = start,
+		endpos = endPos,
+		filter = caller,
+		mins = Vector(-16, -16, 0),
+		maxs = Vector(16, 16, 72),
+		mask = bit.bor(CONTENTS_PLAYERCLIP, MASK_PLAYERSOLID_BRUSHONLY, MASK_SHOT_HULL)
+	}
+	local trace = util.TraceHull(traceData)
+
+	if trace.StartSolid or (wasInWorld and not util.IsInWorld(trace.HitPos)) then
+		trace = util.TraceHull(traceData)
+		traceData.start = endPos + plyTrace.HitNormal * 3
+	end
+	if trace.StartSolid or (wasInWorld and not util.IsInWorld(trace.HitPos)) then
+		trace = util.TraceHull(traceData)
+		traceData.start = caller:GetPos() + Vector(0, 0, 1)
+	end
+	if trace.StartSolid or (wasInWorld and not util.IsInWorld(trace.HitPos)) then
+		trace = util.TraceHull(traceData)
+		traceData.start = endPos + dist
+	end
+
+	if trace.StartSolid then
+		return false, "Couldn't teleport you without getting you stuck"
+	end
+
+	return goto(caller, trace.HitPos, true)
+end)
 
