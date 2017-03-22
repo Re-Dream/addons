@@ -9,9 +9,9 @@ local classes = {
 	["env_sprite"] = true,
 }
 hook.Add("InitPostEntity", "abstraction-changepos", function()
-	for _, ent in next, ents.FindInSphere(Vector(7440, 16, 64), 64) do
+	for _, ent in next, ents.FindInSphere(Vector(7440, 16, 64), 128) do
 		if classes[ent:GetClass()] then
-			ent:SetPos(Vector(8138, -145, 24) + Vector(0, 0, 32))
+			ent:SetPos(Vector(6725, -143, 28))
 		end
 	end
 end)
