@@ -16,6 +16,13 @@ local function IsStuck(ply)
 
 end
 
+local teleportSounds = {
+	"jumplanding",
+	"jumplanding2",
+	"jumplanding3",
+	"jumplanding4",
+	"jumplanding_zombie",
+}
 local function goto(from, to, istp)
 	if not IsValid(from) then return end
 
@@ -72,7 +79,7 @@ local function goto(from, to, istp)
 			from:LookAt(ent, 0.25)
 			from:EmitSound("buttons/button15.wav")
 		else
-			from:EmitSound("player/jumplanding" .. (math.random(1, 2) == 1 and math.random(0, 5) or "") .. ".wav")
+			from:EmitSound("player/" .. table.Random(teleportSounds) .. ".wav")
 		end
 	else
 		return false, "Invalid location!"
