@@ -3,8 +3,8 @@ local whitelist = {
 	gm_flatgrass = true,
 	gm_construct = true,
 	gm_abstraction_extended = true,
-	["gm_abstraction_ex-sunset"] = true,
-	["gm_abstraction_ex-night"] = true,
+	-- ["gm_abstraction_ex-sunset"] = true,
+	-- ["gm_abstraction_ex-night"] = true,
 }
 
 if not whitelist[game.GetMap():lower()] then return end
