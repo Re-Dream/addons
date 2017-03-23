@@ -1,8 +1,7 @@
 
 if SERVER then
 	AddCSLuaFile("scoreboard/scoreboard.lua")
-end
-if CLIENT then
+else
 	include("scoreboard/scoreboard.lua")
 end
 

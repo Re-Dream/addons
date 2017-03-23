@@ -1,4 +1,6 @@
 
-AddCSLuaFile("tod/tod.lua")
+if SERVER then
+	AddCSLuaFile("tod/tod.lua")
+end
 include("tod/tod.lua")
 
