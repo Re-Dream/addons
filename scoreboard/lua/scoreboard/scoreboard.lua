@@ -124,6 +124,22 @@ function Player:Init()
 			LocalPlayer():ConCommand("mingeban goto _" .. self.Player:EntIndex())
 		end
 	end
+	function self.Info.DoRightClick()
+		local menu = DermaMenu()
+		local lply = LocalPlayer()
+		local ply = self.Player
+		if mingeban and mingeban.commands then
+			local cmds = mingeban.commands
+			if LocalPlayer():IsAdmin() then
+				if cmds.kick then
+					menu:AddOption("Kick", function()
+						lply:ConCommand("mingeban kick _" .. ply:EntIndex())
+					end):SetIcon("icon16/door_in.png")
+				end
+			end
+		end
+		menu:Open()
+	end
 	function self.Info.Paint(s, w, h)
 		local ply = self.Player
 		if not IsValid(ply) then return end
@@ -208,7 +224,10 @@ function Player:PerformLayout()
 end
 
 function Player:Paint(w, h)
-	surface.SetDrawColor(Color(244, 248, 255, 190))
+	local ply = self.Player
+	local isAFK = (IsValid(ply) and ply.IsAFK) and ply:IsAFK() or false
+
+	surface.SetDrawColor(isAFK and Color(225, 229, 240, 190) or Color(244, 248, 255, 190))
 	surface.DrawRect(0, 0, w, h)
 
 	if self.Info:IsHovered() then
@@ -407,7 +426,7 @@ function scoreboard:Init()
 end
 
 function scoreboard:HandlePlayers()
-	local i = 0
+	local i = 1
 	local setLone = false
 	for id, info in next, team.GetAllTeams() do
 		local pnl = self.Teams[id]
@@ -461,6 +480,9 @@ function scoreboard:RefreshPlayers(id)
 					_pnl = vgui.Create(tag .. "Player", pnl)
 					_pnl.UserID = ply:UserID()
 					pnl[ply:UserID()] = _pnl
+				end
+				if not IsValid(ply) then
+					print("What the fuck", ply)
 				end
 				_pnl:SetPlayer(ply)
 				_pnl:Dock(TOP)
