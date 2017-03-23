@@ -1,15 +1,25 @@
 
 if CLIENT then return end
 
-local kill = mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
+mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
 	caller:KillSilent()
 	caller:CreateRagdoll()
 end)
 
-local revive = mingeban.CreateCommand("revive", function(caller, line)
+mingeban.CreateCommand("revive", function(caller, line)
 	local oldPos, oldAng = caller:GetPos(), caller:EyeAngles()
 	caller:Spawn()
 	caller:SetPos(oldPos)
 	caller:SetEyeAngles(oldAng)
 end)
 
+mingeban.CreateCommand("map",function(caller, line)
+	line = line:gsub(".bsp", "")
+	game.ConsoleCommand("changelevel " .. line .. "\n")
+end)
+
+mingeban.CreateCommand("maps",function(caller)
+	for _, v in next, (file.Find("maps/*.bsp", "GAME")) do
+		caller:PrintMessage(HUD_PRINTCONSOLE, v)
+	end
+end)
