@@ -13,7 +13,6 @@ local function IsStuck(ply)
 	trace.filter = ply
 
 	return util.TraceEntity(trace, ply).StartSolid
-
 end
 
 local teleportSounds = {
@@ -31,6 +30,7 @@ local function goto(from, to, istp)
 	if not isentity(to) and not isvector(to) then
 		ent = mingeban.utils.findEntity(to, false)[1]
 	end
+	if ent == from then return false, "Can't goto yourself" end
 
 	if not from:Alive() then
 		from:Spawn()
