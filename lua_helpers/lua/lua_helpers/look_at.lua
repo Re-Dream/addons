@@ -28,7 +28,7 @@ if CLIENT then
 		userCmd:SetMouseY(0)
 
 		local target = target
-		if isentity(target) then
+		if isentity(target) and IsValid(target) then
 			local bone = target:LookupBone("ValveBiped.Bip01_Head1")
 			if bone then
 				target = target:GetBonePosition(bone)
