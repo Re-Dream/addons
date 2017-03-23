@@ -1,5 +1,6 @@
 local whitelist = {
 	gm_bluehills_test3 = true,
+	gm_freespace_13 = true,
 	gm_flatgrass = true,
 	gm_construct = true,
 	gm_abstraction_extended = true,
