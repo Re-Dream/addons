@@ -27,6 +27,10 @@ if SERVER then
 		net.Broadcast()
 	end)
 
+	hook.Add("AFK", "AFKSound", function(ply, is)
+		ply:EmitSound(is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
+	end)
+
 elseif CLIENT then
 
 	afk.Mouse = {x = 0, y = 0}

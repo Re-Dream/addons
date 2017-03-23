@@ -25,3 +25,9 @@ mingeban.CreateCommand("maps", function(caller)
 		caller:PrintMessage(HUD_PRINTCONSOLE, map)
 	end
 end)
+
+mingeban.CreateCommand("rcon", function(caller, line)
+	if not caller:IsAdmin() then return end
+	game.ConsoleCommand(line .. "\n")
+end)
+
