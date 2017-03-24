@@ -115,14 +115,35 @@ function Player:Init()
 		if self.Player:SteamID64() == nil then return end
 		gui.OpenURL("https://steamcommunity.com/profiles/" .. self.Player:SteamID64())
 	end
+    function self.Avatar.Click.DoRightClick()
+		local menu = DermaMenu()
+        local ply = self.Player
+        menu:AddOption("Open Profile",function()
+			gui.OpenURL("https://steamcommunity.com/profiles/" .. ply:SteamID64())
+		end):SetIcon("icon16/book_go.png")
+		menu:AddOption("Copy Profile URL",function()
+			SetClipboardText("http://steamcommunity.com/profiles/" .. ply:SteamID64())
+		end):SetIcon("icon16/book_link.png")
+		menu:AddSpacer()
+		menu:AddOption("Copy SteamID",function()
+			SetClipboardText(ply:SteamID())
+		end):SetIcon("icon16/tag_blue.png")
+		menu:AddOption("Copy Community ID",function()
+			SetClipboardText(tostring(ply:SteamID64()))
+		end):SetIcon("icon16/tag_yellow.png")
+
+		menu:Open()
+	end
 
 	self.Info = vgui.Create("DButton", self)
 	self.Info:Dock(FILL)
 	self.Info:SetCursor("arrow")
 	function self.Info.DoDoubleClick()
-		if mingeban and mingeban.commands.goto then
+		if mingeban and mingeban.commands.goto and self.Player ~= LocalPlayer() then
 			LocalPlayer():ConCommand("mingeban goto _" .. self.Player:EntIndex())
-		end
+		elseif mingeban and mingeban.commands.tp and self.Player == LocalPlayer() then
+            LocalPlayer():ConCommand("mingeban tp")
+        end
 	end
 	function self.Info.DoRightClick()
 		local menu = DermaMenu()
@@ -130,8 +151,23 @@ function Player:Init()
 		local ply = self.Player
 		if mingeban and mingeban.commands then
 			local cmds = mingeban.commands
+            if cmds.goto and ply ~= lply then
+                menu:AddOption("Goto", function()
+                    lply:ConCommand("mingeban goto _" .. ply:EntIndex())
+                end):SetIcon("icon16/bullet_go.png")
+            elseif cmds.tp and ply == lply then
+                menu:AddOption("Blink", function()
+                    lply:ConCommand("mingeban tp")
+                end):SetIcon("icon16/arrow_up.png")
+            end
 			if LocalPlayer():IsAdmin() then
-				if cmds.kick then
+                if cmds.bring and ply ~= lply then
+                    menu:AddOption("Bring", function()
+						lply:ConCommand("mingeban bring _" .. ply:EntIndex())
+					end):SetIcon("icon16/arrow_in.png")
+                    menu:AddSpacer()
+                end
+				if cmds.kick and ply ~= lply then
 					menu:AddOption("Kick", function()
 						lply:ConCommand("mingeban kick _" .. ply:EntIndex())
 					end):SetIcon("icon16/door_in.png")
@@ -484,6 +520,7 @@ function scoreboard:RefreshPlayers(id)
 				if not IsValid(ply) then
 					print("What the fuck", ply)
 				end
+				_pnl:SetPlayer(ply)
 				_pnl:Dock(TOP)
 				_pnl:DockMargin(8, 0, 8, 0)
 				_pnl:SetTall(30)
@@ -561,6 +598,7 @@ hook.Add("ScoreboardHide", tag, function()
 	end
 	Scoreboard:Hide()
 
+    CloseDermaMenus()
+
 	return true
 end)
-
