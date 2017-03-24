@@ -13,21 +13,7 @@ mingeban.CreateCommand("revive", function(caller)
 	caller:SetEyeAngles(oldAng)
 end)
 
-mingeban.CreateCommand("map", function(caller, line)
-	if not caller:IsAdmin() then return end
-	line = line:gsub(".bsp", "")
-	game.ConsoleCommand("changelevel " .. line .. "\n")
-end)
-
-mingeban.CreateCommand("maps", function(caller)
-	if not caller:IsAdmin() then return end
-	for _, map in next, (file.Find("maps/*.bsp", "GAME")) do
-		caller:PrintMessage(HUD_PRINTCONSOLE, map)
-	end
-end)
-
-mingeban.CreateCommand("rcon", function(caller, line)
-	if not caller:IsAdmin() then return end
-	game.ConsoleCommand(line .. "\n")
+mingeban.CreateCommand("cmd", function(caller, line)
+	caller:ConCommand(line)
 end)
 

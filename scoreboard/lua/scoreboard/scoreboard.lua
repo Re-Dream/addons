@@ -115,6 +115,25 @@ function Player:Init()
 		if self.Player:SteamID64() == nil then return end
 		gui.OpenURL("https://steamcommunity.com/profiles/" .. self.Player:SteamID64())
 	end
+	function self.Avatar.Click.DoRightClick()
+		local menu = DermaMenu()
+		local ply = self.Player
+		menu:AddOption("Open Profile", function()
+			gui.OpenURL("https://steamcommunity.com/profiles/" .. ply:SteamID64())
+		end):SetIcon("icon16/book_go.png")
+		menu:AddOption("Copy Profile URL", function()
+			SetClipboardText("http://steamcommunity.com/profiles/" .. ply:SteamID64())
+		end):SetIcon("icon16/book_link.png")
+		menu:AddSpacer()
+		menu:AddOption("Copy SteamID", function()
+			SetClipboardText(ply:SteamID())
+		end):SetIcon("icon16/tag_blue.png")
+		menu:AddOption("Copy Community ID", function()
+			SetClipboardText(tostring(ply:SteamID64()))
+		end):SetIcon("icon16/tag_yellow.png")
+
+		menu:Open()
+	end
 
 	self.Info = vgui.Create("DButton", self)
 	self.Info:Dock(FILL)
@@ -130,11 +149,24 @@ function Player:Init()
 		local ply = self.Player
 		if mingeban and mingeban.commands then
 			local cmds = mingeban.commands
-			if LocalPlayer():IsAdmin() then
-				if cmds.kick then
-					menu:AddOption("Kick", function()
-						lply:ConCommand("mingeban kick _" .. ply:EntIndex())
-					end):SetIcon("icon16/door_in.png")
+			if lply ~= ply then
+				if cmds.goto then
+					menu:AddOption("Go To", function()
+						lply:ConCommand("mingeban goto _" .. ply:EntIndex())
+					end):SetIcon("icon16/bullet_go.png")
+				end
+				if LocalPlayer():IsAdmin() then
+					if cmds.bring then
+						menu:AddOption("Bring", function()
+							lply:ConCommand("mingeban bring _" .. ply:EntIndex())
+						end):SetIcon("icon16/arrow_in.png")
+					end
+					menu:AddSpacer()
+					if cmds.kick then
+						menu:AddOption("Kick", function()
+							lply:ConCommand("mingeban kick _" .. ply:EntIndex())
+						end):SetIcon("icon16/door_in.png")
+					end
 				end
 			end
 		end
@@ -512,6 +544,7 @@ function scoreboard:Show()
 	self:SetVisible(true)
 end
 function scoreboard:Hide()
+	CloseDermaMenus()
 	self:SetVisible(false)
 	if self.Popup then
 		self:SetMouseInputEnabled(false)
