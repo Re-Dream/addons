@@ -526,7 +526,7 @@ function scoreboard:PerformLayout()
 	if self.Config.Center then
 		self:Center()
 	else
-		local y = ScrH() * 0.1 - (ScrH() * 0.05 * (self:GetTall() / maxH))
+		local y = ScrH() * 0.2 - (ScrH() * 0.1 * (self:GetTall() / maxH))
 		self:SetPos(ScrW() * 0.5 - self:GetWide() * 0.5, y)
 	end
 end
