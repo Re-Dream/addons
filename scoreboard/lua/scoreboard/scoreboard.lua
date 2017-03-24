@@ -426,7 +426,7 @@ function scoreboard:Init()
 end
 
 function scoreboard:HandlePlayers()
-	local i = 1
+	local i = 0
 	local setLone = false
 	for id, info in next, team.GetAllTeams() do
 		local pnl = self.Teams[id]
@@ -442,7 +442,7 @@ function scoreboard:HandlePlayers()
 		for id, info in next, team.GetAllTeams() do
 			local pnl = self.Teams[id]
 			if pnl and pnl:IsVisible() then
-				pnl:SetLone(i <= 1)
+				pnl:SetLone(i < 2)
 			end
 		end
 	end
