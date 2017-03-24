@@ -462,7 +462,7 @@ function scoreboard:Init()
 end
 
 function scoreboard:HandlePlayers()
-	local i = 0
+	local i = 1
 	local setLone = false
 	for id, info in next, team.GetAllTeams() do
 		local pnl = self.Teams[id]
@@ -524,6 +524,7 @@ function scoreboard:RefreshPlayers(id)
 				_pnl:Dock(TOP)
 				_pnl:DockMargin(8, 0, 8, 0)
 				_pnl:SetTall(30)
+				timer.Simple(0, function() _pnl:SetPlayer(ply) end)
 			end
 		end
 
