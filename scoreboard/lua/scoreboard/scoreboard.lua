@@ -505,26 +505,28 @@ function scoreboard:RefreshPlayers(id)
 				end
 			end
 		end
+		local dead = 0
 		if pnl:IsVisible() then
 			for _, ply in next, team.GetPlayers(id) do
-				local _pnl = pnl[ply:UserID()]
-				if not _pnl then
-					_pnl = vgui.Create(tag .. "Player", pnl)
-					_pnl.UserID = ply:UserID()
-					pnl[ply:UserID()] = _pnl
+				if IsValid(ply) then
+					local _pnl = pnl[ply:UserID()]
+					if not _pnl then
+						_pnl = vgui.Create(tag .. "Player", pnl)
+						_pnl.UserID = ply:UserID()
+						pnl[ply:UserID()] = _pnl
+					end
+					_pnl:Dock(TOP)
+					_pnl:DockMargin(8, 0, 8, 0)
+					_pnl:SetTall(30)
+					_pnl:SetPlayer(ply)
+				else
+					dead = dead + 1
 				end
-				if not IsValid(ply) then
-					print("What the fuck", ply)
-				end
-				_pnl:Dock(TOP)
-				_pnl:DockMargin(8, 0, 8, 0)
-				_pnl:SetTall(30)
-				timer.Simple(0, function() _pnl:SetPlayer(ply) end)
 			end
 		end
 
 		if pnl._first then
-			pnl.Last = #team.GetPlayers(id)
+			pnl.Last = #team.GetPlayers(id) - dead
 		else
 			pnl._first = true
 		end
