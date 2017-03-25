@@ -472,10 +472,14 @@ function scoreboard:HandlePlayers()
 			setLone = true
 			self:RefreshPlayers(id)
 		end
-		if setLone and pnl and pnl:IsVisible() then
+	end
+	for id, info in next, team.GetAllTeams() do
+		local pnl = self.Teams[id]
+		if setLone and pnl and pnl:IsVisible() then -- #team.GetPlayers(id) > 0 then
 			i = i + 1
 		end
 	end
+	print(i)
 	if setLone then
 		for id, info in next, team.GetAllTeams() do
 			local pnl = self.Teams[id]
