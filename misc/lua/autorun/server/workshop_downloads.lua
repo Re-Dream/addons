@@ -6,11 +6,13 @@
 	["wiltos-base"] = 757604550,
 	-- ["flybysounds"] = 167809847,
 } ]]
+
 if file.Exists("cfg/workshop_downloads.cfg", "GAME") then
 	for _, line in next, file.Read("cfg/workshop_downloads.cfg", "GAME"):Split("\n") do
 		resource.AddWorkshop(line:gsub("(//.+)", ""):Trim())
 	end
 end
+
 local maps = {
 	["gm_bluehills_test3"] = 243902601,
 	["gm_freespace_09_extended"] = 278492798,
@@ -19,9 +21,6 @@ local maps = {
 	["gm_abstraction_ex-sunset"] = 740691120,
 }
 
-for name, id in next, addons do
-	resource.AddWorkshop(id)
-end
 for name, id in next, maps do
 	if game.GetMap() == name then
 		resource.AddWorkshop(id)
