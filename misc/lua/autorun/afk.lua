@@ -28,7 +28,7 @@ if SERVER then
 	end)
 
 	hook.Add("AFK", "AFKSound", function(ply, is)
-		ply:EmitSound(is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
+		ply:EmitSound(not is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
 	end)
 
 elseif CLIENT then

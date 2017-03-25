@@ -6,7 +6,7 @@ local afkmera_transition_speed = CreateConVar("cl_afkmera_transition_speed", "0.
 local afkmera_rotation_speed = CreateConVar("cl_afkmera_rotation_speed", "0.5", { FCVAR_ARCHIVE }, "How fast the AFKmera should rotate around the player. (negative = other way)")
 local afkmera_fov = CreateConVar("cl_afkmera_fov", "60", { FCVAR_ARCHIVE }, "Field of view of the AFKmera.")
 local afkmera_dist = CreateConVar("cl_afkmera_dist", "10", { FCVAR_ARCHIVE }, "Distance between the AFKmera and the player.")
-local afkmera_height = CreateConVar("cl_afkmera_height", "0.66", { FCVAR_ARCHIVE }, "Height of the AFKmera.")
+local afkmera_height = CreateConVar("cl_afkmera_height", "0.25", { FCVAR_ARCHIVE }, "Height of the AFKmera.")
 local afkmera_pitch = CreateConVar("cl_afkmera_pitch", "-15", { FCVAR_ARCHIVE }, "Angle pitch of the AFKmera.")
 local afkmera_simulate = CreateConVar("cl_afkmera_simulate", "0", { FCVAR_ARCHIVE }, "Force AFKmera to be active (to test and set other ConVars as you like)")
 
