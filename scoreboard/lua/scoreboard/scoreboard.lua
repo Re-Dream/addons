@@ -513,12 +513,12 @@ function scoreboard:RefreshPlayers(id)
 					if not _pnl then
 						_pnl = vgui.Create(tag .. "Player", pnl)
 						_pnl.UserID = ply:UserID()
+						_pnl:SetPlayer(ply)
 						pnl[ply:UserID()] = _pnl
 					end
 					_pnl:Dock(TOP)
 					_pnl:DockMargin(8, 0, 8, 0)
 					_pnl:SetTall(30)
-					_pnl:SetPlayer(ply)
 				else
 					dead = dead + 1
 				end
