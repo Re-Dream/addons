@@ -461,7 +461,7 @@ function scoreboard:Init()
 end
 
 function scoreboard:HandlePlayers()
-	local i = 1
+	local i = 0
 	local setLone = false
 	for id, info in next, team.GetAllTeams() do
 		local pnl = self.Teams[id]
