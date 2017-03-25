@@ -175,7 +175,10 @@ function Player:Init()
 	function self.Info.Paint(s, w, h)
 		local ply = self.Player
 		if not IsValid(ply) then
-			self.Player = Player(self.UserID)
+			self.Player = _G.Player(self.UserID)
+			if not IsValid(self.Player) then
+				self:Remove()
+			end
 			return
 		end
 
