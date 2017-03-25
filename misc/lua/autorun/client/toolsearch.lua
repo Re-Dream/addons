@@ -8,9 +8,14 @@ hook.Add("PostReloadToolsMenu", "ToolSearch", function()
 	list:SetParent(panel)
 	list:Dock(FILL)
 
-	local search = panel:Add("DTextEntry")
-	search:Dock(TOP)
-	search:DockMargin(0, 0, 0, 2)
+	local text = panel:Add("EditablePanel")
+	text:Dock(TOP)
+	text:DockMargin(0, 0, 0, 2)
+	text:SetTall(20)
+
+	local search = text:Add("DTextEntry")
+	search:Dock(FILL)
+	search:DockMargin(0, 0, 2, 0)
 	search:SetText("Search Tool...")
 	search._OnGetFocus = search.OnGetFocus
 	function search:OnGetFocus(...)
@@ -23,22 +28,44 @@ hook.Add("PostReloadToolsMenu", "ToolSearch", function()
 	search:SetUpdateOnType(true)
 	function search:OnValueChange(str)
 		for _, cat in next, list.pnlCanvas:GetChildren() do
+			local hidden = 0
 			for _, pnl in next, cat:GetChildren() do
 				if pnl.ClassName ~= "DCategoryHeader" then
 					if language.GetPhrase(pnl:GetText()):lower():match(str:lower()) then
 						pnl:SetVisible(true)
 					else
 						pnl:SetVisible(false)
+						hidden = hidden + 1
 					end
 				end
 			end
-			cat:InvalidateLayout()
+			if hidden >= #cat:GetChildren() - 1 then
+				cat:SetVisible(false)
+			else
+				cat:SetVisible(true)
+				cat:InvalidateLayout()
+			end
 		end
 	end
 
-	divider:SetLeft(panel)
+	local clear = text:Add("DButton")
+	clear:Dock(RIGHT)
+	clear:SetWide(20)
+	clear:SetText("")
+	function clear:DoClick()
+		search:SetValue("")
+	end
+	local close = Material("icon16/cross.png")
+	function clear:Paint(w, h)
+		derma.SkinHook("Paint", "Button", self, w, h)
 
+		surface.SetMaterial(close)
+		surface.SetDrawColor(Color(255, 255, 255))
+		surface.DrawTexturedRect(w * 0.5 - 16 * 0.5, h * 0.5 - 16 * 0.5, 16, 16)
+	end
+
+	divider:SetLeft(panel)
 end)
 
-RunConsoleCommand("spawnmenu_reload")
+-- RunConsoleCommand("spawnmenu_reload")
 
