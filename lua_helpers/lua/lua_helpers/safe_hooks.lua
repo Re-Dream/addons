@@ -42,16 +42,16 @@ end
 local function removeIfError(func, name, id, ...)
 	local ok, a, b, c, d, e, f = pcall(func, ...)
 	if ok then return a, b, c, d, e, f end
-	
+
 	local f = debug.getinfo(func)
-	
+
 	if f.what == "C" or file.Exists(f.short_src, "GAME") then
 		print("Hook errored: '" .. name .. "' ->", id)
 		ErrorNoHalt(a .. "\n")
 		print("Could not remove hook as there could be potentially fatal consequences")
 		return
 	end
-	
+
 	hook.Hooks[name][id] = nil
 
 	print("Removing broken Hook: '" .. name .. "' ->", id)
@@ -117,3 +117,17 @@ end
 
 hook.overwriteRegistry()
 timer.Simple(0, hook.overwriteRegistry)
+
+hooks = hook.GetTable()
+setmetatable(hook, {
+	__call = function(self, event, name, callback)
+		if not name then
+			return hooks[event]
+		elseif not callback then
+			hook.Remove(event, name)
+		else
+			hook.Add(event, name, callback)
+		end
+	end
+})
+
