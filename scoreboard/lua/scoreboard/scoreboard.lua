@@ -479,7 +479,6 @@ function scoreboard:HandlePlayers()
 			i = i + 1
 		end
 	end
-	print(i)
 	if setLone then
 		for id, info in next, team.GetAllTeams() do
 			local pnl = self.Teams[id]
