@@ -74,7 +74,7 @@ function steamapi.GetFriendList(ply)
 		relationship = "friend"
 	}, function(response)
 		if not response.friendslist or not response.friendslist.friends then
-			print("looks like " .. tostring(ply) .. " is lonely?")
+			-- private profile or some shit
 			return
 		end
 		if isentity(ply) and ply:IsPlayer() and (not ply.FriendsList or table.Count(ply.FriendsList) ~= #response.friendslist.friends) then
