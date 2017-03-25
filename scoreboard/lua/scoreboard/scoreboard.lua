@@ -174,7 +174,10 @@ function Player:Init()
 	end
 	function self.Info.Paint(s, w, h)
 		local ply = self.Player
-		if not IsValid(ply) then return end
+		if not IsValid(ply) then
+			self.Player = Player(self.UserID)
+			return
+		end
 
 		surface.SetFont(tag .. "Player")
 		local txt = ply:Nick()
