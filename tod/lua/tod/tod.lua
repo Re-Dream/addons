@@ -4,7 +4,7 @@ local whitelist = {
 	gm_flatgrass = true,
 	gm_construct = true,
 	gm_abstraction_extended = true,
-	gm_excess_islands = true
+	gm_excess_island = true
 	-- ["gm_abstraction_ex-sunset"] = true,
 	-- ["gm_abstraction_ex-night"] = true,
 }
