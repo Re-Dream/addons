@@ -713,6 +713,7 @@ local redream_scoreboard_enable = CreateClientConVar("redream_scoreboard_enable"
 
 hook.Add("PlayerBindPress", tag, function(ply, bind, pressed)
 	if not redream_scoreboard_enable:GetBool() then return end
+	if not IsValid(Scoreboard) then return end
 
 	if bind == "+attack2" and pressed and Scoreboard:IsVisible() and not Scoreboard.Popup then
 		Scoreboard:SetMouseInputEnabled(true)
