@@ -1,5 +1,7 @@
 -- easylua.StartEntity("sent_coin")
 
+AddCSLuaFile()
+
 ENT.Base = "base_anim"
 ENT.Type = "anim"
 
