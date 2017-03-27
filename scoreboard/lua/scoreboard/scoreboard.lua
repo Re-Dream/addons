@@ -118,13 +118,16 @@ function Player:Init()
 	function self.Avatar.Click.DoRightClick()
 		local menu = DermaMenu()
 		local ply = self.Player
+
 		menu:AddOption("Open Profile", function()
 			gui.OpenURL("https://steamcommunity.com/profiles/" .. ply:SteamID64())
 		end):SetIcon("icon16/book_go.png")
 		menu:AddOption("Copy Profile URL", function()
 			SetClipboardText("http://steamcommunity.com/profiles/" .. ply:SteamID64())
 		end):SetIcon("icon16/book_link.png")
+
 		menu:AddSpacer()
+
 		menu:AddOption("Copy SteamID", function()
 			SetClipboardText(ply:SteamID())
 		end):SetIcon("icon16/tag_blue.png")
@@ -155,13 +158,16 @@ function Player:Init()
 						lply:ConCommand("mingeban goto _" .. ply:EntIndex())
 					end):SetIcon("icon16/bullet_go.png")
 				end
+
 				if LocalPlayer():IsAdmin() then
 					if cmds.bring then
 						menu:AddOption("Bring", function()
 							lply:ConCommand("mingeban bring _" .. ply:EntIndex())
 						end):SetIcon("icon16/arrow_in.png")
 					end
+
 					menu:AddSpacer()
+
 					if cmds.kick then
 						menu:AddOption("Kick", function()
 							lply:ConCommand("mingeban kick _" .. ply:EntIndex())
@@ -284,6 +290,113 @@ scoreboard = {}
 
 scoreboard.GetContentSize = GetContentSize
 
+local wantsToClose = false
+local activeFrame
+local function OpenColorSelect()
+	if IsValid(activeFrame) then return end
+
+	local frame = vgui.Create("EditablePanel")
+	frame:SetSize(250, 175)
+	frame:SetPos(ScrW() * 0.5 - frame:GetWide() * 0.5, ScrH() * 0.75 - frame:GetTall() * 0.5)
+	frame:DockPadding(6, 6, 6, 6)
+	function frame:Paint(w, h)
+		local col = HSVToColor(RealTime() * 10 % 360, 1, 0.5)
+		col.a = 245
+		surface.SetDrawColor(col)
+		surface.DrawRect(0, 0, w, h)
+
+		surface.SetDrawColor(Color(0, 0, 0, 80))
+		surface.DrawOutlinedRect(0, 0, w, h)
+	end
+
+	local top = frame:Add("EditablePanel")
+	top:Dock(TOP)
+	top:SetTall(20)
+	top:DockMargin(0, 0, 0, 4)
+	function top:Paint(w, h)
+		surface.SetFont("DermaDefault")
+		local txt = "Header Color Selection"
+		local txtW, txtH = surface.GetTextSize(txt)
+		surface.SetTextPos(2, h * 0.5 - txtH * 0.5)
+		surface.SetTextColor(Color(255, 255, 255))
+		surface.DrawText(txt)
+	end
+
+	local close = top:Add("DButton")
+	close:Dock(RIGHT)
+	close:SetWide(20)
+	close:DockMargin(4, 0, 0, 0)
+	function close:Paint(w, h)
+		surface.SetDrawColor(Color(255, 96, 96, 192))
+		surface.DrawRect(0, 0, w, h)
+
+		surface.SetFont("marlett")
+		local txt = "r"
+		local txtW, txtH = surface.GetTextSize(txt)
+		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
+		surface.SetTextColor(Color(0, 0, 0))
+		surface.DrawText(txt)
+
+		surface.SetDrawColor(Color(255, 255, 255, 20))
+		surface.DrawOutlinedRect(0, 0, w, h)
+
+		return true
+	end
+	function close:DoClick()
+		activeFrame:Remove()
+		if wantsToClose then
+			Scoreboard:Hide()
+		end
+	end
+
+	local reset = top:Add("DButton")
+	reset:Dock(RIGHT)
+	reset:SetWide(38)
+	function reset:Paint(w, h)
+		surface.SetDrawColor(Color(255, 96, 96, 192))
+		surface.DrawRect(0, 0, w, h)
+
+		surface.SetFont("DermaDefault")
+		local txt = "Reset"
+		local txtW, txtH = surface.GetTextSize(txt)
+		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
+		surface.SetTextColor(Color(0, 0, 0))
+		surface.DrawText(txt)
+
+		surface.SetDrawColor(Color(255, 255, 255, 20))
+		surface.DrawOutlinedRect(0, 0, w, h)
+
+		return true
+	end
+	function reset:DoClick()
+		Scoreboard.Config.Color = nil
+		Scoreboard:SaveConfig()
+	end
+
+	local mixer = frame:Add("DColorMixer")
+	mixer:Dock(FILL)
+	mixer:SetAlphaBar(false)
+	mixer:SetPalette(false)
+	local last = RealTime()
+	local changed = true
+	function mixer:ValueChanged(col)
+		last = RealTime() + 0.1
+		changed = false
+	end
+
+	function frame:Think()
+		if last < RealTime() and not changed then
+			Scoreboard.Config.Color = mixer:GetColor()
+			Scoreboard:SaveConfig()
+			changed = true
+		end
+	end
+
+	frame:MakePopup()
+
+	activeFrame = frame
+end
+
 local Options = {
 	Center = {
 		icon = Material("icon16/arrow_in.png"),
@@ -295,6 +408,15 @@ local Options = {
 		name = "Toggle Center",
 		type = "boolean",
 		w = 112
+	},
+	Color = {
+		icon = Material("icon16/palette.png"),
+		callback = function(self, option)
+			OpenColorSelect()
+		end,
+		name = "Change Header Color",
+		type = "table",
+		w = 144
 	}
 }
 local totype = {
@@ -309,7 +431,8 @@ function scoreboard:LoadConfig()
 
 	for k, v in next, config do
 		if Options[k] then
-			self.Config[k] = Options[k].type and totype[Options[k].type](v) or v
+			local convert = totype[Options[k].type]
+			self.Config[k] = (Options[k].type and convert) and convert(v) or v
 		end
 	end
 end
@@ -319,6 +442,8 @@ end
 
 local maxH = ScrH() * 0.9
 function scoreboard:Init()
+	local scoreboard = self
+
 	self:SetSize(ScrW() * 0.375, maxH)
 
 	self.Header = vgui.Create("DButton", self)
@@ -335,7 +460,9 @@ function scoreboard:Init()
 		self.Options:SetSize(self:GetWide(), 112 - 64)
 	end
 	function self.Header:Paint(w, h)
-		surface.SetDrawColor(Color(77, 81, 96, 230))
+		local col = scoreboard.Config.Color or Color(77, 81, 96)
+		col.a = 230
+		surface.SetDrawColor(col)
 		surface.DrawRect(0, 0, w, h)
 
 		local txt = GetHostName()
@@ -393,7 +520,7 @@ function scoreboard:Init()
 		self.Header.Options[name] = vgui.Create("DButton", self.Header.Options)
 		local option = self.Header.Options[name]
 		option:Dock(LEFT)
-		option:DockMargin(0, 0, 0, 2)
+		option:DockMargin(0, 0, 4, 0)
 		option:SetWide(info.w or 64)
 		function option:Paint(w, h)
 			draw.RoundedBox(6, 0, 0, w, h, Color(0, 0, 0, 96))
@@ -415,8 +542,8 @@ function scoreboard:Init()
 
 			return true
 		end
-		function option.DoClick(s)
-			info.callback(self, s)
+		function option:DoClick()
+			info.callback(scoreboard, self)
 		end
 	end
 
@@ -429,13 +556,13 @@ function scoreboard:Init()
 	self.Teams.GetContentSize = GetContentSize
 	self.Teams.pnlCanvas.GetContentSize = GetContentSize
 	self.Teams._PerformLayout = self.Teams.PerformLayout
-	function self.Teams.PerformLayout(s)
-		s:_PerformLayout()
+	function self.Teams:PerformLayout()
+		self:_PerformLayout()
 
-		local h = ({s.pnlCanvas:GetContentSize()})[2]
-		s.pnlCanvas:SetTall(h)
-		h = h > maxH and maxH - self.Header:GetTall() or h
-		s:SetTall(h)
+		local h = ({self.pnlCanvas:GetContentSize()})[2]
+		self.pnlCanvas:SetTall(h)
+		h = h > maxH and maxH - scoreboard.Header:GetTall() or h
+		self:SetTall(h)
 	end
 	function self.Teams:OnMouseWheeled(d)
 		if IsValid(self.VBar) and self.VBar.Enabled then
@@ -543,18 +670,16 @@ function scoreboard:RefreshPlayers(id)
 end
 
 function scoreboard:Think()
-	if not self.Popup and input.IsMouseDown(MOUSE_RIGHT) then
-		self:SetMouseInputEnabled(true)
-		self.Popup = true
-	end
-
 	self:HandlePlayers()
 end
 
 function scoreboard:Show()
+	wantsToClose = false
 	self:SetVisible(true)
 end
 function scoreboard:Hide()
+	wantsToClose = true
+	if IsValid(activeFrame) then return end
 	CloseDermaMenus()
 	self:SetVisible(false)
 	if self.Popup then
@@ -585,6 +710,16 @@ end
 vgui.Register(tag, scoreboard, "EditablePanel")
 
 local redream_scoreboard_enable = CreateClientConVar("redream_scoreboard_enable", "1")
+
+hook.Add("PlayerBindPress", tag, function(ply, bind, pressed)
+	if not redream_scoreboard_enable:GetBool() then return end
+
+	if bind == "+attack2" and pressed and Scoreboard:IsVisible() and not Scoreboard.Popup then
+		Scoreboard:SetMouseInputEnabled(true)
+		Scoreboard.Popup = true
+		return true
+	end
+end)
 
 hook.Add("ScoreboardShow", tag, function()
 	if not redream_scoreboard_enable:GetBool() then return end
