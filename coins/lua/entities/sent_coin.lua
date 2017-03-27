@@ -1,5 +1,8 @@
 -- easylua.StartEntity("sent_coin")
 
+ENT.Base = "base_anim"
+ENT.Type = "anim"
+
 function ENT:Initialize()
 	local scale = 0.05
 	local origcoins = 5
