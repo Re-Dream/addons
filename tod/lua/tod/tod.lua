@@ -4,6 +4,7 @@ local whitelist = {
 	gm_flatgrass = true,
 	gm_construct = true,
 	gm_abstraction_extended = true,
+	gm_excess_islands = true
 	-- ["gm_abstraction_ex-sunset"] = true,
 	-- ["gm_abstraction_ex-night"] = true,
 }
@@ -646,10 +647,12 @@ end
 if CLIENT then
 	net.Receive("tod_setcycle", function()
 		tod.current_cycle = net.ReadFloat() / 1000
+		render.RedownloadAllLightmaps(true)
 	end)
 
 	net.Receive("tod_setmode", function()
 		tod.mode = net.ReadInt(4)
+		render.RedownloadAllLightmaps(true)
 	end)
 end
 
