@@ -3,6 +3,8 @@
 ENT.Base = "base_anim"
 ENT.Type = "anim"
 
+ENT.Coins = 0
+
 function ENT:Initialize()
 	local scale = 0.05
 	local origcoins = 5
@@ -39,10 +41,6 @@ function ENT:Touch(ent)
 	end
 end
 
-function ENT:Draw()
-	self:DrawModel()
-end
-
 function ENT:SetCoins(c)
 	self.Coins = c
 end
@@ -51,5 +49,5 @@ function ENT:GetCoins()
 	return self.Coins
 end
 
--- easylua.EndEntity("sent_coin")
+-- easylua.EndEntity(true, true)
 
