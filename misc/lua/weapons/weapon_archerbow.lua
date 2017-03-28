@@ -1,4 +1,6 @@
-easylua.StartWeapon("weapon_archerbow")
+-- easylua.StartWeapon("weapon_archerbow")
+
+AddCSLuaFile()
 
 SWEP.Base				= "weapon_base"
 
@@ -672,5 +674,5 @@ if CLIENT then
 
 end
 
-easylua.EndWeapon(false,false)
+-- easylua.EndWeapon(false,false)
 
