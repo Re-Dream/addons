@@ -10,10 +10,12 @@ ENT.Coins = 0
 function ENT:Initialize()
 	local scale = 0.05
 	local origcoins = 5
+	local oor = 0 --other value for overriding 
 
 	while self:GetCoins() > origcoins do
-		scale = scale + 0.001
-		origcoins = origcoins + 1
+		scale = scale + 0.1
+		oor = oor + origcoins 
+		origcoins = oor * 2
 	end
 
 	self:SetModel("models/hunter/tubes/circle2x2.mdl")
