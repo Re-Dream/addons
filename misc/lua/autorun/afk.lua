@@ -73,7 +73,7 @@ elseif CLIENT then
 	hook.Add("KeyRelease", tag, Input)
 	hook.Add("PlayerBindPress", tag, Input)
 	local function getAFKtime()
-		return math.max(CurTime() - afk.When, 0)
+		return math.abs(math.max(CurTime() - afk.When, 0))
 	end
 
 	net.Receive(tag, function()

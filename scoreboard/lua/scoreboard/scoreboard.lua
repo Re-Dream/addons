@@ -181,10 +181,12 @@ function Player:Init()
 	function self.Info.Paint(s, w, h)
 		local ply = self.Player
 		if not IsValid(ply) then
+			--[[ let's try this out
 			self.Player = _G.Player(self.UserID)
 			if not IsValid(self.Player) then
 				self:Remove()
 			end
+			]]
 			return
 		end
 
@@ -300,7 +302,7 @@ local function OpenColorSelect()
 	frame:SetPos(ScrW() * 0.5 - frame:GetWide() * 0.5, ScrH() * 0.75 - frame:GetTall() * 0.5)
 	frame:DockPadding(6, 6, 6, 6)
 	function frame:Paint(w, h)
-		local col = HSVToColor(RealTime() * 10 % 360, 1, 0.5)
+		local col = Color(77, 81, 96)
 		col.a = 245
 		surface.SetDrawColor(col)
 		surface.DrawRect(0, 0, w, h)
@@ -590,12 +592,16 @@ function scoreboard:Init()
 	self:InvalidateLayout()
 end
 
+player.GetCount = player.GetCount or function()
+	return #player.GetAll()
+end
 function scoreboard:HandlePlayers()
 	local i = 0
 	local setLone = false
-	for id, info in next, team.GetAllTeams() do
+	for _, ply in next, player.GetAll() do
+		local id = ply:Team()
 		local pnl = self.Teams[id]
-		if not pnl or pnl.Last ~= #team.GetPlayers(id) then
+		if not self.Last or self.Last ~= player.GetCount() then
 			setLone = true
 			self:RefreshPlayers(id)
 		end
@@ -623,6 +629,7 @@ function scoreboard:RefreshPlayers(id)
 			pnl = vgui.Create(tag .. "Team")
 			self.Teams:AddItem(pnl)
 			pnl:SetTeam(id)
+			pnl:SetZPos(id)
 			pnl:Dock(TOP)
 			pnl:DockMargin(0, 4, 0, 0)
 			self.Teams[id] = pnl
@@ -659,12 +666,6 @@ function scoreboard:RefreshPlayers(id)
 					dead = dead + 1
 				end
 			end
-		end
-
-		if pnl._first then
-			pnl.Last = #team.GetPlayers(id) - dead
-		else
-			pnl._first = true
 		end
 	end
 end
