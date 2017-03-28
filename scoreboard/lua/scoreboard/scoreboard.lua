@@ -715,7 +715,7 @@ hook.Add("PlayerBindPress", tag, function(ply, bind, pressed)
 	if not redream_scoreboard_enable:GetBool() then return end
 	if not IsValid(Scoreboard) then return end
 
-	if bind == "+attack2" and pressed and Scoreboard:IsVisible() and not Scoreboard.Popup then
+	if bind:lower():match("+attack2") and pressed and Scoreboard:IsVisible() and not Scoreboard.Popup then
 		Scoreboard:SetMouseInputEnabled(true)
 		Scoreboard.Popup = true
 		return true
