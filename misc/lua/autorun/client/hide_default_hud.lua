@@ -32,7 +32,6 @@ hook.Add("HUDShouldDraw", tag, function(elem)
 end)
 
 local function drawCircle(x, y, radius, seg, poly)
-
 	local cir
 
 	if poly and (poly.prevX ~= x or poly.prevY ~= y) or not poly then
@@ -58,7 +57,6 @@ local function drawCircle(x, y, radius, seg, poly)
 	surface.DrawPoly(cir)
 
 	return cir
-
 end
 
 local cl_crosshairsize = CreateClientConVar("cl_crosshairsize", "5")
@@ -80,8 +78,7 @@ cvars.AddChangeCallback("cl_crosshairquality", function()
 end, "cl_crosshairquality_change")
 
 local eyeDistAlpha = 0
-hook.Add("HUDPaint", tag, function()
-
+hook.Add("HUDPaint", tag .. "_crosshair", function()
 	if not cl_crosshair:GetBool() then return end
 	if ctp and ctp:IsEnabled() and not ctp:IsCrosshairEnabled() then return end
 	if not IsValid(lply) then lply = LocalPlayer() return end
@@ -125,28 +122,32 @@ hook.Add("HUDPaint", tag, function()
 	circle = drawCircle(x, y, size, qual, circle)
 
 	surface.SetAlphaMultiplier(1)
-
 end)
 
 if ctp then
-
 	ctp._DrawCrosshair = ctp.DrawCrosshair
 
 	function ctp:DrawCrosshair(...)
-
 		if cl_crosshair:GetBool() then return false end
 
 		return ctp._DrawCrosshair(...)
-
 	end
-
 end
 
 hook.Add("PostRender", tag, function()
-
 	if fn ~= FrameNumber() then
 		drawCrosshair = false
 	end
+end)
 
+hook.Add("HUDPaint", tag .. "_hide_voicetalk", function()
+	hook.Remove("HUDPaint", tag .. "_hide_voicetalk")
+
+	local mat = Material("voice/icntlk_local")
+	mat:SetFloat("$alpha", 0)
+	local mat = Material("voice/icntlk_sv")
+	mat:SetFloat("$alpha", 0)
+	local mat = Material("voice/icntlk_pl")
+	mat:SetFloat("$alpha", 0)
 end)
 
