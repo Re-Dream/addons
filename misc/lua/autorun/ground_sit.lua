@@ -26,13 +26,17 @@ if CLIENT then
 		local txt = "Sitting down..."
 		surface.SetFont(tag)
 		local txtW, txtH = surface.GetTextSize(txt)
+		surface.SetTextPos(ScrW() * 0.5 - txtW * 0.5 + 3, ScrH() * 0.25 + txtW * (0.075 * mult) + 3)
+		surface.SetTextColor(Color(0, 0, 0, 127 * mult))
+		surface.DrawText(txt)
+
 		surface.SetTextPos(ScrW() * 0.5 - txtW * 0.5, ScrH() * 0.25 + txtW * (0.075 * mult))
 		surface.SetTextColor(Color(199 - 64 * mult, 210, 213 - 64 * mult, 192 * mult))
 		surface.DrawText(txt)
 	end)
 end
 
-local time, speed = 1.5, 1.5
+local time, speed = 1.5, 1
 hook.Add("SetupMove", tag, function(ply, mv)
 	local butts = mv:GetButtons()
 

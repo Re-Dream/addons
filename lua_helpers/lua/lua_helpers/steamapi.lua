@@ -120,6 +120,6 @@ function PLAYER:IsFriend(ply)
 		steamapi.GetFriendList(self)
 		return false
 	end
-	return self.FriendsList[ply:SteamID64()]
+	return self.FriendsList and self.FriendsList[ply:SteamID64()] or false
 end
 
