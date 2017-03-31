@@ -46,8 +46,8 @@ hook.Add("PhysgunPickup", tag, function(ply, ent)
 end)
 
 hook.Add("PhysgunDrop", tag, function(ply, ent)
-	if ent:IsPlayer() then
-		ent:SetMoveType((isentity(ply) and ply:IsPlayer() and ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) and MOVETYPE_NOCLIP or MOVETYPE_WALK)
+	if ent:IsPlayer() and isentity(ply) and ply:IsPlayer() then
+		ent:SetMoveType((ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) and MOVETYPE_NOCLIP or MOVETYPE_WALK)
 		ent:SetOwner()
 		ent.Physgunner = nil
 		ply.Physgunning = nil
