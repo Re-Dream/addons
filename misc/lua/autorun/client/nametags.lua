@@ -14,9 +14,45 @@ CreateFont(tag, {
 	size = 128,
 	additive = true
 }, 12)
+CreateFont(tag .. "2", {
+	font = "Roboto",
+	weight = 550,
+	size = 64,
+	additive = true
+}, 12)
 
 local lply
 local maxDist = 1024
+
+local h
+local function DrawText(txt, font, y, col)
+	if not h then
+		surface.SetFont(tag)
+		h = select(2, surface.GetTextSize("WAW"))
+	end
+	local y = y * h or 0
+	surface.SetFont("blur_" .. font)
+	local txtW, txtH = surface.GetTextSize(txt)
+	for i = 1, 3 do
+		surface.SetTextPos(-txtW * 0.5, y)
+		surface.SetTextColor(Color(0, 0, 0))
+		surface.DrawText(txt)
+	end
+
+	surface.SetFont(font)
+	local txtW, txtH = surface.GetTextSize(txt)
+	surface.SetTextPos(-txtW * 0.5, y)
+	surface.SetTextColor(col)
+	surface.DrawText(txt)
+end
+local awayPhrases = {
+	"Zzz",
+	"Peacefully dreaming",
+	"Passed out",
+	"Gone for a walk",
+	"Brainstorming",
+	"Out of coffee"
+}
 hook.Add("PostDrawTranslucentRenderables", tag, function()
 	if not IsValid(lply) then lply = LocalPlayer() return end
 	local players = player.GetAll()
@@ -60,23 +96,19 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 
 				surface.SetAlphaMultiplier(alpha)
 
-				-- for i = 1, 1 do
-				surface.SetFont("blur_" .. tag)
-				local txtW, txtH = surface.GetTextSize(txt)
-				for i = 1, 3 do
-					surface.SetTextPos(-txtW * 0.5, 0)
-					surface.SetTextColor(Color(0, 0, 0))
-					surface.DrawText(txt)
+				DrawText(ply:Nick(), tag, 0, team.GetColor(ply:Team()))
+				if lply.IsAFK and ply:IsAFK() then
+					local AFKTime = math.abs(math.max(0, CurTime() - ply:AFKTime()))
+					local h = math.floor(AFKTime / 60 / 60)
+					local m = math.floor(AFKTime / 60 - h * 60)
+					local s = math.floor(AFKTime - m * 60 - h * 60 * 60)
+					local txt = h > 1 and string.format("%.2d:%.2d", h, m, s) or string.format("%.2d:%.2d", m, s)
+
+					local choice = math.Clamp(math.Round(RealTime() * 0.125 % #awayPhrases), 1, #awayPhrases)
+					DrawText(txt .. " - " .. awayPhrases[choice] .. "...", tag .. "2", 1, Color(160, 160, 255))
 				end
 
-				surface.SetFont(tag)
-				local txtW, txtH = surface.GetTextSize(txt)
-				surface.SetTextPos(-txtW * 0.5, 0)
-				surface.SetTextColor(team.GetColor(ply:Team()))
-				surface.DrawText(txt)
-
 				surface.SetAlphaMultiplier(1)
-				-- end
 			cam.End3D2D()
 		end
 	end

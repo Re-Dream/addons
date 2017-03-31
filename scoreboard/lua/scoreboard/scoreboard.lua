@@ -181,12 +181,10 @@ function Player:Init()
 	function self.Info.Paint(s, w, h)
 		local ply = self.Player
 		if not IsValid(ply) then
-			--[[ let's try this out
 			self.Player = _G.Player(self.UserID)
 			if not IsValid(self.Player) then
 				self:Remove()
 			end
-			]]
 			return
 		end
 
@@ -604,6 +602,7 @@ function scoreboard:HandlePlayers()
 		if not self.Last or self.Last ~= player.GetCount() then
 			setLone = true
 			self:RefreshPlayers(id)
+			self.Last = player.GetCount()
 		end
 	end
 	for id, info in next, team.GetAllTeams() do
