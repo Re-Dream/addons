@@ -30,7 +30,7 @@ hook.Add("PhysgunPickup", tag, function(ply, ent)
 			friend = friend or (ent:IsFriend(ply) and ent:GetInfoNum("physgun_noplayergrab", 1) == 0)
 		end
 		friend = friend or ply:IsAdmin()
-		friend = friend or ply:IsBot()
+		friend = friend or ent:IsBot()
 		local ret = hook.Run("PlayerCanGrabPlayer", ply, ent)
 		if ret ~= nil then
 			friend = ret
