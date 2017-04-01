@@ -8,7 +8,8 @@ hook.Add("Initialize", "gmod_camera_override", function()
 
 	SWEP.NextReload = 0
 	function SWEP:Reload()
-		if self.Owner:KeyDown(IN_USE) and self.NextReload < CurTime() then
+		if self.NextReload > CurTime() then return end
+		if self.Owner:KeyDown(IN_USE) then
 			self:SetNWBool("Hidden", not self:GetNWBool("Hidden"))
 			if self:GetNWBool("Hidden") then
 				self:SetHoldType("normal")
