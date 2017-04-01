@@ -27,9 +27,8 @@ local function GetContentSize(self)
 end
 
 local hostnameFont = {
-	font = "Roboto",
+	font = "Roboto Bold",
 	size = ScreenScale(12.5),
-	weight = 550,
 	antialias = true,
 }
 surface.CreateFont(tag .. "HostnameSmall", hostnameFont)
@@ -39,13 +38,11 @@ surface.CreateFont(tag .. "HostnameBig", hostnameFont)
 surface.CreateFont(tag .. "Team", {
 	font = "Roboto",
 	size = 18,
-	weight = 550,
 	antialias = true,
 })
 surface.CreateFont(tag .. "Player", {
-	font = "Roboto",
+	font = "Roboto Medium",
 	size = 20,
-	weight = 550,
 	antialias = true,
 })
 
