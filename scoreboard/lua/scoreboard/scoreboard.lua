@@ -599,7 +599,6 @@ function scoreboard:HandlePlayers()
 		if not self.Last or self.Last ~= player.GetCount() then
 			setLone = true
 			self:RefreshPlayers(id)
-			self.Last = player.GetCount()
 		end
 	end
 	for id, info in next, team.GetAllTeams() do
@@ -615,6 +614,7 @@ function scoreboard:HandlePlayers()
 				pnl:SetLone(i < 2)
 			end
 		end
+		self.Last = player.GetCount()
 	end
 end
 
