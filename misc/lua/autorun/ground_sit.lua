@@ -36,7 +36,7 @@ if CLIENT then
 	end)
 end
 
-local time, speed = 1.5, 1
+local time, speed = 1.5, 1.25
 hook.Add("SetupMove", tag, function(ply, mv)
 	local butts = mv:GetButtons()
 

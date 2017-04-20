@@ -125,7 +125,7 @@ hook.Add("CalcMainActivity", tag, function(ply)
 
 	local IsAFK = false
 	local simulate = afkmera_simulate:GetBool() or false
-	if ply:EntIndex() == LocalPlayer():EntIndex() and (ply.IsAFK and ply:IsAFK() or simulate) then IsAFK = true end
+	if ply:EntIndex() == LocalPlayer():EntIndex() and (ply.IsAFK and ply:IsAFK() or simulate) and ply:GetVelocity():Length() <= 10 then IsAFK = true end
 	if IsAFK and act ~= "" then
 		local seq = ply:LookupSequence(act)
 		return seq, seq
