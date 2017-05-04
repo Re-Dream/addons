@@ -87,7 +87,7 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 				local maxs, center = ent:OBBMaxs(), ent:OBBCenter()
 				pos = Vector(center.x, center.y, maxs.z)
 			end
-			pos = pos + Vector(0, 0, 20)
+			pos = pos + Vector(0, 0, 22.5)
 			local ang = EyeAngles()
 			ang:RotateAroundAxis(ang:Right(), 90)
 			ang:RotateAroundAxis(ang:Up(), -90)
