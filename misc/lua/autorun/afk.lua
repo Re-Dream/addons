@@ -118,7 +118,7 @@ elseif CLIENT then
 	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE }, "Should we draw the AFK HUD?")
 	hook.Add("HUDPaint", tag, function()
 		if not afk.Draw:GetBool() then return end
-		if not afk.When then afk.When = CurTime() + afk.AFKTime:GetInt() end
+		if not afk.When or afk.When < CurTime() then afk.When = CurTime() + afk.AFKTime:GetInt() end
 		afk.Focus = system.HasFocus()
 		if not afk.Is then a = 0 return end
 
