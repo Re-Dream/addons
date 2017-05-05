@@ -38,8 +38,12 @@ elseif CLIENT then
 	afk.Is = false
 	afk.Network = true
 
+	hook.Add("Initialize", tag, function()
+		afk.Start = true
+	end)
+
 	local function Input()
-		if not afk.When then return end
+		if not afk.When or not afk.Start then return end
 		afk.When = CurTime() + afk.AFKTime:GetInt()
 		if afk.Is and afk.Network then
 			net.Start(tag)
@@ -49,7 +53,7 @@ elseif CLIENT then
 		afk.Is = false
 	end
 	hook.Add("StartCommand", tag, function(ply, cmd)
-		if ply ~= LocalPlayer() or not afk.When then return end
+		if ply ~= LocalPlayer() or not afk.When or not afk.Start then return end
 		local mouseMoved = (system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false)
 		if  mouseMoved or
 			cmd:GetMouseX() ~= 0 or
@@ -118,13 +122,14 @@ elseif CLIENT then
 	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE }, "Should we draw the AFK HUD?")
 	hook.Add("HUDPaint", tag, function()
 		if not afk.Draw:GetBool() then return end
-		if not afk.When or afk.When < CurTime() then afk.When = CurTime() + afk.AFKTime:GetInt() end
+		if not afk.When then afk.When = CurTime() + afk.AFKTime:GetInt() end
 		afk.Focus = system.HasFocus()
 		if not afk.Is then a = 0 return end
 
 		a = math.Clamp(a + FrameTime() * 120, 0, 255)
 
 		local AFKTime = getAFKtime()
+		--[[
 		local h = math.floor(AFKTime / 60 / 60)
 		local m = math.floor(AFKTime / 60 - h * 60)
 		local s = math.floor(AFKTime - m * 60 - h * 60 * 60)
@@ -137,6 +142,8 @@ elseif CLIENT then
 			timeString = timeString .. m .. " minute" .. plural(m) .. ", "
 		end
 		timeString = timeString .. s .. " second" .. plural(s)
+		]]
+		local timString = string.NiceTime(AFKTime)
 
 		surface.SetFont(tag)
 		local txt = "You've been away for"
