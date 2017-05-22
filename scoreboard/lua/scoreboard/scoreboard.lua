@@ -569,6 +569,15 @@ function scoreboard:Init()
 	function self.Teams:Paint()
 		return true
 	end
+	function self.Teams:GetTeams()
+		local teams = {}
+		for k, v in next, self:GetTable() do
+			if isnumber(k) then
+				teams[k] = v
+			end
+		end
+		return teams
+	end
 	if Debug then
 		self.Teams.isTeam = true
 		function self.Teams:PaintOver(w, h)
@@ -591,30 +600,29 @@ player.GetCount = player.GetCount or function()
 	return #player.GetAll()
 end
 function scoreboard:HandlePlayers()
-	local i = 0
 	local setLone = false
 	for _, ply in next, player.GetAll() do
 		local id = ply:Team()
 		local pnl = self.Teams[id]
 		if not self.Last or self.Last ~= player.GetCount() then
-			setLone = true
+			-- setLone = true
 			self:RefreshPlayers(id)
+		end
+	end
+	local i = 0
+	for id, pnl in next, self.Teams:GetTeams() do
+		if IsValid(pnl) and pnl:IsVisible() then -- #team.GetPlayers(id) > 0 then
+			if pnl.Last ~= #team.GetPlayers(id) then
+				self:RefreshPlayers(id)
+			end
+			i = i + 1
 		end
 	end
 	for id, info in next, team.GetAllTeams() do
 		local pnl = self.Teams[id]
-		if setLone and pnl and pnl:IsVisible() then -- #team.GetPlayers(id) > 0 then
-			i = i + 1
+		if pnl and pnl:IsVisible() then
+			pnl:SetLone(i < 2)
 		end
-	end
-	if setLone then
-		for id, info in next, team.GetAllTeams() do
-			local pnl = self.Teams[id]
-			if pnl and pnl:IsVisible() then
-				pnl:SetLone(i < 2)
-			end
-		end
-		self.Last = player.GetCount()
 	end
 end
 
@@ -624,6 +632,7 @@ function scoreboard:RefreshPlayers(id)
 		if not pnl then
 			pnl = vgui.Create(tag .. "Team")
 			self.Teams:AddItem(pnl)
+			pnl.Team = id
 			pnl:SetTeam(id)
 			pnl:SetZPos(id)
 			pnl:Dock(TOP)
@@ -631,37 +640,33 @@ function scoreboard:RefreshPlayers(id)
 			self.Teams[id] = pnl
 		end
 
-		if #team.GetPlayers(id) < 1 then
+		for _, ply in next, team.GetPlayers(id) do
+			local _pnl = pnl[ply:UserID()]
+			if not _pnl then
+				_pnl = vgui.Create(tag .. "Player", pnl)
+				_pnl.UserID = ply:UserID()
+				_pnl:SetPlayer(ply)
+				pnl[ply:UserID()] = _pnl
+			end
+			_pnl:Dock(TOP)
+			_pnl:DockMargin(8, 0, 8, 0)
+			_pnl:SetTall(30)
+		end
+		pnl.Last = #team.GetPlayers(id)
+
+		for _, _pnl in next, pnl:GetChildren() do
+			if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
+				pnl[_pnl.UserID] = nil
+				_pnl:SetVisible(false)
+				_pnl:SetParent() -- ugly hack to call PerformLayout
+				_pnl:Remove()
+			end
+		end
+
+		if #pnl:GetChildren() < 1 then
 			pnl:SetVisible(false)
 		else
 			pnl:SetVisible(true)
-			for _, _pnl in next, pnl:GetChildren() do
-				if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
-					pnl[_pnl.UserID] = nil
-					_pnl:SetVisible(false)
-					_pnl:SetParent() -- ugly hack to call PerformLayout
-					_pnl:Remove()
-				end
-			end
-		end
-		local dead = 0
-		if pnl:IsVisible() then
-			for _, ply in next, team.GetPlayers(id) do
-				if IsValid(ply) then
-					local _pnl = pnl[ply:UserID()]
-					if not _pnl then
-						_pnl = vgui.Create(tag .. "Player", pnl)
-						_pnl.UserID = ply:UserID()
-						_pnl:SetPlayer(ply)
-						pnl[ply:UserID()] = _pnl
-					end
-					_pnl:Dock(TOP)
-					_pnl:DockMargin(8, 0, 8, 0)
-					_pnl:SetTall(30)
-				else
-					dead = dead + 1
-				end
-			end
 		end
 	end
 end
