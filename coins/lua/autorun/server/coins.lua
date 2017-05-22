@@ -7,15 +7,11 @@ end
 function PLAYER:SetCoins(c)
     self.Coins = c
     self:SetNWInt("Coins", self.Coins)
-    file.Write("coins/" .. self:SteamID64() .. ".txt", self.Coins) -- writes a steamid64 of required user
+    self:SetPData("Coins", self.Coins) --Save this into MySQL cloud or something.
 end
 
 hook.Add("PlayerInitialSpawn", "Cl_CoinInit", function(ply)
-    if not file.Exists("coins/" .. ply:SteamID64() .. ".txt", "DATA") then
-        ply:SetCoins(0)
-    else
-        ply:SetCoins(file.Read("coins/" .. ply:SteamID64() .. ".txt", "DATA"))
-    end
+    ply:SetCoins(tonumber(ply:GetPData( "Coins", 0 ))) --Save this into MySQL cloud or something.
 end)
 
 coins = {}
@@ -25,4 +21,3 @@ function coins.CreateCoin(amount, pos)
     ent:SetPos(pos)
     ent:Spawn()
 end
-
