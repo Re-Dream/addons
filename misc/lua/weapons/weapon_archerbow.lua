@@ -1,4 +1,6 @@
-easylua.StartWeapon("weapon_archerbow")
+-- easylua.StartWeapon("weapon_archerbow")
+
+AddCSLuaFile()
 
 SWEP.Base				= "weapon_base"
 
@@ -379,13 +381,10 @@ if SERVER then
 		if self.Arrowtype == "grapple" and self.dt.Grappled and IsValid(self.Owner) then
 
 			if self.Owner:KeyDown(IN_JUMP) then
-				self.Owner:SetNWBool("archerbow_grappling", true)
 				local vecSub = self:GetPos()-self.Owner:GetPos()
 				local vecNormal = vecSub:GetNormalized()
 				local vecFinal = (self.Owner:GetVelocity() + vecNormal - self.Owner:GetVelocity()) * 50 //Note to self: Instantaneous velocity on players can be reached by subtracting the original player velocity after adding the velocity to be set to
 				self.Owner:SetVelocity(vecFinal)
-			else
-				self.Owner:SetNWBool("archerbow_grappling", false)
 			end
 
 			if self.Owner:KeyDown(IN_RELOAD) or ( self.Owner:IsPlayer() and !self.Owner:Alive() and self.Hit ) then
@@ -672,5 +671,5 @@ if CLIENT then
 
 end
 
-easylua.EndWeapon(false,false)
+-- easylua.EndWeapon(false,false)
 

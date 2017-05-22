@@ -114,6 +114,5 @@ hook.Add("HUDPaint", "_ctp_cmenu", function()
 	CreateContextMenu()
 
 	hook.Remove("HUDPaint", "_ctp_cmenu")
-
 end)
 

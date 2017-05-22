@@ -1,5 +1,4 @@
 local PLAYER = FindMetaTable("Player")
-PLAYER.Coins = 0
 
 function PLAYER:GetCoins()
 	return self.Coins

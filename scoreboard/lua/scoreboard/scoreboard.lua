@@ -27,9 +27,8 @@ local function GetContentSize(self)
 end
 
 local hostnameFont = {
-	font = "Roboto",
+	font = "Roboto Bold",
 	size = ScreenScale(12.5),
-	weight = 550,
 	antialias = true,
 }
 surface.CreateFont(tag .. "HostnameSmall", hostnameFont)
@@ -39,13 +38,11 @@ surface.CreateFont(tag .. "HostnameBig", hostnameFont)
 surface.CreateFont(tag .. "Team", {
 	font = "Roboto",
 	size = 18,
-	weight = 550,
 	antialias = true,
 })
 surface.CreateFont(tag .. "Player", {
-	font = "Roboto",
+	font = "Roboto Medium",
 	size = 20,
-	weight = 550,
 	antialias = true,
 })
 
@@ -300,7 +297,7 @@ local function OpenColorSelect()
 	frame:SetPos(ScrW() * 0.5 - frame:GetWide() * 0.5, ScrH() * 0.75 - frame:GetTall() * 0.5)
 	frame:DockPadding(6, 6, 6, 6)
 	function frame:Paint(w, h)
-		local col = HSVToColor(RealTime() * 10 % 360, 1, 0.5)
+		local col = Color(77, 81, 96)
 		col.a = 245
 		surface.SetDrawColor(col)
 		surface.DrawRect(0, 0, w, h)
@@ -590,12 +587,16 @@ function scoreboard:Init()
 	self:InvalidateLayout()
 end
 
+player.GetCount = player.GetCount or function()
+	return #player.GetAll()
+end
 function scoreboard:HandlePlayers()
 	local i = 0
 	local setLone = false
-	for id, info in next, team.GetAllTeams() do
+	for _, ply in next, player.GetAll() do
+		local id = ply:Team()
 		local pnl = self.Teams[id]
-		if not pnl or pnl.Last ~= #team.GetPlayers(id) then
+		if not self.Last or self.Last ~= player.GetCount() then
 			setLone = true
 			self:RefreshPlayers(id)
 		end
@@ -613,6 +614,7 @@ function scoreboard:HandlePlayers()
 				pnl:SetLone(i < 2)
 			end
 		end
+		self.Last = player.GetCount()
 	end
 end
 
@@ -623,6 +625,7 @@ function scoreboard:RefreshPlayers(id)
 			pnl = vgui.Create(tag .. "Team")
 			self.Teams:AddItem(pnl)
 			pnl:SetTeam(id)
+			pnl:SetZPos(id)
 			pnl:Dock(TOP)
 			pnl:DockMargin(0, 4, 0, 0)
 			self.Teams[id] = pnl
@@ -659,12 +662,6 @@ function scoreboard:RefreshPlayers(id)
 					dead = dead + 1
 				end
 			end
-		end
-
-		if pnl._first then
-			pnl.Last = #team.GetPlayers(id) - dead
-		else
-			pnl._first = true
 		end
 	end
 end
@@ -715,7 +712,7 @@ hook.Add("PlayerBindPress", tag, function(ply, bind, pressed)
 	if not redream_scoreboard_enable:GetBool() then return end
 	if not IsValid(Scoreboard) then return end
 
-	if bind == "+attack2" and pressed and Scoreboard:IsVisible() and not Scoreboard.Popup then
+	if bind:lower():match("+attack2") and pressed and Scoreboard:IsVisible() and not Scoreboard.Popup then
 		Scoreboard:SetMouseInputEnabled(true)
 		Scoreboard.Popup = true
 		return true
