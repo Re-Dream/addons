@@ -1,9 +1,6 @@
 [submodule "epoe"]
 	path = submodules/epoe
 	url = https://github.com/Metastruct/EPOE
-[submodule "luadev"]
-	path = submodules/luadev
-	url = https://github.com/Noiwex/luadev
 [submodule "glib"]
 	path = submodules/glib
 	url = https://github.com/notcake/glib
@@ -52,3 +49,6 @@
 [submodule "patch-protect"]
 	path = submodules/patch-protect
 	url = https://github.com/Patcher56/PatchProtect
+[submodule "submodules/luadev"]
+	path = submodules/luadev
+	url = https://github.com/Metastruct/luadev
