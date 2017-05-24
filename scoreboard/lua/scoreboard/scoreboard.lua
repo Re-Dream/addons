@@ -37,12 +37,17 @@ surface.CreateFont(tag .. "HostnameBig", hostnameFont)
 
 surface.CreateFont(tag .. "Team", {
 	font = "Roboto",
-	size = 18,
+	size = 19,
 	antialias = true,
 })
 surface.CreateFont(tag .. "Player", {
 	font = "Roboto Medium",
 	size = 20,
+	antialias = true,
+})
+surface.CreateFont(tag .. "Option", {
+	font = "Roboto Condensed",
+	size = 16,
 	antialias = true,
 })
 
@@ -55,7 +60,7 @@ function Team:GetTeam() return self.Team end
 
 function Team:SetLone(b)
 	self.Lone = b
-	self:DockPadding(0, self:GetLone() and 0 or 24 + 1, 0, 0)
+	self:DockPadding(0, self:GetLone() and 0 or 24, 0, 0)
 	self:GetParent():InvalidateLayout()
 	self:InvalidateLayout()
 end
@@ -70,17 +75,26 @@ function Team:Paint(w, h)
 		local t = self:GetTeam()
 		local tCol = team.GetColor(t)
 		tCol.a = 192
-		draw.RoundedBox(6, 0, 0, w, 24, tCol)
+		local brightness = (0.299 * tCol.r + 0.587 * tCol.g + 0.114 * tCol.b)
+		print(brightness)
+
+		surface.SetDrawColor(tCol)
+		surface.DrawRect(0, 0, w, 24)
+
+		surface.SetDrawColor(Color(0, 0, 0, 127))
+		surface.DrawOutlinedRect(0, 0, w, 24)
 
 		surface.SetFont(tag .. "Team")
 		local txt = team.GetName(t) .. " (" .. #self:GetChildren() .. ")"
 		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetTextPos(6 + 1, 24 * 0.5 - txtH * 0.5 + 1)
-		surface.SetTextColor(Color(0, 0, 0, 192))
-		surface.DrawText(txt)
+		if brightness <= 177 then
+			surface.SetTextPos(6 + 1, 24 * 0.5 - txtH * 0.5 + 1)
+			surface.SetTextColor(Color(0, 0, 0, 192))
+			surface.DrawText(txt)
+		end
 
 		surface.SetTextPos(6, 24 * 0.5 - txtH * 0.5)
-		surface.SetTextColor(Color(255, 255, 255))
+		surface.SetTextColor(brightness > 177 and Color(0, 0, 0) or Color(255, 255, 255))
 		surface.DrawText(txt)
 	end
 end
@@ -311,7 +325,7 @@ local function OpenColorSelect()
 	top:SetTall(20)
 	top:DockMargin(0, 0, 0, 4)
 	function top:Paint(w, h)
-		surface.SetFont("DermaDefault")
+		surface.SetFont(tag .. "Option")
 		local txt = "Header Color Selection"
 		local txtW, txtH = surface.GetTextSize(txt)
 		surface.SetTextPos(2, h * 0.5 - txtH * 0.5)
@@ -353,7 +367,7 @@ local function OpenColorSelect()
 		surface.SetDrawColor(Color(255, 96, 96, 192))
 		surface.DrawRect(0, 0, w, h)
 
-		surface.SetFont("DermaDefault")
+		surface.SetFont(tag .. "Option")
 		local txt = "Reset"
 		local txtW, txtH = surface.GetTextSize(txt)
 		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
@@ -520,21 +534,25 @@ function scoreboard:Init()
 		option:DockMargin(0, 0, 4, 0)
 		option:SetWide(info.w or 64)
 		function option:Paint(w, h)
-			draw.RoundedBox(6, 0, 0, w, h, Color(0, 0, 0, 96))
+			draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 96))
 
 			surface.SetMaterial(info.icon)
 			surface.SetDrawColor(Color(255, 255, 255))
 			surface.DrawTexturedRect(8, h * 0.5 - 8, 16, 16)
 
 			local txt = info.name
-			surface.SetFont("DermaDefault")
+			surface.SetFont(tag .. "Option")
 			local txtW, txtH = surface.GetTextSize(txt)
+			surface.SetTextPos((w + 8 + 16) * 0.5 - txtW * 0.5 + 2, h * 0.5 - txtH * 0.5 + 2)
+			surface.SetTextColor(Color(0, 0, 0, 164))
+			surface.DrawText(txt)
+
 			surface.SetTextPos((w + 8 + 16) * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
 			surface.SetTextColor(Color(255, 255, 255, 192))
 			surface.DrawText(txt)
 
 			if self:IsHovered() then
-				draw.RoundedBox(6, 0, 0, w, h, Color(255, 255, 255, self.Depressed and 5 or 10))
+				draw.RoundedBox(6, 0, 0, w, h, Color(255, 255, 255, self.Depressed and 2 or 4))
 			end
 
 			return true
@@ -634,9 +652,9 @@ function scoreboard:RefreshPlayers(id)
 			self.Teams:AddItem(pnl)
 			pnl.Team = id
 			pnl:SetTeam(id)
-			pnl:SetZPos(id)
+			pnl:SetZPos(-id)
 			pnl:Dock(TOP)
-			pnl:DockMargin(0, 4, 0, 0)
+			pnl:DockMargin(0, 2, 0, 0)
 			self.Teams[id] = pnl
 		end
 
