@@ -25,30 +25,30 @@
 [submodule "pac3"]
 	path = pac3
 	url = https://github.com/Metastruct/pac3
-[submodule "sit-anywhere"]
-	path = sit-anywhere
-	url = https://github.com/Xerasin/Sit-Anywhere
 [submodule "wire"]
 	path = wire
 	url = https://github.com/wiremod/wire
-[submodule "ctp"]
-	path = ctp
-	url = https://github.com/CapsAdmin/customisable_thirdperson/
 [submodule "advdupe2"]
 	path = advdupe2
 	url = https://github.com/wiremod/advdupe2
-[submodule "chat-substitute"]
-	path = qchat
-	url = https://github.com/CaveeJohnson/gmod-xp-chat
 [submodule "mingeban2"]
 	path = mingeban2
 	url = https://github.com/Re-Dream/mingeban2
 [submodule "gm-mediaplayer"]
-	path = mediaplayer
+	path = gm-mediaplayer
 	url = https://github.com/pixeltailgames/gm-mediaplayer
-[submodule "patch-protect"]
-	path = patch-protect
-	url = https://github.com/Patcher56/PatchProtect
 [submodule "luadev"]
 	path = luadev
 	url = https://github.com/Metastruct/luadev
+[submodule "Sit-Anywhere"]
+	path = Sit-Anywhere
+	url = https://github.com/Xerasin/Sit-Anywhere
+[submodule "customisable_thirdperson"]
+	path = customisable_thirdperson
+	url = https://github.com/CapsAdmin/customisable_thirdperson/
+[submodule "gmod-xp-chat"]
+	path = gmod-xp-chat
+	url = https://github.com/CaveeJohnson/gmod-xp-chat
+[submodule "PatchProtect"]
+	path = PatchProtect
+	url = https://github.com/Patcher56/PatchProtect
