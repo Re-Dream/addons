@@ -49,6 +49,3 @@
 [submodule "patch-protect"]
 	path = submodules/patch-protect
 	url = https://github.com/Patcher56/PatchProtect
-[submodule "submodules/luadev"]
-	path = submodules/luadev
-	url = https://github.com/Metastruct/luadev
