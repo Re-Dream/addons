@@ -128,13 +128,15 @@ if CLIENT then
 		["l"]   = { c = server, n = "server",  a = "ran"     },
 		["p"]   = { c = server, n = "server",  a = "printed" },
 		["lm"]  = { c = client, n = "self",    a = "ran"     },
+		["pm"] =  { c = client, n = "self",    a = "printed" },
 		["pm2"] = { c = client, n = "self",    a = "printed" },
 		["ls"]  = { c = shared, n = "shared",  a = "ran"     },
 		["ps"]  = { c = shared, n = "shared",  a = "printed" },
 		["lb"]  = { c = shared, n = "both",    a = "ran"     },
 		["lc"]  = { c = client, n = "clients", a = "ran"     },
 		["pc"]  = { c = client, n = "clients", a = "printed" },
-		["lsc"] = { c = client, a = "ran"},
+		["lsc"] = { c = client, a = "ran"					 },
+		["psc"] = { c = client, a = "printed"				 },
 	}
 
 	hook.Add("OnPlayerChat", tag .. "-syntax", function(ply, txt, tc, dead)
@@ -146,7 +148,7 @@ if CLIENT then
 
 			local code = txt:sub(prefix:len() + 1 + method:len() + 1)
 			local name = methodInfo.n
-			if method == "lsc" then
+			if method == "lsc" or method == "psc" then
 				name = code:Split(",")[1] or "no one"
 				name = name:Trim()
 				code = code:sub(name:len() + 2)
@@ -164,9 +166,7 @@ if CLIENT then
 
 			return true
 		end
-
 	end)
-
 end
 
 if SERVER then
