@@ -69,7 +69,7 @@ end
 function Team:GetLone() return self.Lone end
 
 function Team:PerformLayout()
-	self.HeightTo = Lerp(FrameTime() * 10, self.HeightTo or ({self:GetContentSize()})[2], self.Hidden and 24 or ({self:GetContentSize()})[2])
+	self.HeightTo = Lerp(FrameTime() * 10, self.HeightTo or ({self:GetContentSize()})[2], (not self.Lone and self.Hidden) and 24 or ({self:GetContentSize()})[2])
 	self:SetTall(self.HeightTo)
 end
 
@@ -480,7 +480,6 @@ function scoreboard:Init()
 	self.Header:SetTall(64)
 	self.Header:InvalidateLayout(true)
 	self.Header.lastTxt = ""
-	self.Header.fontSize = false
 	function self.Header:DoClick()
 		self.Expanded = not self.Expanded
 		self:SizeTo(self:GetWide(), self.Expanded and 112 or 64, 0.3)
