@@ -153,7 +153,7 @@ if CLIENT then
 			end
 
 			local stuff = { team.GetColor(ply:Team()), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
-			stuff[#stuff + 1] = code
+			-- stuff[#stuff + 1] = code
 
 			local highlight = syntax_highlight(code)
 			for _, thing in next, highlight do
