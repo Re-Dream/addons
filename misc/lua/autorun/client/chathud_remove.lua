@@ -5,3 +5,5 @@ hook.Add("HUDPaint", "chathud.remove", function()
 	hook.Remove("HUDPaint", "chathud.remove")
 end)
 
+print("This is a test of cllup.")
+
