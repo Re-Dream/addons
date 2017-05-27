@@ -155,14 +155,10 @@ if CLIENT then
 			local stuff = { team.GetColor(ply:Team()), ply:Nick(), " ", Color(160, 170, 220), methodInfo.a, gray, "@", methodInfo.c, name, gray, ": " }
 			stuff[#stuff + 1] = code
 
-			--[[ until new chathud.
-
 			local highlight = syntax_highlight(code)
 			for _, thing in next, highlight do
 				stuff[#stuff + 1] = thing
 			end
-
-			]]
 
 			chat.AddText(unpack(stuff))
 
