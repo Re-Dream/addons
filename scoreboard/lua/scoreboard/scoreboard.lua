@@ -28,9 +28,11 @@ end
 
 local hostnameFont = {
 	font = "Roboto Bold",
-	size = ScreenScale(12.5),
+	size = ScreenScale(8),
 	antialias = true,
 }
+surface.CreateFont(tag .. "HostnameSmaller", hostnameFont)
+hostnameFont.size = ScreenScale(12)
 surface.CreateFont(tag .. "HostnameSmall", hostnameFont)
 hostnameFont.size = ScreenScale(16)
 surface.CreateFont(tag .. "HostnameBig", hostnameFont)
@@ -67,7 +69,8 @@ end
 function Team:GetLone() return self.Lone end
 
 function Team:PerformLayout()
-	self:SizeToContentsY()
+	self.HeightTo = Lerp(FrameTime() * 10, self.HeightTo or ({self:GetContentSize()})[2], self.Hidden and 24 or ({self:GetContentSize()})[2])
+	self:SetTall(self.HeightTo)
 end
 
 function Team:Paint(w, h)
@@ -76,7 +79,6 @@ function Team:Paint(w, h)
 		local tCol = team.GetColor(t)
 		tCol.a = 192
 		local brightness = (0.299 * tCol.r + 0.587 * tCol.g + 0.114 * tCol.b)
-		print(brightness)
 
 		surface.SetDrawColor(tCol)
 		surface.DrawRect(0, 0, w, 24)
@@ -96,7 +98,23 @@ function Team:Paint(w, h)
 		surface.SetTextPos(6, 24 * 0.5 - txtH * 0.5)
 		surface.SetTextColor(brightness > 177 and Color(0, 0, 0) or Color(255, 255, 255))
 		surface.DrawText(txt)
+
+		local mX, mY = self:LocalCursorPos()
+		if self:IsHovered() and mY <= 24 then
+			self:SetCursor("hand")
+			surface.SetDrawColor(Color(255, 255, 255, self.Depressed and 10 or 20))
+			surface.DrawRect(0, 0, w, 24)
+		else
+			self:SetCursor("arrow")
+		end
+
+		return true
 	end
+end
+function Team:DoClick()
+	local mX, mY = self:LocalCursorPos()
+	if mY > 24 then return end
+	self.Hidden = not self.Hidden
 end
 if Debug then
 	function Team:PaintOver(w, h)
@@ -106,7 +124,7 @@ if Debug then
 end
 Team.GetContentSize = GetContentSize
 
-vgui.Register(tag .. "Team", Team, "EditablePanel")
+vgui.Register(tag .. "Team", Team, "DButton")
 
 -- Team panel end
 -- Player panel start!
@@ -462,7 +480,7 @@ function scoreboard:Init()
 	self.Header:SetTall(64)
 	self.Header:InvalidateLayout(true)
 	self.Header.lastTxt = ""
-	self.Header.fontSize = ""
+	self.Header.fontSize = false
 	function self.Header:DoClick()
 		self.Expanded = not self.Expanded
 		self:SizeTo(self:GetWide(), self.Expanded and 112 or 64, 0.3)
@@ -480,21 +498,16 @@ function scoreboard:Init()
 
 		if txt ~= self.lastTxt then
 			self.lastTxt  = txt
-			self.fontSize = nil
 		end
-		if self.fontSize == nil then
-			surface.SetFont(tag .. "HostnameBig")
+
+		surface.SetFont(tag .. "HostnameBig")
+		local _txtW = surface.GetTextSize(txt)
+		if _txtW >= w - 32 then
+			surface.SetFont(tag .. "HostnameSmall")
 			local _txtW = surface.GetTextSize(txt)
 			if _txtW >= w - 32 then
-				self.fontSize = true
-			else
-				self.fontSize = false
+				surface.SetFont(tag .. "HostnameSmaller")
 			end
-		end
-		if self.fontSize == true then
-			surface.SetFont(tag .. "HostnameSmall")
-		else
-			surface.SetFont(tag .. "HostnameBig")
 		end
 
 		local txtW, txtH = surface.GetTextSize(txt)
@@ -618,15 +631,16 @@ player.GetCount = player.GetCount or function()
 	return #player.GetAll()
 end
 function scoreboard:HandlePlayers()
-	local setLone = false
+	local done = {}
 	for _, ply in next, player.GetAll() do
 		local id = ply:Team()
 		local pnl = self.Teams[id]
-		if not self.Last or self.Last ~= player.GetCount() then
-			-- setLone = true
+		if (not self.Last or self.Last ~= player.GetCount()) and not done[id] then
 			self:RefreshPlayers(id)
+			done[id] = true
 		end
 	end
+	self.Last = player.GetCount()
 	local i = 0
 	for id, pnl in next, self.Teams:GetTeams() do
 		if IsValid(pnl) and pnl:IsVisible() then -- #team.GetPlayers(id) > 0 then
@@ -636,8 +650,7 @@ function scoreboard:HandlePlayers()
 			i = i + 1
 		end
 	end
-	for id, info in next, team.GetAllTeams() do
-		local pnl = self.Teams[id]
+	for id, pnl in next, self.Teams:GetTeams() do
 		if pnl and pnl:IsVisible() then
 			pnl:SetLone(i < 2)
 		end
