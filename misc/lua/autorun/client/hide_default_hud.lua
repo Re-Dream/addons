@@ -93,7 +93,7 @@ hook.Add("HUDPaint", tag .. "_crosshair", function()
 
 	local trace = lply:GetEyeTrace()
 	local dist = lply:EyePos():Distance(trace.HitPos)
-	eyeDistAlpha = Lerp(FrameTime() * 15, eyeDistAlpha, dist >= 96 and 1 or 0.15)
+	eyeDistAlpha = Lerp(FrameTime() * 10, eyeDistAlpha, dist >= 32 and 1 or 0.15)
 
 	fn = FrameNumber()
 
