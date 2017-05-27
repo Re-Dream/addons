@@ -1,54 +1,57 @@
 [submodule "epoe"]
-	path = submodules/epoe
+	path = epoe
 	url = https://github.com/Metastruct/EPOE
-[submodule "luadev"]
-	path = submodules/luadev
-	url = https://github.com/Noiwex/luadev
 [submodule "glib"]
-	path = submodules/glib
+	path = glib
 	url = https://github.com/notcake/glib
 [submodule "gooey"]
-	path = submodules/gooey
+	path = gooey
 	url = https://github.com/notcake/gooey
 [submodule "gcodec"]
-	path = submodules/gcodec
+	path = gcodec
 	url = https://github.com/notcake/gcodec
 [submodule "vfs"]
-	path = submodules/vfs
+	path = vfs
 	url = https://github.com/notcake/vfs
 [submodule "gcompute"]
-	path = submodules/gcompute
+	path = gcompute
 	url = https://github.com/notcake/gcompute
 [submodule "gvote"]
-	path = submodules/gvote
+	path = gvote
 	url = https://github.com/notcake/gvote
 [submodule "garrysmod-chatsounds"]
-	path = submodules/garrysmod-chatsounds
+	path = garrysmod-chatsounds
 	url = https://github.com/Metastruct/garrysmod-chatsounds
 [submodule "pac3"]
-	path = submodules/pac3
+	path = pac3
 	url = https://github.com/Metastruct/pac3
-[submodule "sit-anywhere"]
-	path = submodules/sit-anywhere
-	url = https://github.com/Xerasin/Sit-Anywhere
 [submodule "wire"]
-	path = submodules/wire
+	path = wire
 	url = https://github.com/wiremod/wire
-[submodule "ctp"]
-	path = submodules/ctp
-	url = https://github.com/CapsAdmin/customisable_thirdperson/
 [submodule "advdupe2"]
-	path = submodules/advdupe2
+	path = advdupe2
 	url = https://github.com/wiremod/advdupe2
-[submodule "chat-substitute"]
-	path = submodules/qchat
-	url = https://github.com/CaveeJohnson/gmod-xp-chat
 [submodule "mingeban2"]
-	path = submodules/mingeban2
+	path = mingeban2
 	url = https://github.com/Re-Dream/mingeban2
 [submodule "gm-mediaplayer"]
-	path = submodules/mediaplayer
+	path = gm-mediaplayer
 	url = https://github.com/pixeltailgames/gm-mediaplayer
-[submodule "patch-protect"]
-	path = submodules/patch-protect
+[submodule "luadev"]
+	path = luadev
+	url = https://github.com/Metastruct/luadev
+[submodule "Sit-Anywhere"]
+	path = sit-anywhere
+	url = https://github.com/Xerasin/Sit-Anywhere
+[submodule "customisable_thirdperson"]
+	path = customisable_thirdperson
+	url = https://github.com/CapsAdmin/customisable_thirdperson/
+[submodule "gmod-xp-chat"]
+	path = gmod-xp-chat
+	url = https://github.com/CaveeJohnson/gmod-xp-chat
+[submodule "PatchProtect"]
+	path = patchprotect
 	url = https://github.com/Patcher56/PatchProtect
+[submodule "starfallex"]
+	path = starfallex
+	url = https://github.com/thegrb93/StarfallEx

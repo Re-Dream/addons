@@ -28,21 +28,28 @@ end
 
 local hostnameFont = {
 	font = "Roboto Bold",
-	size = ScreenScale(12.5),
+	size = ScreenScale(8),
 	antialias = true,
 }
+surface.CreateFont(tag .. "HostnameSmaller", hostnameFont)
+hostnameFont.size = ScreenScale(12)
 surface.CreateFont(tag .. "HostnameSmall", hostnameFont)
 hostnameFont.size = ScreenScale(16)
 surface.CreateFont(tag .. "HostnameBig", hostnameFont)
 
 surface.CreateFont(tag .. "Team", {
 	font = "Roboto",
-	size = 18,
+	size = 19,
 	antialias = true,
 })
 surface.CreateFont(tag .. "Player", {
 	font = "Roboto Medium",
 	size = 20,
+	antialias = true,
+})
+surface.CreateFont(tag .. "Option", {
+	font = "Roboto Condensed",
+	size = 16,
 	antialias = true,
 })
 
@@ -55,14 +62,15 @@ function Team:GetTeam() return self.Team end
 
 function Team:SetLone(b)
 	self.Lone = b
-	self:DockPadding(0, self:GetLone() and 0 or 24 + 1, 0, 0)
+	self:DockPadding(0, self:GetLone() and 0 or 24, 0, 0)
 	self:GetParent():InvalidateLayout()
 	self:InvalidateLayout()
 end
 function Team:GetLone() return self.Lone end
 
 function Team:PerformLayout()
-	self:SizeToContentsY()
+	self.HeightTo = Lerp(FrameTime() * 10, self.HeightTo or ({self:GetContentSize()})[2], (not self.Lone and self.Hidden) and 24 or ({self:GetContentSize()})[2])
+	self:SetTall(self.HeightTo)
 end
 
 function Team:Paint(w, h)
@@ -70,19 +78,43 @@ function Team:Paint(w, h)
 		local t = self:GetTeam()
 		local tCol = team.GetColor(t)
 		tCol.a = 192
-		draw.RoundedBox(6, 0, 0, w, 24, tCol)
+		local brightness = (0.299 * tCol.r + 0.587 * tCol.g + 0.114 * tCol.b)
+
+		surface.SetDrawColor(tCol)
+		surface.DrawRect(0, 0, w, 24)
+
+		surface.SetDrawColor(Color(0, 0, 0, 127))
+		surface.DrawOutlinedRect(0, 0, w, 24)
 
 		surface.SetFont(tag .. "Team")
 		local txt = team.GetName(t) .. " (" .. #self:GetChildren() .. ")"
 		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetTextPos(6 + 1, 24 * 0.5 - txtH * 0.5 + 1)
-		surface.SetTextColor(Color(0, 0, 0, 192))
-		surface.DrawText(txt)
+		if brightness <= 177 then
+			surface.SetTextPos(6 + 1, 24 * 0.5 - txtH * 0.5 + 1)
+			surface.SetTextColor(Color(0, 0, 0, 192))
+			surface.DrawText(txt)
+		end
 
 		surface.SetTextPos(6, 24 * 0.5 - txtH * 0.5)
-		surface.SetTextColor(Color(255, 255, 255))
+		surface.SetTextColor(brightness > 177 and Color(0, 0, 0) or Color(255, 255, 255))
 		surface.DrawText(txt)
+
+		local mX, mY = self:LocalCursorPos()
+		if self:IsHovered() and mY <= 24 then
+			self:SetCursor("hand")
+			surface.SetDrawColor(Color(255, 255, 255, self.Depressed and 10 or 20))
+			surface.DrawRect(0, 0, w, 24)
+		else
+			self:SetCursor("arrow")
+		end
+
+		return true
 	end
+end
+function Team:DoClick()
+	local mX, mY = self:LocalCursorPos()
+	if mY > 24 then return end
+	self.Hidden = not self.Hidden
 end
 if Debug then
 	function Team:PaintOver(w, h)
@@ -92,7 +124,7 @@ if Debug then
 end
 Team.GetContentSize = GetContentSize
 
-vgui.Register(tag .. "Team", Team, "EditablePanel")
+vgui.Register(tag .. "Team", Team, "DButton")
 
 -- Team panel end
 -- Player panel start!
@@ -311,7 +343,7 @@ local function OpenColorSelect()
 	top:SetTall(20)
 	top:DockMargin(0, 0, 0, 4)
 	function top:Paint(w, h)
-		surface.SetFont("DermaDefault")
+		surface.SetFont(tag .. "Option")
 		local txt = "Header Color Selection"
 		local txtW, txtH = surface.GetTextSize(txt)
 		surface.SetTextPos(2, h * 0.5 - txtH * 0.5)
@@ -353,7 +385,7 @@ local function OpenColorSelect()
 		surface.SetDrawColor(Color(255, 96, 96, 192))
 		surface.DrawRect(0, 0, w, h)
 
-		surface.SetFont("DermaDefault")
+		surface.SetFont(tag .. "Option")
 		local txt = "Reset"
 		local txtW, txtH = surface.GetTextSize(txt)
 		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
@@ -448,7 +480,6 @@ function scoreboard:Init()
 	self.Header:SetTall(64)
 	self.Header:InvalidateLayout(true)
 	self.Header.lastTxt = ""
-	self.Header.fontSize = ""
 	function self.Header:DoClick()
 		self.Expanded = not self.Expanded
 		self:SizeTo(self:GetWide(), self.Expanded and 112 or 64, 0.3)
@@ -466,21 +497,16 @@ function scoreboard:Init()
 
 		if txt ~= self.lastTxt then
 			self.lastTxt  = txt
-			self.fontSize = nil
 		end
-		if self.fontSize == nil then
-			surface.SetFont(tag .. "HostnameBig")
+
+		surface.SetFont(tag .. "HostnameBig")
+		local _txtW = surface.GetTextSize(txt)
+		if _txtW >= w - 32 then
+			surface.SetFont(tag .. "HostnameSmall")
 			local _txtW = surface.GetTextSize(txt)
 			if _txtW >= w - 32 then
-				self.fontSize = true
-			else
-				self.fontSize = false
+				surface.SetFont(tag .. "HostnameSmaller")
 			end
-		end
-		if self.fontSize == true then
-			surface.SetFont(tag .. "HostnameSmall")
-		else
-			surface.SetFont(tag .. "HostnameBig")
 		end
 
 		local txtW, txtH = surface.GetTextSize(txt)
@@ -520,21 +546,25 @@ function scoreboard:Init()
 		option:DockMargin(0, 0, 4, 0)
 		option:SetWide(info.w or 64)
 		function option:Paint(w, h)
-			draw.RoundedBox(6, 0, 0, w, h, Color(0, 0, 0, 96))
+			draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 96))
 
 			surface.SetMaterial(info.icon)
 			surface.SetDrawColor(Color(255, 255, 255))
 			surface.DrawTexturedRect(8, h * 0.5 - 8, 16, 16)
 
 			local txt = info.name
-			surface.SetFont("DermaDefault")
+			surface.SetFont(tag .. "Option")
 			local txtW, txtH = surface.GetTextSize(txt)
+			surface.SetTextPos((w + 8 + 16) * 0.5 - txtW * 0.5 + 2, h * 0.5 - txtH * 0.5 + 2)
+			surface.SetTextColor(Color(0, 0, 0, 164))
+			surface.DrawText(txt)
+
 			surface.SetTextPos((w + 8 + 16) * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
 			surface.SetTextColor(Color(255, 255, 255, 192))
 			surface.DrawText(txt)
 
 			if self:IsHovered() then
-				draw.RoundedBox(6, 0, 0, w, h, Color(255, 255, 255, self.Depressed and 5 or 10))
+				draw.RoundedBox(6, 0, 0, w, h, Color(255, 255, 255, self.Depressed and 2 or 4))
 			end
 
 			return true
@@ -569,6 +599,15 @@ function scoreboard:Init()
 	function self.Teams:Paint()
 		return true
 	end
+	function self.Teams:GetTeams()
+		local teams = {}
+		for k, v in next, self:GetTable() do
+			if isnumber(k) then
+				teams[k] = v
+			end
+		end
+		return teams
+	end
 	if Debug then
 		self.Teams.isTeam = true
 		function self.Teams:PaintOver(w, h)
@@ -591,30 +630,29 @@ player.GetCount = player.GetCount or function()
 	return #player.GetAll()
 end
 function scoreboard:HandlePlayers()
-	local i = 0
-	local setLone = false
+	local done = {}
 	for _, ply in next, player.GetAll() do
 		local id = ply:Team()
 		local pnl = self.Teams[id]
-		if not self.Last or self.Last ~= player.GetCount() then
-			setLone = true
+		if (not self.Last or self.Last ~= player.GetCount()) and not done[id] then
 			self:RefreshPlayers(id)
+			done[id] = true
 		end
 	end
-	for id, info in next, team.GetAllTeams() do
-		local pnl = self.Teams[id]
-		if setLone and pnl and pnl:IsVisible() then -- #team.GetPlayers(id) > 0 then
+	self.Last = player.GetCount()
+	local i = 0
+	for id, pnl in next, self.Teams:GetTeams() do
+		if IsValid(pnl) and pnl:IsVisible() then -- #team.GetPlayers(id) > 0 then
+			if pnl.Last ~= #team.GetPlayers(id) then
+				self:RefreshPlayers(id)
+			end
 			i = i + 1
 		end
 	end
-	if setLone then
-		for id, info in next, team.GetAllTeams() do
-			local pnl = self.Teams[id]
-			if pnl and pnl:IsVisible() then
-				pnl:SetLone(i < 2)
-			end
+	for id, pnl in next, self.Teams:GetTeams() do
+		if pnl and pnl:IsVisible() then
+			pnl:SetLone(i < 2)
 		end
-		self.Last = player.GetCount()
 	end
 end
 
@@ -624,44 +662,41 @@ function scoreboard:RefreshPlayers(id)
 		if not pnl then
 			pnl = vgui.Create(tag .. "Team")
 			self.Teams:AddItem(pnl)
+			pnl.Team = id
 			pnl:SetTeam(id)
-			pnl:SetZPos(id)
+			pnl:SetZPos(-id)
 			pnl:Dock(TOP)
-			pnl:DockMargin(0, 4, 0, 0)
+			pnl:DockMargin(0, 2, 0, 0)
 			self.Teams[id] = pnl
 		end
 
-		if #team.GetPlayers(id) < 1 then
+		for _, ply in next, team.GetPlayers(id) do
+			local _pnl = pnl[ply:UserID()]
+			if not _pnl then
+				_pnl = vgui.Create(tag .. "Player", pnl)
+				_pnl.UserID = ply:UserID()
+				_pnl:SetPlayer(ply)
+				pnl[ply:UserID()] = _pnl
+			end
+			_pnl:Dock(TOP)
+			_pnl:DockMargin(8, 0, 8, 0)
+			_pnl:SetTall(30)
+		end
+		pnl.Last = #team.GetPlayers(id)
+
+		for _, _pnl in next, pnl:GetChildren() do
+			if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
+				pnl[_pnl.UserID] = nil
+				_pnl:SetVisible(false)
+				_pnl:SetParent() -- ugly hack to call PerformLayout
+				_pnl:Remove()
+			end
+		end
+
+		if #pnl:GetChildren() < 1 then
 			pnl:SetVisible(false)
 		else
 			pnl:SetVisible(true)
-			for _, _pnl in next, pnl:GetChildren() do
-				if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
-					pnl[_pnl.UserID] = nil
-					_pnl:SetVisible(false)
-					_pnl:SetParent() -- ugly hack to call PerformLayout
-					_pnl:Remove()
-				end
-			end
-		end
-		local dead = 0
-		if pnl:IsVisible() then
-			for _, ply in next, team.GetPlayers(id) do
-				if IsValid(ply) then
-					local _pnl = pnl[ply:UserID()]
-					if not _pnl then
-						_pnl = vgui.Create(tag .. "Player", pnl)
-						_pnl.UserID = ply:UserID()
-						_pnl:SetPlayer(ply)
-						pnl[ply:UserID()] = _pnl
-					end
-					_pnl:Dock(TOP)
-					_pnl:DockMargin(8, 0, 8, 0)
-					_pnl:SetTall(30)
-				else
-					dead = dead + 1
-				end
-			end
 		end
 	end
 end

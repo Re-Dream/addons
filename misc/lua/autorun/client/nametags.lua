@@ -104,7 +104,7 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 					local s = math.floor(AFKTime - m * 60 - h * 60 * 60)
 					local txt = h > 1 and string.format("%.2d:%.2d:%.2d", h, m, s) or string.format("%.2d:%.2d", m, s)
 
-					local choice = math.Clamp(math.Round(RealTime() * 0.125 % #awayPhrases), 1, #awayPhrases)
+					local choice = math.Clamp(math.Round((RealTime() * 0.125 + ply:EntIndex()) % #awayPhrases), 1, #awayPhrases)
 					DrawText(txt .. " - " .. awayPhrases[choice] .. "...", tag .. "2", 1, Color(160, 160, 255))
 				end
 
