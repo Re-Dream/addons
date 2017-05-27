@@ -17,7 +17,7 @@ pcall(function()
 		local path = line:match(".+/")
 		local filename = line:match("([^/]+)%.lua$")
 
-		Msg("[RefreshLua] ") print("Updating " .. path .. fn .. ".lua...")
+		Msg("[RefreshLua] ") print("Updating " .. path .. filename .. ".lua...")
 		HandleChange_Lua(path .. "/", filename, "lua")
 	end
 
