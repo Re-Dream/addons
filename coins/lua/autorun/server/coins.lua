@@ -7,7 +7,8 @@ end
 function PLAYER:SetCoins(c)
     self.Coins = c
     self:SetNWInt("Coins", self.Coins)
-    self:SetPData("Coins", self.Coins) --Save this into MySQL cloud or something.
+    self:SetPData("Coins", self.Coins) --Save this into MySQL cloud or something.	
+    hook.Run( "CoinsChange", self.Coins )
 end
 
 hook.Add("PlayerInitialSpawn", "Cl_CoinInit", function(ply)
