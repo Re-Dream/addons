@@ -52,3 +52,6 @@
 [submodule "PatchProtect"]
 	path = patchprotect
 	url = https://github.com/Patcher56/PatchProtect
+[submodule "starfallex"]
+	path = starfallex
+	url = https://github.com/thegrb93/StarfallEx
