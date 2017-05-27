@@ -12,7 +12,7 @@ pcall(function()
 		if line == "" or not line:match("%.lua$") then return false, "invalid file extension" end
 
 		local exists = file.Exists(line, "GAME")
-		if not exists then return false, "doesn't exist"
+		if not exists then return false, "doesn't exist" end
 
 		local path = line:match(".+/")
 		local filename = line:match("([^/]+)%.lua$")
