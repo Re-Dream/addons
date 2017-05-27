@@ -41,7 +41,7 @@
 	path = luadev
 	url = https://github.com/Metastruct/luadev
 [submodule "Sit-Anywhere"]
-	path = Sit-Anywhere
+	path = sit-anywhere
 	url = https://github.com/Xerasin/Sit-Anywhere
 [submodule "customisable_thirdperson"]
 	path = customisable_thirdperson
@@ -50,5 +50,5 @@
 	path = gmod-xp-chat
 	url = https://github.com/CaveeJohnson/gmod-xp-chat
 [submodule "PatchProtect"]
-	path = PatchProtect
+	path = patchprotect
 	url = https://github.com/Patcher56/PatchProtect
