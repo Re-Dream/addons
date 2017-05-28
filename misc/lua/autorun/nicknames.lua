@@ -11,7 +11,8 @@ PLAYER.GetRealName = PLAYER.SteamNick or PLAYER.Nick
 PLAYER.GetRealNick = PLAYER.SteamNick or PLAYER.Nick
 
 function PLAYER:Nick()
-	return self:GetNWString("Nick", self:RealName())
+	local nick = self:GetNWString("Nick")
+	return nick:Trim() == "" and self:RealName() or nick
 end
 PLAYER.Name = PLAYER.Nick
 PLAYER.GetNick = PLAYER.Nick
@@ -33,12 +34,13 @@ else
 
 	local nextChange = {}
 	local nick = mingeban.CreateCommand({"name", "nick"}, function(caller, line)
-		if nextChange[self:UserID()] > CurTime() then
-			return false, "Changing nicks too quickly"
+		local cd = nextChange[caller:UserID()]
+		if cd and cd > CurTime() then
+			return false, "You're changing nicks too quickly!"
 		end
 
 		caller:SetNick(line)
-		nextChange[self:UserID()] = CurTime() + 2
+		nextChange[caller:UserID()] = CurTime() + 2
 	end)
 
 	hook.Add("PlayerInitialSpawn", tag, function(caller)

@@ -143,7 +143,7 @@ elseif CLIENT then
 		end
 		timeString = timeString .. s .. " second" .. plural(s)
 		]]
-		local timString = string.NiceTime(AFKTime)
+		local timeString = string.NiceTime(AFKTime)
 
 		surface.SetFont(tag)
 		local txt = "You've been away for"

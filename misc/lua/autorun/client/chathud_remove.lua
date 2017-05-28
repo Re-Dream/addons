@@ -5,3 +5,15 @@ hook.Add("HUDPaint", "chathud.remove", function()
 	hook.Remove("HUDPaint", "chathud.remove")
 end)
 
+function chat.AddText(...)
+	local args = {...}
+	for k, v in next, args do
+		if type(v):lower() == "player" then
+			args[k] = team.GetColor(v:Team())
+			table.insert(args, k + 1, v:Nick())
+		end
+	end
+	chatbox.ParseInto(chatbox.GetChatFeed(), unpack(args))
+	chat.old_text(unpack(args))
+end
+
