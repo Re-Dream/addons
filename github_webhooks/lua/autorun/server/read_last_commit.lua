@@ -1,5 +1,5 @@
 
--- This will not work
+-- This works!
 concommand.Add("read_last_commit", function()
 	local exists = file.Exists("last_commit.txt", "DATA")
 	if exists then
