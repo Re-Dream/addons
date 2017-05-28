@@ -9,15 +9,21 @@ else
 
 	local prefix = "Re-Dream: "
 	local titles = -- STOP INDENTING IT, IT BREAKS.
-[[We do shit better
+[[We do shit better.
 :blox:
-We have hookers and blackjacks
-gcompute inside
-come fuck around and build stupid shit
+:sadbarf:
+sexual tension
+We have blackjack and hookers
+GCompute inside
+come fuck around
+build stupid shit
+code stupid shit
+make stupid shit
+professionalism itself
+out of hostnames
 pac4 when?
 better than outfitter
 trust no one, not even the workshop
-addons can be requested
 gmlounge.us
 gmlounge.us
 gmlounge.us
