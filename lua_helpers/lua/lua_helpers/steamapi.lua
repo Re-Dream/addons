@@ -95,6 +95,7 @@ function steamapi.GetFamilySharing(ply)
 	function(response)
 		if not response or not response.lender_steamid then
 			ErrorNoHalt(string.format("FamilySharing: Invalid Steam API response for %s (%s)\n", ply:Nick(), ply:SteamID()))
+			return
 		end
 
 		local lender = response.lender_steamid
