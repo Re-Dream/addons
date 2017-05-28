@@ -13,7 +13,10 @@ function chat.AddText(...)
 			table.insert(args, k + 1, v:Nick())
 		end
 	end
-	chatbox.ParseInto(chatbox.GetChatFeed(), unpack(args))
+
+	if chatbox and IsValid(chatbox.frame) then
+		chatbox.ParseInto(chatbox.GetChatFeed(), unpack(args))
+	end
 	chat.old_text(unpack(args))
 end
 
