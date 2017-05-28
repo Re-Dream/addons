@@ -58,3 +58,16 @@ hook.Add("PlayerDisconnected", tag, function(ply)
 	hook.Run("PhysgunDrop", tag, ply, ply.Physgunning)
 end)
 
+if SERVER then
+	hook.Add("PlayerNoClip", tag, function(ply)
+		local physgunner = ply:GetPhysgunner()
+		if not IsValid(physgunner) then return end
+		if ply:IsFriend(physgunner) then
+			physgunner:SelectWeapon("none")
+			hook.Run("PhysgunDrop", tag, physgunner, ply)
+		else
+			return false
+		end
+	end)
+end
+
