@@ -14,7 +14,7 @@ concommand.Add("read_last_commit", function()
 			text[#text + 1] = txt
 		end
 		local operations = {
-			modified = { Symbol = "*", Color = Color(96, 96, 255) },
+			modified = { Symbol = "*", Color = Color(164, 127, 255) },
 			added = { Symbol = "+", Color = Color(96, 255, 96) },
 			removed = { Symbol = "-", Color = Color(255, 96, 96) }
 		}
