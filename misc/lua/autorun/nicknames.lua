@@ -39,6 +39,7 @@ else
 			return false, "You're changing nicks too quickly!"
 		end
 
+		ChatAddText(caller, Color(255, 255, 255, 255), " changed name to ", team.GetColor(caller:Team()), line)
 		caller:SetNick(line)
 		nextChange[caller:UserID()] = CurTime() + 2
 	end)

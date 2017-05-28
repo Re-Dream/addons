@@ -94,7 +94,7 @@ function steamapi.GetFamilySharing(ply)
 	},
 	function(response)
 		if not response or not response.lender_steamid then
-			ErrorNoHalt(string.format("FamilySharing: Invalid Steam API response for %s (%s)\n", self:Nick(), self:SteamID()))
+			ErrorNoHalt(string.format("FamilySharing: Invalid Steam API response for %s (%s)\n", ply:Nick(), ply:SteamID()))
 		end
 
 		local lender = response.lender_steamid
@@ -105,7 +105,6 @@ function steamapi.GetFamilySharing(ply)
 		end
 	end)
 end
-
 
 local PLAYER = FindMetaTable("Player")
 

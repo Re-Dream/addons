@@ -1,11 +1,16 @@
+
 local function HandleSharedPlayer(ply)
 		if ply:IsFamilySharing() then
-		print(string.format("Family Sharing: %s|%s has been lent Garry's Mod by %s",
+	end
+end
+
+hook.Add("PlayerAuth", "FamilyShareChecker", function(ply)
+	if ply:IsFamilySharing() then
+		Msg("[FamilySharing]") print(string.format("%s (%s) has been lent Garry's Mod by %s",
 			ply:Nick(),
 			ply:SteamID(),
 			ply:GetLender()
 		))
 	end
-end
+end)
 
-hook.Add("PlayerAuth","FamilyShareChecker",HandleSharedPlayer)
