@@ -87,6 +87,26 @@ function steamapi.GetFriendList(ply)
 	end)
 end
 
+function steamapi.GetFamilySharing(ply)
+	steamapi("IPlayerService", "IsPlayingSharedGame", 1, {
+		steamid = (isentity(ply) and ply:IsPlayer()) and ply:SteamID64() or ply,
+		appid_playing = 4000
+	},
+	function(response)
+		if not response or not response.lender_steamid then
+			ErrorNoHalt(string.format("FamilySharing: Invalid Steam API response for %s (%s)\n", self:Nick(), self:SteamID()))
+		end
+
+		local lender = response.lender_steamid
+		if lender ~= "0" then
+			ply.Lender = util.SteamIDFrom64(lender)
+		else
+			ply.Lender = false
+		end
+	end)
+end
+
+
 local PLAYER = FindMetaTable("Player")
 
 timer.Create("steamapi_RefreshFriendLists", 60, 0, function()
@@ -121,5 +141,19 @@ function PLAYER:IsFriend(ply)
 		return false
 	end
 	return self.FriendsList and self.FriendsList[ply:SteamID64()] or false
+end
+
+function PLAYER:GetLender()
+	if self.Lender == nil then
+		steamapi.GetFamilySharing(self)
+	end
+	return self.Lender
+end
+
+function PLAYER:IsFamilySharing()
+	if not self.Lender then
+		steamapi.GetFamilySharing(self)
+	end
+	return self.Lender and true or false
 end
 
