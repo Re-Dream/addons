@@ -54,11 +54,11 @@ steamapi = setmetatable({}, {
 
 		local response = {}
 		requesting = true
-		http.Fetch(url, function(content)
+		http.Fetch(url, function(content, ...)
 			if content and content:Trim() ~= "" then
 				response = util.JSONToTable(content)
 				requesting = false
-				callback(response)
+				callback(response, {url, content, ...})
 			end
 		end, function(err)
 			print("What in the fuck? SteamAPI Error: " .. error)
@@ -72,7 +72,9 @@ function steamapi.GetFriendList(ply)
 	steamapi("ISteamUser", "GetFriendList", 1, {
 		steamid = (isentity(ply) and ply:IsPlayer()) and ply:SteamID64() or ply,
 		relationship = "friend"
-	}, function(response)
+	}, function(response, other)
+		-- PrintTable(other)
+
 		if not response.friendslist or not response.friendslist.friends then
 			-- private profile or some shit
 			return
@@ -92,7 +94,10 @@ function steamapi.GetFamilySharing(ply)
 		steamid = (isentity(ply) and ply:IsPlayer()) and ply:SteamID64() or ply,
 		appid_playing = 4000
 	},
-	function(response)
+	function(response, other)
+		-- PrintTable(other)
+
+		local response = response.response
 		if not response or not response.lender_steamid then
 			ErrorNoHalt(string.format("FamilySharing: Invalid Steam API response for %s (%s)\n", ply:Nick(), ply:SteamID()))
 			return
