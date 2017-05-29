@@ -28,7 +28,7 @@ else
 	util.AddNetworkString(tag)
 
 	function PLAYER:SetNick(nick)
-		self:SetPData("Nick", nick)
+		self:SetPData("Nick", nick:Trim() ~= "" and nick or nil)
 		self:SetNWString("Nick", nick)
 	end
 
@@ -45,7 +45,9 @@ else
 	end)
 
 	hook.Add("PlayerInitialSpawn", tag, function(caller)
-		caller:SetNick(caller:GetPData("Nick") or "")
+		if caller:GetPData("Nick") then
+			caller:SetNick(caller:GetPData("Nick"))
+		end
 	end)
 
 	net.Receive(tag, function(caller)
