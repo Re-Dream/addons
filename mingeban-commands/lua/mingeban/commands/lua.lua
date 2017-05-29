@@ -11,18 +11,31 @@ pcall(function()
 		line = line:Trim()
 		if line == "" or not line:match("%.lua$") then return false, "invalid file extension" end
 
-		local exists = file.Exists(line, "GAME")
-		if not exists then return false, "doesn't exist" end
-
-		local path = line:match(".+/")
+		local path = line:match(".+/") or ""
 		local filename = line:match("([^/]+)%.lua$")
 
+		local _, folders = file.Find("addons/*", "GAME")
+		for _, folder in next, folders do
+			local _path = "addons/" .. folder .. "/lua/" .. path .. filename .. ".lua"
+			if file.Exists(_path, "GAME") then
+				path =  _path:match(".+/")
+				break
+			end
+		end
+
+		local exists = file.Exists(path, "GAME")
+		if not exists then return false, "doesn't exist" end
+
 		Msg("[RefreshLua] ") print("Updating " .. path .. filename .. ".lua...")
-		HandleChange_Lua(path .. "/", filename, "lua")
+		return HandleChange_Lua(path .. "/", filename, "lua")
 	end
 
 	mingeban.CreateCommand("refreshlua", function(caller, line)
-		RefreshLua(line)
+		local success, info = RefreshLua(line)
+
+		if success == false then
+			return false, info
+		end
 	end)
 end)
 
