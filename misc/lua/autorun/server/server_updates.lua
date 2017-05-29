@@ -1,5 +1,21 @@
 
--- This works! kind of
+concommand.Add("updating", function(_, _, _, args)
+	local spacedArgs = args:Trim():Split(" ")
+	local method = spacedArgs[1]:lower()
+	if method == "start" then
+		ChatAddText(Color(175, 235, 225), "Server update in progress...")
+	elseif method == "addons-updated" then
+		ChatAddText(Color(175, 235, 225), "\tUpdated addons...")
+	elseif method == "submodule-updated" then
+		local submodule = spacedArgs[2]
+		ChatAddText(Color(175, 235, 225), "\tUpdated submodule " .. submodule .. "...")
+	elseif method == "gamemode-updated" then
+		ChatAddText(Color(175, 235, 225), "\tUpdated gamemode...")
+	elseif method == "end" then
+		ChatAddText(Color(175, 235, 225), "Update finished!")
+	end
+end)
+
 concommand.Add("read_last_commit", function()
 	local exists = file.Exists("last_commit.txt", "DATA")
 	if exists then
@@ -34,7 +50,6 @@ concommand.Add("read_last_commit", function()
 			"Update in " .. commit.repository.name .. " by " .. commit.head_commit.author.username .. " (" .. commit.head_commit.author.email .. "):\n",
 			unpack(text)
 		)
-
 	end
 end)
 
