@@ -4,8 +4,6 @@ local tag = "lively_chat"
 local prefix = mingeban and mingeban.utils.CmdPrefix or "^[%$%.!/]"
 
 if CLIENT then
-	team.SetUp(1001, "Unassigned", Color(129, 171, 213)) -- custom chat color
-
 	local gray = Color(192, 212, 222)
 
 	local luaPatterns = {

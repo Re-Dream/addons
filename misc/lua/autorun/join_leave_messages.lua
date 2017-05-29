@@ -1,4 +1,4 @@
-local tag = "player_info"
+local tag = "joinleave"
 
 if SERVER then
 	util.AddNetworkString(tag)
