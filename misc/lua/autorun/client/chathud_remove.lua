@@ -18,5 +18,6 @@ function chat.AddText(...)
 		chatbox.ParseInto(chatbox.GetChatFeed(), unpack(args))
 	end
 	chat.old_text(unpack(args))
+	chat.PlaySound()
 end
 

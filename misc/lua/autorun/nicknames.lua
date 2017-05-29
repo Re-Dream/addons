@@ -45,7 +45,7 @@ else
 	end)
 
 	hook.Add("PlayerInitialSpawn", tag, function(caller)
-		caller:SetNick(caller:GetPData("Nick"))
+		caller:SetNick(caller:GetPData("Nick") or "")
 	end)
 
 	net.Receive(tag, function(caller)

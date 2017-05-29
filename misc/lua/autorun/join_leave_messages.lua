@@ -1,7 +1,6 @@
 local tag = "player_info"
 
 if SERVER then
-
 	util.AddNetworkString(tag)
 
 	local geoip
@@ -34,20 +33,15 @@ if SERVER then
 		local steamid = data.networkid
 		local entid = data.index
 		if geoip then
-
 			local geoipres = geoip.Get(ip:Split(":")[1])
 			local geoipinfo = { geoipres.country_name,geoipres.city,geoipres.asn }
 
 			MsgC(Color(0, 255, 0),"[Join] ") print(name .. " (" .. steamid .. ") is connecting to the server! [" .. ip .. (steamid ~= "BOT" and table.Count(geoipinfo) ~= 0 and " | " .. table.concat(geoipinfo, ", ") .. "]" or "]"))
-
 		else
-
 			MsgC(Color(0, 255, 0),"[Join] ") print(name .. " (" .. steamid .. ") is connecting to the server! [" .. ip .. "]")
-
 		end
 
 		JoinMessage(name, steamid, entid)
-
 	end)
 
 	gameevent.Listen("player_disconnect")
@@ -57,18 +51,15 @@ if SERVER then
 		local reason = data.reason
 
 		LeaveMessage(name, steamid, reason)
-
 	end)
 
 	hook.Add("Initialize", tag, function()
 		function GAMEMODE:PlayerConnect() end
 		function GAMEMODE:PlayerDisconnected() end
 	end)
-
 end
 
 if CLIENT then
-
 	local bullet = "●"
 	net.Receive(tag, function()
 		local info = net.ReadTable()
@@ -79,7 +70,6 @@ if CLIENT then
 		else
 			chat.AddText(Color(255, 127, 127), bullet, " ", Color(210, 210, 225), info.name, Color(127, 127, 127), " (" .. info.steamid .. ") ", Color(255, 127, 127), "left", Color(210, 210, 225), " the server!", Color(127, 127, 127), " (" .. info.reason .. ")")
 		end
-
 	end)
 
 	hook.Add("ChatText", tag, function(_, _, _, mode)
@@ -87,7 +77,6 @@ if CLIENT then
 			return true
 		end
 	end)
-
 end
 
 

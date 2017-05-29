@@ -17,3 +17,7 @@ mingeban.CreateCommand("cmd", function(caller, line)
 	caller:ConCommand(line)
 end)
 
+mingeban.CreateCommand("retry", function(caller)
+	caller:ConCommand("retry")
+end)
+
