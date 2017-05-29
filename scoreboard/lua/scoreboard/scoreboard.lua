@@ -3,9 +3,26 @@ local tag = "ReDreamScoreboard"
 
 if IsValid(Scoreboard) then Scoreboard:Remove() end
 
+scoreboard = {}
 local Debug = false
 
-local function GetContentSize(self)
+local hostnameFont = {
+	font = "Roboto Bold",
+	size = ScreenScale(8),
+	antialias = true,
+}
+surface.CreateFont(tag .. "HostnameSmaller", hostnameFont)
+hostnameFont.size = ScreenScale(12)
+surface.CreateFont(tag .. "HostnameSmall", hostnameFont)
+hostnameFont.size = ScreenScale(16)
+surface.CreateFont(tag .. "HostnameBig", hostnameFont)
+surface.CreateFont(tag .. "Option", {
+	font = "Roboto Condensed",
+	size = 16,
+	antialias = true,
+})
+
+function scoreboard:GetContentSize()
 	local w, h = 0, 0
 
 	local padding = { self:GetDockPadding() }
@@ -26,298 +43,8 @@ local function GetContentSize(self)
 	return w, h
 end
 
-local hostnameFont = {
-	font = "Roboto Bold",
-	size = ScreenScale(8),
-	antialias = true,
-}
-surface.CreateFont(tag .. "HostnameSmaller", hostnameFont)
-hostnameFont.size = ScreenScale(12)
-surface.CreateFont(tag .. "HostnameSmall", hostnameFont)
-hostnameFont.size = ScreenScale(16)
-surface.CreateFont(tag .. "HostnameBig", hostnameFont)
-
-surface.CreateFont(tag .. "Team", {
-	font = "Roboto",
-	size = 19,
-	antialias = true,
-})
-surface.CreateFont(tag .. "Player", {
-	font = "Roboto Medium",
-	size = 20,
-	antialias = true,
-})
-surface.CreateFont(tag .. "Option", {
-	font = "Roboto Condensed",
-	size = 16,
-	antialias = true,
-})
-
--- Team panel start!
-
-local Team = {}
-
-function Team:SetTeam(t) self.Team = t end
-function Team:GetTeam() return self.Team end
-
-function Team:SetLone(b)
-	self.Lone = b
-	self:DockPadding(0, self:GetLone() and 0 or 24, 0, 0)
-	self:GetParent():InvalidateLayout()
-	self:InvalidateLayout()
-end
-function Team:GetLone() return self.Lone end
-
-function Team:PerformLayout()
-	self.HeightTo = Lerp(FrameTime() * 10, self.HeightTo or ({self:GetContentSize()})[2], (not self.Lone and self.Hidden) and 24 or ({self:GetContentSize()})[2])
-	self:SetTall(self.HeightTo)
-end
-
-function Team:Paint(w, h)
-	if not self:GetLone() then
-		local t = self:GetTeam()
-		local tCol = team.GetColor(t)
-		tCol.a = 192
-		local brightness = (0.299 * tCol.r + 0.587 * tCol.g + 0.114 * tCol.b)
-
-		surface.SetDrawColor(tCol)
-		surface.DrawRect(0, 0, w, 24)
-
-		surface.SetDrawColor(Color(0, 0, 0, 127))
-		surface.DrawOutlinedRect(0, 0, w, 24)
-
-		surface.SetFont(tag .. "Team")
-		local txt = team.GetName(t) .. " (" .. #self:GetChildren() .. ")"
-		local txtW, txtH = surface.GetTextSize(txt)
-		if brightness <= 177 then
-			surface.SetTextPos(6 + 1, 24 * 0.5 - txtH * 0.5 + 1)
-			surface.SetTextColor(Color(0, 0, 0, 192))
-			surface.DrawText(txt)
-		end
-
-		surface.SetTextPos(6, 24 * 0.5 - txtH * 0.5)
-		surface.SetTextColor(brightness > 177 and Color(0, 0, 0) or Color(255, 255, 255))
-		surface.DrawText(txt)
-
-		local mX, mY = self:LocalCursorPos()
-		if self:IsHovered() and mY <= 24 then
-			self:SetCursor("hand")
-			surface.SetDrawColor(Color(255, 255, 255, self.Depressed and 10 or 20))
-			surface.DrawRect(0, 0, w, 24)
-		else
-			self:SetCursor("arrow")
-		end
-
-		return true
-	end
-end
-function Team:DoClick()
-	local mX, mY = self:LocalCursorPos()
-	if mY > 24 then return end
-	self.Hidden = not self.Hidden
-end
-if Debug then
-	function Team:PaintOver(w, h)
-		surface.SetDrawColor(Color(255, 255, 0))
-		surface.DrawOutlinedRect(0, 0, w, h)
-	end
-end
-Team.GetContentSize = GetContentSize
-
-vgui.Register(tag .. "Team", Team, "DButton")
-
--- Team panel end
--- Player panel start!
-
-local Player = {}
-
-function Player:Init()
-	self.Avatar = vgui.Create("AvatarImage", self)
-	self.Avatar:Dock(LEFT)
-
-	self.Avatar.Click = vgui.Create("DButton", self.Avatar)
-	self.Avatar.Click:Dock(FILL)
-	function self.Avatar.Click:Paint(w, h)
-		return true
-	end
-	function self.Avatar.Click.DoClick()
-		if self.Player:SteamID64() == nil then return end
-		gui.OpenURL("https://steamcommunity.com/profiles/" .. self.Player:SteamID64())
-	end
-	function self.Avatar.Click.DoRightClick()
-		local menu = DermaMenu()
-		local ply = self.Player
-
-		menu:AddOption("Open Profile", function()
-			gui.OpenURL("https://steamcommunity.com/profiles/" .. ply:SteamID64())
-		end):SetIcon("icon16/book_go.png")
-		menu:AddOption("Copy Profile URL", function()
-			SetClipboardText("http://steamcommunity.com/profiles/" .. ply:SteamID64())
-		end):SetIcon("icon16/book_link.png")
-
-		menu:AddSpacer()
-
-		menu:AddOption("Copy SteamID", function()
-			SetClipboardText(ply:SteamID())
-		end):SetIcon("icon16/tag_blue.png")
-		menu:AddOption("Copy Community ID", function()
-			SetClipboardText(tostring(ply:SteamID64()))
-		end):SetIcon("icon16/tag_yellow.png")
-
-		menu:Open()
-	end
-
-	self.Info = vgui.Create("DButton", self)
-	self.Info:Dock(FILL)
-	self.Info:SetCursor("arrow")
-	function self.Info.DoDoubleClick()
-		if mingeban and mingeban.commands.goto then
-			LocalPlayer():ConCommand("mingeban goto _" .. self.Player:EntIndex())
-		end
-	end
-	function self.Info.DoRightClick()
-		local menu = DermaMenu()
-		local lply = LocalPlayer()
-		local ply = self.Player
-		if mingeban and mingeban.commands then
-			local cmds = mingeban.commands
-			if lply ~= ply then
-				if cmds.goto then
-					menu:AddOption("Go To", function()
-						lply:ConCommand("mingeban goto _" .. ply:EntIndex())
-					end):SetIcon("icon16/bullet_go.png")
-				end
-
-				if LocalPlayer():IsAdmin() then
-					if cmds.bring then
-						menu:AddOption("Bring", function()
-							lply:ConCommand("mingeban bring _" .. ply:EntIndex())
-						end):SetIcon("icon16/arrow_in.png")
-					end
-
-					menu:AddSpacer()
-
-					if cmds.kick then
-						menu:AddOption("Kick", function()
-							lply:ConCommand("mingeban kick _" .. ply:EntIndex())
-						end):SetIcon("icon16/door_in.png")
-					end
-				end
-			end
-		end
-		menu:Open()
-	end
-	function self.Info.Paint(s, w, h)
-		local ply = self.Player
-		if not IsValid(ply) then
-			self.Player = _G.Player(self.UserID)
-			if not IsValid(self.Player) then
-				self:Remove()
-			end
-			return
-		end
-
-		surface.SetFont(tag .. "Player")
-		local txt = ply:Nick()
-		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetTextPos(6 + 1, h * 0.5 - txtH * 0.5 + 1)
-		surface.SetTextColor(Color(0, 0, 0, 64))
-		surface.DrawText(txt)
-
-		surface.SetTextPos(6, h * 0.5 - txtH * 0.5)
-		surface.SetTextColor(Color(0, 0, 0, 240))
-		surface.DrawText(txt)
-
-		return true
-	end
-	function self.Info:PaintOver(w, h)
-		surface.SetDrawColor(Color(0, 0, 0, 20))
-		surface.DrawOutlinedRect(0, 0, w, h)
-	end
-
-	self.Info.Ping = vgui.Create("DButton", self.Info)
-	self.Info.Ping:Dock(RIGHT)
-	self.Info.Ping:SetWide(58)
-	self.Info.Ping:SetCursor("arrow")
-	self.Info.Ping.Clock = Material("icon16/clock.png")
-	self.Info.Ping.Latency = Material("icon16/transmit_blue.png")
-	function self.Info.Ping.Paint(s, w, h)
-		local ply = self.Player
-		if not IsValid(ply) then return end
-
-		local isAFK = ply.IsAFK and ply:IsAFK() or false
-		if isAFK then
-			surface.SetDrawColor(Color(127, 64, 255, 70))
-		else
-			surface.SetDrawColor(Color(127, 167, 99, 70))
-		end
-
-		surface.DrawRect(0, 0, w, h)
-
-		surface.SetMaterial(isAFK and s.Clock or s.Latency)
-		surface.SetDrawColor(Color(255, 255, 255))
-		surface.DrawTexturedRect(4, h * 0.5 - 8, 16, 16)
-
-		surface.SetFont("DermaDefault")
-		local txt
-		if isAFK then
-			local AFKTime = math.max(0, CurTime() - ply:AFKTime())
-			local h = math.floor(AFKTime / 60 / 60)
-			local m = math.floor(AFKTime / 60 - h * 60)
-			local s = math.floor(AFKTime - m * 60 - h * 60 * 60)
-			txt = string.format("%.2d:%.2d", h > 1 and h or m, h > 1 and m or s)
-		else
-			txt = ply:Ping()
-		end
-		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetTextPos(4 + 16 + 4, h * 0.5 - txtH * 0.5)
-		surface.SetTextColor(Color(0, 0, 0, 230))
-		surface.DrawText(txt)
-
-		return true
-	end
-end
-
-function Player:RefreshAvatar()
-	if not IsValid(self.Player) or not self.Player:SteamID64() then return end
-
-	local w = 32
-	if self.Avatar:GetTall() > 32 then w = 64 end
-	if self.Avatar:GetTall() > 64 then w = 184 end
-	self.Avatar:SetSteamID(self.Player:SteamID64(), w)
-end
-function Player:SetPlayer(ply)
-	self.Player = ply
-	self:RefreshAvatar()
-end
-
-function Player:PerformLayout()
-	self.Avatar:SetWide(self.Avatar:GetTall())
-	self:RefreshAvatar()
-end
-
-function Player:Paint(w, h)
-	local ply = self.Player
-	local isAFK = (IsValid(ply) and ply.IsAFK) and ply:IsAFK() or false
-
-	surface.SetDrawColor(isAFK and Color(225, 229, 240, 190) or Color(244, 248, 255, 190))
-	surface.DrawRect(0, 0, w, h)
-
-	if self.Info:IsHovered() then
-		surface.SetDrawColor(Color(255, 255, 255, self.Info.Depressed and 40 or 90))
-		surface.DrawRect(0, 0, w, h)
-	end
-
-	return true
-end
-
-vgui.Register(tag .. "Player", Player, "EditablePanel")
-
--- Player panel end
-
-scoreboard = {}
-
-scoreboard.GetContentSize = GetContentSize
+include("scoreboard/team_panel.lua")
+include("scoreboard/player_panel.lua")
 
 local wantsToClose = false
 local activeFrame
@@ -329,8 +56,7 @@ local function OpenColorSelect()
 	frame:SetPos(ScrW() * 0.5 - frame:GetWide() * 0.5, ScrH() * 0.75 - frame:GetTall() * 0.5)
 	frame:DockPadding(6, 6, 6, 6)
 	function frame:Paint(w, h)
-		local col = Color(77, 81, 96)
-		col.a = 245
+		local col = Color(77, 81, 96, 192)
 		surface.SetDrawColor(col)
 		surface.DrawRect(0, 0, w, h)
 
@@ -425,7 +151,6 @@ local function OpenColorSelect()
 
 	activeFrame = frame
 end
-
 local Options = {
 	Center = {
 		icon = Material("icon16/arrow_in.png"),
@@ -580,8 +305,8 @@ function scoreboard:Init()
 	self.Teams:DockMargin(4, 0, 4, 0)
 	self.Teams:SetSpacing(0)
 	self.Teams:SetPadding(0)
-	self.Teams.GetContentSize = GetContentSize
-	self.Teams.pnlCanvas.GetContentSize = GetContentSize
+	self.Teams.GetContentSize = scoreboard.GetContentSize
+	self.Teams.pnlCanvas.GetContentSize = scoreboard.GetContentSize
 	self.Teams._PerformLayout = self.Teams.PerformLayout
 	function self.Teams:PerformLayout()
 		self:_PerformLayout()
@@ -680,7 +405,7 @@ function scoreboard:RefreshPlayers(id)
 			end
 			_pnl:Dock(TOP)
 			_pnl:DockMargin(8, 0, 8, 0)
-			_pnl:SetTall(30)
+			_pnl:SetTall(36)
 		end
 		pnl.Last = #team.GetPlayers(id)
 
