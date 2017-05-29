@@ -19,7 +19,7 @@ if not file.Exists("steamapi_list.txt", "DATA") then
 					api[interface.name][method.name][method.version] = method
 				end
 			end
-			PrintTable(api)
+			-- PrintTable(api)
 			file.Write("steamapi_list.txt", util.TableToJSON(api))
 			apiList = api
 		end
@@ -36,15 +36,15 @@ steamapi = setmetatable({}, {
 			return
 		end
 		if not apiList[api] then
-			print("Invalid API! (" .. api .. ")")
+			Msg("[SteamAPI] ") print("Invalid API! (" .. api .. ")")
 			return
 		end
 		if not apiList[api][method] then
-			print("Invalid method! (" .. api .. "." .. method .. ")")
+			Msg("[SteamAPI] ") print("Invalid method! (" .. api .. "." .. method .. ")")
 			return
 		end
 		if not apiList[api][method][v] then
-			print("Invalid version! (" .. api .. "." .. method .. "." .. v .. ")")
+			Msg("[SteamAPI] ") print("Invalid version! (" .. api .. "." .. method .. "." .. v .. ")")
 			return
 		end
 		local url = "http://api.steampowered.com/" .. api .. "/" .. method .. "/v000" .. tostring(v) .. "/?key=" .. authkey
@@ -61,7 +61,7 @@ steamapi = setmetatable({}, {
 				callback(response, {url, content, ...})
 			end
 		end, function(err)
-			print("What in the fuck? SteamAPI Error: " .. error)
+			ErrorNoHalt("SteamAPI http.Fetch Error: " .. err)
 		end)
 		return response
 	end
@@ -93,13 +93,12 @@ function steamapi.GetFamilySharing(ply)
 	steamapi("IPlayerService", "IsPlayingSharedGame", 1, {
 		steamid = (isentity(ply) and ply:IsPlayer()) and ply:SteamID64() or ply,
 		appid_playing = 4000
-	},
-	function(response, other)
+	},	function(response, other)
 		-- PrintTable(other)
 
 		local response = response.response
 		if not response or not response.lender_steamid then
-			ErrorNoHalt(string.format("FamilySharing: Invalid Steam API response for %s (%s)\n", ply:Nick(), ply:SteamID()))
+			ErrorNoHalt(string.format("SteamAPI FamilySharing: Invalid response for %s (%s)\n", ply:Nick(), ply:SteamID()))
 			return
 		end
 
