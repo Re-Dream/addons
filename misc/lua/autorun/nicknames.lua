@@ -24,11 +24,19 @@ if CLIENT then
 			net.WriteString(nick)
 		net.SendToServer()
 	end
+
+	net.Receive(tag, function()
+		local ply = Player(net.ReadUInt(16))
+		local oldNick = net.ReadString()
+		local newNick = net.ReadString()
+
+		chat.AddText(team.GetColor(ply:Team()), oldNick, Color(255, 255, 255, 255), " is now called ", team.GetColor(ply:Team()), newNick, Color(255, 255, 255, 255), ".")
+	end)
 else
 	util.AddNetworkString(tag)
 
 	function PLAYER:SetNick(nick)
-		self:SetPData("Nick", nick:Trim() ~= "" and nick or nil)
+		self:SetPData("Nick", nick)
 		self:SetNWString("Nick", nick)
 	end
 
@@ -39,13 +47,18 @@ else
 			return false, "You're changing nicks too quickly!"
 		end
 
-		ChatAddText(caller, Color(255, 255, 255, 255), " changed name to ", team.GetColor(caller:Team()), line)
+		local oldNick = caller:Nick()
 		caller:SetNick(line)
+		net.Start(tag)
+			net.WriteUInt(caller:UserID(), 16)
+			net.WriteString(oldNick)
+			net.WriteString(caller:Nick())
+		net.Broadcast()
 		nextChange[caller:UserID()] = CurTime() + 2
 	end)
 
 	hook.Add("PlayerInitialSpawn", tag, function(caller)
-		if caller:GetPData("Nick") then
+		if caller:GetPData("Nick"):Trim() ~= "" then
 			caller:SetNick(caller:GetPData("Nick"))
 		end
 	end)
