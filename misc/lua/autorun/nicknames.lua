@@ -58,7 +58,7 @@ else
 	end)
 
 	hook.Add("PlayerInitialSpawn", tag, function(caller)
-		if caller:GetPData("Nick"):Trim() ~= "" then
+		if caller:GetPData("Nick") and caller:GetPData("Nick"):Trim() ~= "" then
 			caller:SetNick(caller:GetPData("Nick"))
 		end
 	end)

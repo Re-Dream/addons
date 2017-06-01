@@ -407,7 +407,6 @@ function scoreboard:RefreshPlayers(id)
 			_pnl:DockMargin(8, 0, 8, 0)
 			_pnl:SetTall(36)
 		end
-		pnl.Last = #team.GetPlayers(id)
 
 		for _, _pnl in next, pnl:GetChildren() do
 			if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
@@ -417,6 +416,8 @@ function scoreboard:RefreshPlayers(id)
 				_pnl:Remove()
 			end
 		end
+
+		pnl.Last = #pnl:GetChildren()
 
 		if #pnl:GetChildren() < 1 then
 			pnl:SetVisible(false)
