@@ -36,7 +36,11 @@ else
 	util.AddNetworkString(tag)
 
 	function PLAYER:SetNick(nick)
-		self:SetPData("Nick", nick)
+		if not nick or nick:Trim() == "" then
+			self:RemovePData("Nick")
+		else
+			self:SetPData("Nick", nick)
+		end
 		self:SetNWString("Nick", nick)
 	end
 
