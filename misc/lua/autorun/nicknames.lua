@@ -67,7 +67,7 @@ else
 		end
 	end)
 
-	net.Receive(tag, function(caller)
+	net.Receive(tag, function(_, caller)
 		local nick = net.ReadString()
 		mingeban.RunCommand("nick", caller, nick)
 	end)
