@@ -20,6 +20,7 @@ concommand.Add("read_last_commit", function()
 	local exists = file.Exists("last_commit.txt", "DATA")
 	if exists then
 		local commit = util.JSONToTable(file.Read("last_commit.txt", "DATA"))
+		if not commit then return end
 		local text = {}
 		if commit.head_commit.message and commit.head_commit.message:Trim() ~= "" then
 			local txt = ""
