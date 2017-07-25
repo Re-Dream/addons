@@ -1,4 +1,6 @@
 
+if not chatexp then return end
+
 hook.Add("HUDPaint", "chathud.remove", function()
 	hook.Remove("HUDShouldDraw", "chathud.disable")
 	hook.Remove("HUDPaint", "chathud.draw")
@@ -6,6 +8,13 @@ hook.Add("HUDPaint", "chathud.remove", function()
 end)
 
 function chat.AddText(...)
+	local old_pos_x, old_pos_y = chat.old_pos()
+
+	if old_pos_x < 0 then
+		chat.old_open(0)
+		chat.old_close()
+	end
+
 	local args = {...}
 	for k, v in next, args do
 		if type(v):lower() == "player" then
