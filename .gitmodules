@@ -46,9 +46,6 @@
 [submodule "customisable_thirdperson"]
 	path = customisable_thirdperson
 	url = https://github.com/CapsAdmin/customisable_thirdperson/
-[submodule "gmod-xp-chat"]
-	path = gmod-xp-chat
-	url = https://github.com/CaveeJohnson/gmod-xp-chat
 [submodule "PatchProtect"]
 	path = patchprotect
 	url = https://github.com/Patcher56/PatchProtect
