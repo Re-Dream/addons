@@ -119,6 +119,21 @@ end)
 unban:AddArgument(ARGTYPE_STRING)
 	:SetName("steamid")
 
+local rank = mingeban.CreateCommand("rank", function(caller, line, ply, rank)
+	local ok, err = pcall(function()
+		ply:SetUserGroup(rank)
+	end)
+	if ok then
+		mingeban.utils.print(mingeban.colors.Cyan, tostring(caller) .. " ranked " .. tostring(ply) .. " to '" .. rank .. "'.")
+	else
+		ErrorNoHalt(err)
+	end
+	return ok, err
+end)
+rank:AddArgument(ARGTYPE_PLAYER)
+rank:AddArgument(ARGTYPE_STRING)
+	:SetName("rank")
+
 --[[ server stays dead with _restart rip
 
 mingeban.CreateCommand("reboot",function(caller)
