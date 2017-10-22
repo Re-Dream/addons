@@ -12,11 +12,6 @@ if SERVER then
 		self:SetNWInt("Coins", self.Coins)
 		self:SetPData("Coins", self.Coins) 
 		hook.Run( "CoinsChange", self.Coins, self )
-		
-		net.Start("coins_net")
-		net.WriteEntity(self)
-		net.WriteFloat(c)
-		net.Broadcast()
 	end
 	
 	hook.Add("PlayerInitialSpawn", "Cl_CoinInit", function(ply)
@@ -32,12 +27,6 @@ if SERVER then
 	end
 elseif CLIENT then
 	function PLAYER:GetCoins()
-		return self.Coins
+		return PLAYER:GetNWInt("Coins")
 	end
-	
-	net.Receive("coins_net", function()
-		local ent = net.ReadEntity()
-		
-		ent.Coins = net.ReadFloat()
-	end)
 end
