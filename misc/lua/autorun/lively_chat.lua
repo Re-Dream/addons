@@ -4,9 +4,6 @@ local tag = "lively_chat"
 local prefix = mingeban and mingeban.utils.CmdPrefix or "^[%$%.!/]"
 
 if CLIENT then
-
-	team.SetUp(1001, "Unassigned", Color(129, 171, 213)) -- custom chat color
-
 	local gray = Color(192, 212, 222)
 
 	local luaPatterns = {
@@ -170,7 +167,6 @@ if CLIENT then
 end
 
 if SERVER then
-
 	-- timed messages, dunno if this is a good idea
 
 	local w = Color(194, 210, 225)
@@ -217,7 +213,5 @@ if SERVER then
 	hook.Add("PreChatSoundsSay", tag, function(ply, txt)
 		if txt:match(prefix) then return false end
 	end)
-
 end
-
 

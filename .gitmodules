@@ -22,9 +22,6 @@
 [submodule "garrysmod-chatsounds"]
 	path = garrysmod-chatsounds
 	url = https://github.com/Metastruct/garrysmod-chatsounds
-[submodule "pac3"]
-	path = pac3
-	url = https://github.com/Metastruct/pac3
 [submodule "wire"]
 	path = wire
 	url = https://github.com/wiremod/wire
@@ -46,12 +43,12 @@
 [submodule "customisable_thirdperson"]
 	path = customisable_thirdperson
 	url = https://github.com/CapsAdmin/customisable_thirdperson/
-[submodule "gmod-xp-chat"]
-	path = gmod-xp-chat
-	url = https://github.com/CaveeJohnson/gmod-xp-chat
-[submodule "PatchProtect"]
-	path = patchprotect
-	url = https://github.com/Patcher56/PatchProtect
 [submodule "starfallex"]
 	path = starfallex
 	url = https://github.com/thegrb93/StarfallEx
+[submodule "easychat"]
+	path = easychat
+	url = https://github.com/Earu/EasyChat
+[submodule "pac3"]
+	path = pac3
+	url = http://github.com/Metastruct/pac3

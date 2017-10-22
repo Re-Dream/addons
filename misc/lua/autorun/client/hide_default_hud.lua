@@ -8,7 +8,6 @@ local fn = 0
 local cl_crosshair = CreateClientConVar("cl_crosshair", "1")
 
 hook.Add("HUDShouldDraw", tag, function(elem)
-
 	if not IsValid(lply) then lply = LocalPlayer() return end
 
 	local maxHP = lply:GetMaxHealth()
@@ -28,7 +27,6 @@ hook.Add("HUDShouldDraw", tag, function(elem)
 		drawCrosshair = true
 		return false
 	end
-
 end)
 
 local function drawCircle(x, y, radius, seg, poly)

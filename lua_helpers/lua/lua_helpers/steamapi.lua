@@ -19,7 +19,7 @@ if not file.Exists("steamapi_list.txt", "DATA") then
 					api[interface.name][method.name][method.version] = method
 				end
 			end
-			PrintTable(api)
+			-- PrintTable(api)
 			file.Write("steamapi_list.txt", util.TableToJSON(api))
 			apiList = api
 		end
@@ -36,15 +36,15 @@ steamapi = setmetatable({}, {
 			return
 		end
 		if not apiList[api] then
-			print("Invalid API! (" .. api .. ")")
+			Msg("[SteamAPI] ") print("Invalid API! (" .. api .. ")")
 			return
 		end
 		if not apiList[api][method] then
-			print("Invalid method! (" .. api .. "." .. method .. ")")
+			Msg("[SteamAPI] ") print("Invalid method! (" .. api .. "." .. method .. ")")
 			return
 		end
 		if not apiList[api][method][v] then
-			print("Invalid version! (" .. api .. "." .. method .. "." .. v .. ")")
+			Msg("[SteamAPI] ") print("Invalid version! (" .. api .. "." .. method .. "." .. v .. ")")
 			return
 		end
 		local url = "http://api.steampowered.com/" .. api .. "/" .. method .. "/v000" .. tostring(v) .. "/?key=" .. authkey
@@ -54,48 +54,84 @@ steamapi = setmetatable({}, {
 
 		local response = {}
 		requesting = true
-		http.Fetch(url, function(content)
+		http.Fetch(url, function(content, ...)
 			if content and content:Trim() ~= "" then
 				response = util.JSONToTable(content)
 				requesting = false
-				callback(response)
+				callback(response, {url, content, ...})
 			end
 		end, function(err)
-			print("What in the fuck? SteamAPI Error: " .. error)
+			ErrorNoHalt("SteamAPI http.Fetch Error: " .. err)
 		end)
 		return response
 	end
 })
 steamapi.List = apiList
 
-function steamapi.GetFriendList(ply)
+function steamapi.GetFriendList(ply, callback)
+	if not isentity(ply) or not ply:IsPlayer() then return end
+
 	steamapi("ISteamUser", "GetFriendList", 1, {
-		steamid = (isentity(ply) and ply:IsPlayer()) and ply:SteamID64() or ply,
+		steamid = ply:SteamID64(),
 		relationship = "friend"
-	}, function(response)
+	}, function(response, other)
+		-- PrintTable(other)
+
+		if ply.LastFriendListUpdate and ply.LastFriendListUpdate > CurTime() then
+			if callback then callback(ply) end
+			return
+		end
+
 		if not response.friendslist or not response.friendslist.friends then
 			-- private profile or some shit
 			return
 		end
-		if isentity(ply) and ply:IsPlayer() and (not ply.FriendsList or table.Count(ply.FriendsList) ~= #response.friendslist.friends) then
+
+		if not ply.FriendsList or table.Count(ply.FriendsList) ~= #response.friendslist.friends then
 			ply.FriendsList = {}
 			for k, info in next, response.friendslist.friends do
 				ply.FriendsList[info.steamid] = true
 			end
-			ply.LastFriendListUpdate = CurTime() + 60
 		end
+
+		ply.LastFriendListUpdate = CurTime() + 60
+
+		if callback then callback(ply) end
+	end)
+end
+timer.Create("steamapi_RefreshFriendLists", 60, 0, function()
+	for _, ply in next, player.GetAll() do
+		steamapi.GetFriendList(ply)
+	end
+end)
+
+function steamapi.GetFamilySharing(ply, callback)
+	if not isentity(ply) or not ply:IsPlayer() then return end
+
+	steamapi("IPlayerService", "IsPlayingSharedGame", 1, {
+		steamid = ply:SteamID64(),
+		appid_playing = 4000
+	},	function(response, other)
+		-- PrintTable(other)
+
+		local response = response.response
+		if not response or not response.lender_steamid then
+			ErrorNoHalt(string.format("SteamAPI FamilySharing: Invalid response for %s (%s)\n", ply:Nick(), ply:SteamID()))
+			return
+		end
+
+		local lender = response.lender_steamid
+		if lender ~= "0" then
+			ply.Lender = util.SteamIDFrom64(lender)
+		else
+			ply.Lender = false
+		end
+
+		if callback then callback(ply) end
 	end)
 end
 
 local PLAYER = FindMetaTable("Player")
-
-timer.Create("steamapi_RefreshFriendLists", 60, 0, function()
-	for k, ply in next, player.GetAll() do
-		if not ply.LastFriendListUpdate or ply.LastFriendListUpdate < CurTime() then
-			steamapi.GetFriendList(ply)
-		end
-	end
-end)
 
 function PLAYER:GetFriends()
 	if not self.FriendsList then
@@ -103,7 +139,12 @@ function PLAYER:GetFriends()
 	end
 	return self.FriendsList or {}
 end
-
+function PLAYER:IsFriend(ply)
+	if not self.FriendsList or not self.FriendsList[ply:SteamID64()] then
+		steamapi.GetFriendList(self)
+	end
+	return self.FriendsList and self.FriendsList[ply:SteamID64()] or false
+end
 function PLAYER:GetOnlineFriends()
 	local tbl = {}
 	for sid, _ in next, self:GetFriends() do
@@ -115,11 +156,16 @@ function PLAYER:GetOnlineFriends()
 	return tbl
 end
 
-function PLAYER:IsFriend(ply)
-	if (not self.FriendsList or not self.FriendsList[ply:SteamID64()]) and (not ply.LastFriendListUpdate or ply.LastFriendListUpdate < CurTime()) then
-		steamapi.GetFriendList(self)
-		return false
+function PLAYER:GetLender()
+	if self.Lender == nil then
+		steamapi.GetFamilySharing(self)
 	end
-	return self.FriendsList and self.FriendsList[ply:SteamID64()] or false
+	return self.Lender
+end
+function PLAYER:IsFamilySharing()
+	if not self.Lender then
+		steamapi.GetFamilySharing(self)
+	end
+	return self.Lender and true or false
 end
 
