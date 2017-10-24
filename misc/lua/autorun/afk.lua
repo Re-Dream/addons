@@ -50,7 +50,7 @@ elseif CLIENT then
 		afk.Is = false
 	end
 	hook.Add("StartCommand", tag, function(ply, cmd)
-		if ply ~= LocalPlayer() then not afk.When then return end
+		if ply ~= LocalPlayer() or not afk.When then return end
 		local mouseMoved = (system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false)
 		if  mouseMoved or
 			cmd:GetMouseX() ~= 0 or
