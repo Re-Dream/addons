@@ -11,7 +11,7 @@ mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
 	caller:CreateRagdoll()
 end)
 
-mingeban.CreateCommand("revive", function(caller)
+mingeban.CreateCommand({"revive", "respawn"}, function(caller)
 	local oldPos, oldAng = caller:GetPos(), caller:EyeAngles()
 	caller:Spawn()
 	caller:SetPos(oldPos)
