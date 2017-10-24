@@ -30,3 +30,32 @@ mingeban.CreateCommand("retry", function(caller)
 	caller:ConCommand("retry")
 end)
 
+local defaultWeapons = {
+	["weapon_357"] = true,
+	["weapon_ar2"] = true,
+	["weapon_bugbait"] = true,
+	["weapon_crossbow"] = true,
+	["weapon_crowbar"] = true,
+	["weapon_frag"] = true,
+	["weapon_physcannon"] = true,
+	["weapon_pistol"] = true,
+	["weapon_rpg"] = true,
+	["weapon_shotgun"] = true,
+	["weapon_slam"] = true,
+	["weapon_smg1"] = true,
+	["weapon_stunstick"] = true
+}
+local give = mingeban.CreateCommand("give", function(caller, line, ply, wep)
+	if not weapons.Get(wep) then
+		wep = "weapon_" .. wep
+	end
+	if not weapons.Get(wep) or not defaultWeapons[wep] then
+		return false, "Invalid weapon"
+	end
+	ply:Give(wep)
+	ply:SelectWeapon(wep)
+end)
+give:AddArgument(ARGTYPE_PLAYER)
+give:AddArgument(ARGTYPE_STRING)
+	:SetName("weapon_class")
+
