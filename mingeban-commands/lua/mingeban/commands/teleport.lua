@@ -32,11 +32,11 @@ local function goto(from, to, istp)
 	end
 	if ent == from then return false, "Can't goto yourself" end
 
-	if not from:Alive() then
+	if from:IsPlayer() and not from:Alive() then
 		from:Spawn()
 	end
 
-	if isentity(ent) and IsValid(ent) then
+	if IsValid(ent) and ent:IsPlayer() then
 		local pos = ent:GetPos()
 		local oldPos = from:GetPos()
 		local goodPos
@@ -76,7 +76,11 @@ local function goto(from, to, istp)
 	elseif isvector(ent) then
 		from:SetPos(ent)
 		if not istp then
-			from:LookAt(ent, 0.25)
+			if from:IsPlayer() then
+				from:LookAt(ent, 0.25)
+			else
+				from:GetPhysicsObject():EnableMotion(false)
+			end
 			from:EmitSound("buttons/button15.wav")
 		else
 			from:EmitSound("player/" .. table.Random(teleportSounds) .. ".wav")
@@ -88,6 +92,8 @@ local function goto(from, to, istp)
 end
 
 local go = mingeban.CreateCommand({"go", "goto"}, function(caller, line, pos, y, z)
+	if not IsValid(caller) then return end
+
 	if caller:IsAdmin() and y and z then
 		pos = Vector(tonumber(pos), tonumber(y), tonumber(z))
 	end
@@ -96,10 +102,29 @@ end)
 go:AddArgument(ARGTYPE_VARARGS)
 	:SetName("target")
 
-local bring = mingeban.CreateCommand("bring", function(caller, line, pos)
-	return goto(pos, caller)
+local bring = mingeban.CreateCommand("bring", function(caller, line, plys)
+	if not IsValid(caller) then return end
+	if not caller:IsAdmin() then
+		for _, ply in next, plys do
+			if not ply:IsFriend(caller) then
+				table.RemoveByValue(plys, ply)
+			end
+		end
+	end
+
+	if #plys < 2 then
+		return goto(plys[1], caller)
+	else
+		for _, ent in next, plys do
+			local isPlayer = ent:IsPlayer()
+			local ok, err = goto(ent, isPlayer and caller or caller:GetEyeTrace().HitPos)
+			if ok == false then
+				mingeban.utils.print(mingeban.colors.Red, tostring(ent) .. " bring: " .. err)
+			end
+		end
+	end
 end)
-bring:AddArgument(ARGTYPE_PLAYER)
+bring:AddArgument(ARGTYPE_PLAYERS)
 	:SetName("target")
 
 local tp = mingeban.CreateCommand({"tp", "teleport", "blink"}, function(caller)
