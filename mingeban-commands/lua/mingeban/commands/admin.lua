@@ -1,9 +1,6 @@
 
 if CLIENT then return end
 
-mingeban.CreateCommand("restart", function(caller)
-	game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
-end)
 
 mingeban.CreateCommand("rcon", function(caller, line)
 	game.ConsoleCommand(line .. "\n")
@@ -22,16 +19,13 @@ cexec:AddArgument(ARGTYPE_PLAYERS)
 cexec:AddArgument(ARGTYPE_STRING)
 	:SetName("command")
 
-mingeban.CreateCommand("map", function(caller, line)
-	line = line:gsub(".bsp", "")
-	game.ConsoleCommand("changelevel " .. line .. "\n")
-end)
-
 mingeban.CreateCommand("maps", function(caller)
 	for _, map in next, (file.Find("maps/*.bsp", "GAME")) do
 		caller:PrintMessage(HUD_PRINTCONSOLE, map)
 	end
 end)
+
+-- kick
 
 local kick = mingeban.CreateCommand("kick", function(caller, line, ply, reason)
 	local reason = reason or "byebye!!"
@@ -48,6 +42,8 @@ kick:AddArgument(ARGTYPE_PLAYER)
 kick:AddArgument(ARGTYPE_STRING)
 	:SetName("reason")
 	:SetOptional(true)
+
+-- ban / unban
 
 local ban = mingeban.CreateCommand("ban", function(caller, line, ply, time, reason)
 	local foundPlayer = false
@@ -119,6 +115,8 @@ end)
 unban:AddArgument(ARGTYPE_STRING)
 	:SetName("steamid")
 
+-- rank
+
 local rank = mingeban.CreateCommand("rank", function(caller, line, ply, rank)
 	local ok, err = pcall(function()
 		ply:SetUserGroup(rank)
@@ -133,6 +131,38 @@ end)
 rank:AddArgument(ARGTYPE_PLAYER)
 rank:AddArgument(ARGTYPE_STRING)
 	:SetName("rank")
+
+-- map / restart
+
+local restart = mingeban.CreateCommand("restart", function(caller, line, time)
+	local txt = "Restart"
+	mingeban.Countdown(time, function()
+		timer.Simple(1, function()
+			game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
+		end)
+	end, txt)
+	mingeban.utils.print(mingeban.colors.Cyan, tostring(caller) .. " started countdown \"" .. txt .. "\"")
+end)
+restart:AddArgument(ARGTYPE_NUMBER)
+	:SetName("time")
+
+local map = mingeban.CreateCommand("map", function(caller, line, map, time)
+	map = map:gsub(".bsp", "")
+	if not file.Exists("maps/" .. map .. ".bsp", "GAME") then return false, "Map doesn't exist" end
+
+	local txt = "Changing map to \"" .. map .. "\""
+	mingeban.Countdown(time or 20, function()
+		timer.Simple(1, function()
+			game.ConsoleCommand("changelevel " .. map .. "\n")
+		end)
+	end, txt)
+	mingeban.utils.print(mingeban.colors.Cyan, tostring(caller) .. " started countdown \"" .. txt .. "\"")
+end)
+map:AddArgument(ARGTYPE_STRING)
+	:SetName("map")
+map:AddArgument(ARGTYPE_NUMBER)
+	:SetName("time")
+	:SetOptional(true)
 
 --[[ server stays dead with _restart rip
 
