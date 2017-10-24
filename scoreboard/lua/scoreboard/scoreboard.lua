@@ -1,7 +1,12 @@
 
 local tag = "ReDreamScoreboard"
 
-if IsValid(Scoreboard) then Scoreboard:Remove() end
+if IsValid(Scoreboard) then
+	if IsValid(Scoreboard.ConfigEditor) then
+		Scoreboard.ConfigEditor:Remove()
+	end
+	Scoreboard:Remove()
+end
 
 scoreboard = {}
 local Debug = false
@@ -46,138 +51,22 @@ end
 include("scoreboard/team_panel.lua")
 include("scoreboard/player_panel.lua")
 
-local wantsToClose = false
-local activeFrame
-local function OpenColorSelect()
-	if IsValid(activeFrame) then return end
-
-	local frame = vgui.Create("EditablePanel")
-	frame:SetSize(250, 175)
-	frame:SetPos(ScrW() * 0.5 - frame:GetWide() * 0.5, ScrH() * 0.75 - frame:GetTall() * 0.5)
-	frame:DockPadding(6, 6, 6, 6)
-	function frame:Paint(w, h)
-		local col = Color(77, 81, 96, 192)
-		surface.SetDrawColor(col)
-		surface.DrawRect(0, 0, w, h)
-
-		surface.SetDrawColor(Color(0, 0, 0, 80))
-		surface.DrawOutlinedRect(0, 0, w, h)
-	end
-
-	local top = frame:Add("EditablePanel")
-	top:Dock(TOP)
-	top:SetTall(20)
-	top:DockMargin(0, 0, 0, 4)
-	function top:Paint(w, h)
-		surface.SetFont(tag .. "Option")
-		local txt = "Header Color Selection"
-		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetTextPos(2, h * 0.5 - txtH * 0.5)
-		surface.SetTextColor(Color(255, 255, 255))
-		surface.DrawText(txt)
-	end
-
-	local close = top:Add("DButton")
-	close:Dock(RIGHT)
-	close:SetWide(20)
-	close:DockMargin(4, 0, 0, 0)
-	function close:Paint(w, h)
-		surface.SetDrawColor(Color(255, 96, 96, 192))
-		surface.DrawRect(0, 0, w, h)
-
-		surface.SetFont("marlett")
-		local txt = "r"
-		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
-		surface.SetTextColor(Color(0, 0, 0))
-		surface.DrawText(txt)
-
-		surface.SetDrawColor(Color(255, 255, 255, 20))
-		surface.DrawOutlinedRect(0, 0, w, h)
-
-		return true
-	end
-	function close:DoClick()
-		activeFrame:Remove()
-		if wantsToClose then
-			Scoreboard:Hide()
-		end
-	end
-
-	local reset = top:Add("DButton")
-	reset:Dock(RIGHT)
-	reset:SetWide(38)
-	function reset:Paint(w, h)
-		surface.SetDrawColor(Color(255, 96, 96, 192))
-		surface.DrawRect(0, 0, w, h)
-
-		surface.SetFont(tag .. "Option")
-		local txt = "Reset"
-		local txtW, txtH = surface.GetTextSize(txt)
-		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
-		surface.SetTextColor(Color(0, 0, 0))
-		surface.DrawText(txt)
-
-		surface.SetDrawColor(Color(255, 255, 255, 20))
-		surface.DrawOutlinedRect(0, 0, w, h)
-
-		return true
-	end
-	function reset:DoClick()
-		Scoreboard.Config.Color = nil
-		Scoreboard:SaveConfig()
-	end
-
-	local mixer = frame:Add("DColorMixer")
-	mixer:Dock(FILL)
-	mixer:SetAlphaBar(false)
-	mixer:SetPalette(false)
-	local last = RealTime()
-	local changed = true
-	function mixer:ValueChanged(col)
-		last = RealTime() + 0.1
-		changed = false
-	end
-
-	function frame:Think()
-		if last < RealTime() and not changed then
-			Scoreboard.Config.Color = mixer:GetColor()
-			Scoreboard:SaveConfig()
-			changed = true
-		end
-	end
-
-	frame:MakePopup()
-
-	activeFrame = frame
-end
 local Options = {
-	Center = {
-		icon = Material("icon16/arrow_in.png"),
-		callback = function(self, option)
-			self.Config.Center = not self.Config.Center
-			self:SaveConfig()
-			self:InvalidateLayout()
+	Options = {
+		Icon = Material("icon16/cog.png"),
+		Callback = function(self, option)
+			self:OpenConfig()
 		end,
-		name = "Toggle Center",
-		type = "boolean",
-		w = 112
+		Name = "Options",
+		Type = "boolean",
+		Width = 80
 	},
-	Color = {
-		icon = Material("icon16/palette.png"),
-		callback = function(self, option)
-			OpenColorSelect()
-		end,
-		name = "Change Header Color",
-		type = "table",
-		w = 144
-	}
 }
+
 local totype = {
 	boolean = tobool,
 	number = tonumber,
 }
-
 function scoreboard:LoadConfig()
 	self.Config = {}
 	local config = util.JSONToTable(file.Read(tag:lower() .. "_config.txt", "DATA") or "{}")
@@ -185,13 +74,24 @@ function scoreboard:LoadConfig()
 
 	for k, v in next, config do
 		if Options[k] then
-			local convert = totype[Options[k].type]
-			self.Config[k] = (Options[k].type and convert) and convert(v) or v
+			local convert = totype[Options[k].Type]
+			self.Config[k] = (Options[k].Type and convert) and convert(v) or v
 		end
 	end
 end
 function scoreboard:SaveConfig()
 	file.Write(tag:lower() .. "_config.txt", util.TableToJSON(self.Config))
+end
+
+include("scoreboard/config_panel.lua")
+
+function scoreboard:OpenConfig()
+	if not IsValid(self.ConfigEditor) then
+		self.ConfigEditor = vgui.Create(tag .. "Config")
+		self:InvalidateLayout()
+	else
+		self.ConfigEditor:Remove()
+	end
 end
 
 local maxH = ScrH() * 0.9
@@ -238,20 +138,20 @@ function scoreboard:Init()
 
 		local space = 3
 		surface.SetTextPos(w * 0.5 - txtW * 0.5 + space, 32 - txtH * 0.5 + space)
-		surface.SetTextColor(Color(0, 0, 0, 164))
+		surface.SetTextColor(0, 0, 0, 164)
 		surface.DrawText(txt)
 
 		surface.SetTextPos(w * 0.5 - txtW * 0.5, 32 - txtH * 0.5)
-		surface.SetTextColor(Color(255, 255, 255, 255))
+		surface.SetTextColor(255, 255, 255, 255)
 		surface.DrawText(txt)
 
-		surface.SetDrawColor(Color(255, 255, 255, 40))
+		surface.SetDrawColor(255, 255, 255, 40)
 		surface.DrawOutlinedRect(0, 0, w, h)
-		surface.SetDrawColor(Color(255, 255, 255, 15))
+		surface.SetDrawColor(255, 255, 255, 15)
 		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
 
 		if self:IsHovered() then
-			surface.SetDrawColor(Color(255, 255, 255, self.Depressed and 5 or 10))
+			surface.SetDrawColor(255, 255, 255, self.Depressed and 5 or 10)
 			surface.DrawRect(0, 0, w, h)
 		end
 
@@ -261,7 +161,7 @@ function scoreboard:Init()
 	self.Header.Options:SetPos(0, 64)
 	self.Header.Options:DockPadding(8, 8, 8, 8)
 	function self.Header.Options:Paint(w, h)
-		surface.SetDrawColor(Color(0, 0, 0, 90))
+		surface.SetDrawColor(0, 0, 0, 90)
 		surface.DrawRect(0, 0, w, h)
 	end
 	for name, info in next, Options do
@@ -269,23 +169,23 @@ function scoreboard:Init()
 		local option = self.Header.Options[name]
 		option:Dock(LEFT)
 		option:DockMargin(0, 0, 4, 0)
-		option:SetWide(info.w or 64)
+		option:SetWide(info.Width or 64)
 		function option:Paint(w, h)
 			draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 96))
 
-			surface.SetMaterial(info.icon)
-			surface.SetDrawColor(Color(255, 255, 255))
+			surface.SetMaterial(info.Icon)
+			surface.SetDrawColor(255, 255, 255)
 			surface.DrawTexturedRect(8, h * 0.5 - 8, 16, 16)
 
-			local txt = info.name
+			local txt = info.Name
 			surface.SetFont(tag .. "Option")
 			local txtW, txtH = surface.GetTextSize(txt)
 			surface.SetTextPos((w + 8 + 16) * 0.5 - txtW * 0.5 + 2, h * 0.5 - txtH * 0.5 + 2)
-			surface.SetTextColor(Color(0, 0, 0, 164))
+			surface.SetTextColor(0, 0, 0, 164)
 			surface.DrawText(txt)
 
 			surface.SetTextPos((w + 8 + 16) * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
-			surface.SetTextColor(Color(255, 255, 255, 192))
+			surface.SetTextColor(255, 255, 255, 192)
 			surface.DrawText(txt)
 
 			if self:IsHovered() then
@@ -295,7 +195,7 @@ function scoreboard:Init()
 			return true
 		end
 		function option:DoClick()
-			info.callback(scoreboard, self)
+			info.Callback(scoreboard, self)
 		end
 	end
 
@@ -336,7 +236,7 @@ function scoreboard:Init()
 	if Debug then
 		self.Teams.isTeam = true
 		function self.Teams:PaintOver(w, h)
-			surface.SetDrawColor(Color(0, 255, 0))
+			surface.SetDrawColor(0, 255, 0)
 			surface.DrawOutlinedRect(0, 0, w, h)
 		end
 	end
@@ -395,6 +295,15 @@ function scoreboard:RefreshPlayers(id)
 			self.Teams[id] = pnl
 		end
 
+		for _, _pnl in next, pnl:GetChildren() do
+			if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
+				pnl[_pnl.UserID] = nil
+				_pnl:SetVisible(false)
+				_pnl:SetParent() -- ugly hack to call PerformLayout
+				_pnl:Remove()
+			end
+		end
+
 		for _, ply in next, team.GetPlayers(id) do
 			local _pnl = pnl[ply:UserID()]
 			if not _pnl then
@@ -406,15 +315,6 @@ function scoreboard:RefreshPlayers(id)
 			_pnl:Dock(TOP)
 			_pnl:DockMargin(8, 0, 8, 0)
 			_pnl:SetTall(36)
-		end
-
-		for _, _pnl in next, pnl:GetChildren() do
-			if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
-				pnl[_pnl.UserID] = nil
-				_pnl:SetVisible(false)
-				_pnl:SetParent() -- ugly hack to call PerformLayout
-				_pnl:Remove()
-			end
 		end
 
 		pnl.Last = #pnl:GetChildren()
@@ -432,14 +332,17 @@ function scoreboard:Think()
 end
 
 function scoreboard:Show()
-	wantsToClose = false
 	self:SetVisible(true)
+	if IsValid(self.ConfigEditor) then
+		self.ConfigEditor:SetVisible(true)
+	end
 end
 function scoreboard:Hide()
-	wantsToClose = true
-	if IsValid(activeFrame) then return end
 	CloseDermaMenus()
 	self:SetVisible(false)
+	if IsValid(self.ConfigEditor) then
+		self.ConfigEditor:SetVisible(false)
+	end
 	if self.Popup then
 		self:SetMouseInputEnabled(false)
 		self.Popup = false
@@ -456,11 +359,16 @@ function scoreboard:PerformLayout()
 		local y = ScrH() * 0.2 - (ScrH() * 0.1 * (self:GetTall() / maxH))
 		self:SetPos(ScrW() * 0.5 - self:GetWide() * 0.5, y)
 	end
+	if IsValid(self.ConfigEditor) then
+		local x, y = self:GetPos()
+		local w, h = self:GetSize()
+		self.ConfigEditor:SetPos(x + w + 4, y)
+	end
 end
 
 if Debug then
 	function scoreboard:Paint(w, h)
-		surface.SetDrawColor(Color(255, 0, 0))
+		surface.SetDrawColor(255, 0, 0)
 		surface.DrawOutlinedRect(0, 0, w, h)
 	end
 end
