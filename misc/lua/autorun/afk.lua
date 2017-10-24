@@ -31,7 +31,7 @@ if SERVER then
 	end)
 elseif CLIENT then
 	afk.Mouse = { x = 0, y = 0 }
-	afk.When = CurTime()
+	afk.When = RealTime()
 	afk.Focus = system.HasFocus()
 	afk.Is = false
 
