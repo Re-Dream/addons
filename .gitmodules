@@ -57,5 +57,5 @@
 	url = https://github.com/Nak2/StormFox
 [submodule "impact"]
 	path = impact
-	url = https://github.com/Re-Dream/impact
+	url = https://github.com/Re-Dream/impact.git
 	branch = dev
