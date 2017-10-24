@@ -31,16 +31,14 @@ if SERVER then
 	end)
 elseif CLIENT then
 	afk.Mouse = { x = 0, y = 0 }
-	afk.When = RealTime()
 	afk.Focus = system.HasFocus()
 	afk.Is = false
 
-	hook.Add("Initialize", tag, function()
-		afk.Start = true
+	hook.Add("InitPostEntity", tag, function()
+		afk.When = CurTime() + afk.AFKTime:GetInt()
 	end)
-
 	local function Input()
-		if not afk.When or not afk.Start then return end
+		if not afk.When then return end
 		afk.When = CurTime() + afk.AFKTime:GetInt()
 		if afk.Is then
 			net.Start(tag)
@@ -50,7 +48,7 @@ elseif CLIENT then
 		afk.Is = false
 	end
 	hook.Add("StartCommand", tag, function(ply, cmd)
-		if ply ~= LocalPlayer() or not afk.When or not afk.Start then return end
+		if ply ~= LocalPlayer() then not afk.When then return end
 		local mouseMoved = (system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false)
 		if  mouseMoved or
 			cmd:GetMouseX() ~= 0 or
@@ -115,7 +113,6 @@ elseif CLIENT then
 	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE }, "Should we draw the AFK HUD?")
 	hook.Add("HUDPaint", tag, function()
 		if not afk.Draw:GetBool() then return end
-		if not afk.When then afk.When = CurTime() + afk.AFKTime:GetInt() end
 		afk.Focus = system.HasFocus()
 		if not afk.Is then a = 0 return end
 
