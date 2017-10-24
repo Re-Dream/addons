@@ -52,3 +52,6 @@
 [submodule "pac3"]
 	path = pac3
 	url = http://github.com/Metastruct/pac3
+[submodule "stormfox"]
+	path = stormfox
+	url = https://github.com/Nak2/StormFox
