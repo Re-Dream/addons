@@ -13,7 +13,6 @@ function PLAYER:AFKTime()
 end
 
 if SERVER then
-
 	util.AddNetworkString(tag)
 
 	net.Receive(tag, function(_, ply)
@@ -30,13 +29,11 @@ if SERVER then
 	hook.Add("AFK", "AFKSound", function(ply, is)
 		ply:EmitSound(not is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
 	end)
-
 elseif CLIENT then
-
-	afk.Mouse = {x = 0, y = 0}
+	afk.Mouse = { x = 0, y = 0 }
+	afk.When = CurTime()
 	afk.Focus = system.HasFocus()
 	afk.Is = false
-	afk.Network = true
 
 	hook.Add("Initialize", tag, function()
 		afk.Start = true
@@ -45,7 +42,7 @@ elseif CLIENT then
 	local function Input()
 		if not afk.When or not afk.Start then return end
 		afk.When = CurTime() + afk.AFKTime:GetInt()
-		if afk.Is and afk.Network then
+		if afk.Is then
 			net.Start(tag)
 				net.WriteBool(false)
 			net.SendToServer()
@@ -65,11 +62,9 @@ elseif CLIENT then
 		end
 		if afk.When < CurTime() and not afk.Is then
 			afk.Is = true
-			if afk.Network then
-				net.Start(tag)
-					net.WriteBool(true)
-				net.SendToServer()
-			end
+			net.Start(tag)
+				net.WriteBool(true)
+			net.SendToServer()
 		end
 	end)
 	hook.Add("KeyPress", tag, Input)
@@ -80,8 +75,6 @@ elseif CLIENT then
 	end
 
 	net.Receive(tag, function()
-		if not afk.Network then return end
-
 		local ply = Entity(net.ReadUInt(8))
 		local is = net.ReadBool()
 		ply.isAFK = is
@@ -90,7 +83,7 @@ elseif CLIENT then
 	end)
 
 	surface.CreateFont(tag, {
-		font = "Roboto Condensed",
+		font = "Roboto Cn",
 		size = 36,
 		italic = true,
 		weight = 800,
