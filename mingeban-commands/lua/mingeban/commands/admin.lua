@@ -198,7 +198,7 @@ local give = mingeban.CreateCommand("give", function(caller, line, plys, wep)
 	if not weapons.Get(wep) then
 		wep = "weapon_" .. wep
 	end
-	if not weapons.Get(wep) or not defaultWeapons[wep] then
+	if not weapons.Get(wep) and not defaultWeapons[wep] then
 		return false, "Invalid weapon"
 	end
 
