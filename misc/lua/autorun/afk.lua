@@ -34,8 +34,10 @@ elseif CLIENT then
 	afk.Focus = system.HasFocus()
 	afk.Is = false
 
-	hook.Add("InitPostEntity", tag, function()
+	hook.Add("RenderScene", tag, function()
+		if ply ~= LocalPlayer() then return end
 		afk.When = CurTime() + afk.AFKTime:GetInt()
+		hook.Remove("RenderScene", tag)
 	end)
 	local function Input()
 		if not afk.When then return end
