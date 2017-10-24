@@ -2,6 +2,11 @@
 if CLIENT then return end
 
 mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
+	local ok = hook.Run("CanPlayerSuicide", ply)
+	if ok == false then
+		return false, "Can't suicide"
+	end
+
 	caller:KillSilent()
 	caller:CreateRagdoll()
 end)

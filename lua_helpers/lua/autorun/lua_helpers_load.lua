@@ -3,7 +3,6 @@ local path = "lua_helpers"
 
 -- shared stuff
 for _, filename in pairs((file.Find("lua_helpers/*.lua", "LUA"))) do
-
 	local path = "lua_helpers/" .. filename
 	if SERVER and filename:StartWith("sv_") then
 		include(path)
@@ -22,21 +21,17 @@ for _, filename in pairs((file.Find("lua_helpers/*.lua", "LUA"))) do
 
 		include(path)
 	end
-
 end
 
 -- server stuff
 if SERVER then
-
 	for _, filename in pairs((file.Find("lua_helpers/server/*.lua", "LUA"))) do
 		include("lua_helpers/server/" .. filename)
 	end
-
 end
 
 -- client stuff
 for _, filename in pairs((file.Find("lua_helpers/client/*.lua", "LUA"))) do
-
 	if SERVER then
 		AddCSLuaFile("lua_helpers/client/" .. filename)
 	end
@@ -44,6 +39,5 @@ for _, filename in pairs((file.Find("lua_helpers/client/*.lua", "LUA"))) do
 	if CLIENT then
 		include("lua_helpers/client/" .. filename)
 	end
-
 end
 
