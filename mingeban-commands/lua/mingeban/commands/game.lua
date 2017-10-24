@@ -19,7 +19,11 @@ mingeban.CreateCommand("revive", function(caller)
 end)
 
 mingeban.CreateCommand("cmd", function(caller, line)
-	caller:ConCommand(line)
+	caller:SendLua(string.format("LocalPlayer():ConCommand(%q)", line))
+end)
+
+mingeban.CreateCommand({"vol", "volume"}, function(caller, line)
+	caller:ConCommand("mingeban cmd volume " .. line)
 end)
 
 mingeban.CreateCommand("retry", function(caller)
