@@ -2,7 +2,6 @@
 local tag = "LookAt"
 
 if CLIENT then
-
 	local target
 	local startAng
 	local tStart
@@ -60,11 +59,9 @@ if CLIENT then
 
 		hook.Add("CreateMove", tag, LookAt)
 	end)
-
 end
 
 if SERVER then
-
 	local PLAYER = FindMetaTable("Player")
 
 	util.AddNetworkString(tag)
@@ -83,6 +80,5 @@ if SERVER then
 		net.Send(self)
 
 	end
-
 end
 

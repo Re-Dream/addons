@@ -1,10 +1,8 @@
 
 if CLIENT then
-
 	function GetHostName()
 		return GetGlobalString("ServerName")
 	end
-
 else
 
 	local prefix = "Re-Dream: "
@@ -38,17 +36,17 @@ The Lounge]]
 	end
 
 	local stopped -- some workaround because timer.Stop is aids
-	function SetHostName(hostname)
-		if not hostname then ResetHostName() return end
-		stopped = hostname and true
-		RunConsoleCommand("hostname", tostring(hostname))
-		SetGlobalString("ServerName", tostring(hostname))
+	function SetHostName(hostName)
+		if not hostName then ResetHostName() return end
+		stopped = hostName and true
+		RunConsoleCommand("hostname", tostring(hostName))
+		SetGlobalString("ServerName", tostring(hostName))
 	end
 
 	function SwitchHostName()
-		local hostname = prefix .. titles[math.random(1, #titles)]
-		RunConsoleCommand("hostname", hostname)
-		SetGlobalString("ServerName", hostname)
+		local hostName = prefix .. titles[math.random(1, #titles)]
+		RunConsoleCommand("hostname", hostName)
+		SetGlobalString("ServerName", hostName)
 	end
 
 	function ResetHostName()
@@ -64,6 +62,5 @@ The Lounge]]
 		if stopped then return end
 		SwitchHostName()
 	end)
-
 end
 
