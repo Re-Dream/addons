@@ -163,6 +163,19 @@ map:AddArgument(ARGTYPE_NUMBER)
 	:SetName("time")
 	:SetOptional(true)
 
+local resetmap = mingeban.CreateCommand({"resetmap", "cleanmap", "cleanup"}, function(caller, line, time)
+	local txt = "Cleanup"
+	mingeban.Countdown(time or 20, function()
+		timer.Simple(1, function()
+			game.ConsoleCommand("gmod_admin_clenaup\n")
+		end)
+	end, txt)
+	mingeban.utils.print(mingeban.colors.Cyan, tostring(caller) .. " started countdown \"" .. txt .. "\"")
+end)
+resetmap:AddArgument(ARGTYPE_NUMBER)
+	:SetName("time")
+	:SetOptional(true)
+
 --[[ server stays dead with _restart rip
 
 mingeban.CreateCommand("reboot",function(caller)
