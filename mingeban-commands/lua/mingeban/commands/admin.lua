@@ -167,7 +167,7 @@ local resetmap = mingeban.CreateCommand({"resetmap", "cleanmap", "cleanup"}, fun
 	local txt = "Cleanup"
 	mingeban.Countdown(time or 20, function()
 		timer.Simple(1, function()
-			game.ConsoleCommand("gmod_admin_clenaup\n")
+			game.ConsoleCommand("gmod_admin_cleanup\n")
 		end)
 	end, txt)
 	mingeban.utils.print(mingeban.colors.Cyan, tostring(caller) .. " started countdown \"" .. txt .. "\"")
