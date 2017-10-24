@@ -58,3 +58,4 @@
 [submodule "impact"]
 	path = impact
 	url = https://github.com/Re-Dream/impact
+	branch = dev
