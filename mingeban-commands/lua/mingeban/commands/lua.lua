@@ -23,9 +23,9 @@ pcall(function()
 			end
 		end
 
-		if path:Trim() == "" or file.IsDir(path, "GAME") then return false, "doesn't exist" end
+		if path:Trim() == "" then return false, "doesn't exist" end
 
-		local exists = file.Exists(path, "GAME")
+		local exists = file.Exists((path:match("lua/(.+)") or path) .. filename .. ".lua", "LUA")
 		if not exists then return false, "doesn't exist" end
 
 		Msg("[RefreshLua] ") print("Updating " .. path .. filename .. ".lua...")
