@@ -1,5 +1,9 @@
 
 if CLIENT then
+	function cmd(cmd)
+		LocalPlayer():ConCommand(cmd)
+	end
+
 	function Say(...)
 		local first = true
 		local msg = ""
@@ -12,9 +16,13 @@ if CLIENT then
 			msg = msg .. tostring(v)
 		end
 		msg = msg:gsub("\n", ""):gsub(";", ":"):gsub("\"", "'")
-		LocalPlayer():ConCommand("say " .. msg)
+		cmd("say " .. msg)
 	end
 elseif SERVER then
+	function cmd(cmd)
+		game.ConsoleCommand(cmd .. "\n")
+	end
+
 	function Say(...)
 		local first = true
 		local msg = ""
@@ -27,7 +35,7 @@ elseif SERVER then
 			msg = msg .. tostring(v)
 		end
 		msg = msg:gsub("\n", ""):gsub(";", ":"):gsub("\"", "'")
-		game.ConsoleCommand("say " .. msg .. "\n")
+		cmd("say " .. msg)
 	end
 end
 
