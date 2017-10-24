@@ -1,7 +1,6 @@
 
 if CLIENT then return end
 
-
 mingeban.CreateCommand("rcon", function(caller, line)
 	game.ConsoleCommand(line .. "\n")
 end)
