@@ -35,7 +35,7 @@ elseif CLIENT then
 	afk.Is = false
 
 	hook.Add("RenderScene", tag, function()
-		if ply ~= LocalPlayer() then return end
+		if LocalPlayer() == NULL or not LocalPlayer() then return end
 		afk.When = CurTime() + afk.AFKTime:GetInt()
 		hook.Remove("RenderScene", tag)
 	end)
