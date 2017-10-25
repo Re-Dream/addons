@@ -138,7 +138,7 @@ rank:AddArgument(ARGTYPE_STRING)
 
 local restart = mingeban.CreateCommand("restart", function(caller, line, time)
 	local txt = "Restart"
-	mingeban.Countdown(time, function()
+	mingeban.Countdown(time or 20, function()
 		timer.Simple(1, function()
 			game.ConsoleCommand("changelevel " .. game.GetMap() .. "\n")
 		end)
@@ -147,6 +147,7 @@ local restart = mingeban.CreateCommand("restart", function(caller, line, time)
 end)
 restart:AddArgument(ARGTYPE_NUMBER)
 	:SetName("time")
+	:SetOptional(true)
 
 local map = mingeban.CreateCommand("map", function(caller, line, map, time)
 	map = map:gsub(".bsp", "")
