@@ -47,30 +47,10 @@ function ENT:Initialize()
 	end
 end
 
-if SERVER then
-	util.AddNetworkString(tag)
-
-	hook.Add("PhysgunDrop", tag, function(ply, ent)
-		if ent:GetClass() == tag then
-			local gpo = ent:GetPhysicsObject()
-			if IsValid(gpo) then
-				gpo:Wake()
-				gpo:EnableMotion(false)
-			end
-		end
-	end)
-
-	function ENT:Grip(b)
-		self:SetSolid(b and SOLID_VPHYSICS or SOLID_NONE)
-	end
-
-	net.Receive(tag, function(_, ply)
-		local screen = net.ReadEntity()
-		local args = net.ReadTable()
-
-		screen:Receive(ply, args)
-	end)
-end
+function ENT:CanConstruct() return false end
+function ENT:CanTool() return false end
+ENT.PhysgunDisabled = true
+ENT.m_tblToolsAllowed = {}
 
 function ENT:SetScreen(id)
 	table.Merge(self, luascreen.Screens[id])
@@ -86,6 +66,32 @@ function ENT:IsAccessible(ply)
 	if WorldToLocal(ply:GetShootPos(), Angle(0, 0, 0), pos, ang).z < 0 then return end
 
 	return p:Distance(ply:EyePos()) < maxRange
+end
+
+if SERVER then
+	util.AddNetworkString(tag)
+
+	hook.Add("PhysgunDrop", tag, function(ply, ent)
+		if ent:GetClass() == tag then
+			local gpo = ent:GetPhysicsObject()
+			if IsValid(gpo) then
+				gpo:Wake()
+				gpo:EnableMotion(false)
+			end
+		end
+	end)
+
+	function ENT:Grip(b)
+		self:SetSolid(b and SOLID_VPHYSICS or SOLID_NONE)
+		ENT.PhysgunDisabled = b
+	end
+
+	net.Receive(tag, function(_, ply)
+		local screen = net.ReadEntity()
+		local args = net.ReadTable()
+
+		screen:Receive(ply, args)
+	end)
 end
 
 if CLIENT then
