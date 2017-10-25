@@ -18,4 +18,5 @@ end
 mingeban.CreateCommand({"steam", "steamgroup", "group"}, doLinkOpenFunc("https://steamcommunity.com/groups/Re-Dream")):SetAllowConsole(false)
 mingeban.CreateCommand({"rocket", "liftoff", "cp"}, doLinkOpenFunc("https://gmlounge.us/redream/rcon")):SetAllowConsole(false)
 mingeban.CreateCommand("discord", doLinkOpenFunc("https://discord.gg/9Gc8DeA")):SetAllowConsole(false)
+mingeban.CreateCommand("github", doLinkOpenFunc("https://github.com/Re-Dream")):SetAllowConsole(false)
 

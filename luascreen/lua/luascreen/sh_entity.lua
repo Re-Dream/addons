@@ -45,11 +45,15 @@ function ENT:Initialize()
 		+ 	ang:Forward() * 5
 		self:SetRenderBounds(min, max)
 	end
+
+	if self.Identifier ~= "default" then
+		self:SetScreen(self.Identifier)
+	end
 end
 
 function ENT:CanConstruct() return false end
 function ENT:CanTool() return false end
-ENT.PhysgunDisabled = true
+ENT.PhysgunDisabled = false
 ENT.m_tblToolsAllowed = {}
 
 function ENT:SetScreen(id)
@@ -83,7 +87,7 @@ if SERVER then
 
 	function ENT:Grip(b)
 		self:SetSolid(b and SOLID_VPHYSICS or SOLID_NONE)
-		ENT.PhysgunDisabled = b
+		ENT.PhysgunDisabled = not b
 	end
 
 	net.Receive(tag, function(_, ply)
@@ -179,7 +183,7 @@ if CLIENT then
 		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
 		cam.Start3D2D(pos, ang, self.Coords.s)
 			if self.Draw3D2D then
-				local ok, err = pcall(self.Draw3D2D, w, h, s)
+				local ok, err = pcall(self.Draw3D2D, self, w, h, s)
 				if not ok then
 					surface.SetDrawColor(Color(64, 64, 64, 255))
 					surface.DrawRect(0, 0, w, h)

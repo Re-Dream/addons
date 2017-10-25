@@ -1,7 +1,14 @@
 
 local tag = "lua_screen"
 
-luascreen.Screens = {}
+luascreen.Screens = setmetatable({}, {
+	__newindex = function(self, id, tbl)
+		for _, ent in next, ents.FindByClass(tag) do
+			table.Merge(ent, tbl)
+			luascreen.Print("refreshed screen \"" .. id .. "\"")
+		end
+	end
+})
 for _, file in next, (file.Find("luascreen/screens/*.lua", "LUA")) do
 	AddCSLuaFile("luascreen/screens/" .. file)
 
