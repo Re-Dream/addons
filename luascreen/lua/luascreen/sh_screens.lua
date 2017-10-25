@@ -3,23 +3,26 @@ local tag = "lua_screen"
 
 luascreen.Screens = setmetatable({}, {
 	__newindex = function(self, id, tbl)
+		local found = false
 		for _, ent in next, ents.FindByClass(tag) do
+			found = true
 			table.Merge(ent, tbl)
+		end
+		if found then
 			luascreen.Print("refreshed screen \"" .. id .. "\"")
 		end
+		return true
 	end
 })
 for _, file in next, (file.Find("luascreen/screens/*.lua", "LUA")) do
 	AddCSLuaFile("luascreen/screens/" .. file)
 
-	_G.ENT = {}
-	include("luascreen/screens/" .. file)
-	if ENT.Identifier then
-		luascreen.Screens[ENT.Identifier] = ENT
+	local screen = include("luascreen/screens/" .. file)
+	if screen.Identifier then
+		luascreen.Screens[screen.Identifier] = screen
 	else
 		ErrorNoHalt("no identifier for screen " .. file)
 	end
-	ENT = nil
 end
 
 if SERVER then
@@ -28,6 +31,7 @@ if SERVER then
 		if id  then screen:SetScreen(id) end
 		if pos then	screen:SetPos(pos)   end
 		if ang then screen:SetAngles()   end
+		screen:Spawn()
 		return screen
 	end
 

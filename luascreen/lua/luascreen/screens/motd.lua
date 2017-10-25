@@ -1,5 +1,5 @@
 
--- local ENT = {}
+local ENT = {}
 
 ENT.Identifier = "motd"
 ENT.Coords = {
@@ -136,4 +136,6 @@ if CLIENT then
 end
 
 -- luascreen.Screens[ENT.Identifier] = ENT
+
+return ENT
 
