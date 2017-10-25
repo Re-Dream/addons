@@ -21,38 +21,36 @@ function PLAYER:GetPhysgunning()
 	return self.Physgunning
 end
 
-hook.Add("PhysgunPickup", tag, function(ply, ent)
-	if ent:GetClass():lower() == "player" then
-		local friend = false
-		if CLIENT then
-			friend = friend or ent:GetFriendStatus(ply) == "friend"
-		elseif SERVER then
+if SERVER then
+	hook.Add("PhysgunPickup", tag, function(ply, ent)
+		if IsValid(ent) and ent:IsPlayer() then
+			local friend = false
 			friend = friend or (ent:IsFriend(ply) and ent:GetInfoNum("physgun_noplayergrab", 1) == 0)
+			friend = friend or ply:IsAdmin()
+			friend = friend or ent:IsBot()
+			local ret = hook.Run("PlayerCanGrabPlayer", ply, ent)
+			if ret ~= nil then
+				friend = ret
+			end
+			if friend and not ply.Physgunning and not ent.Physgunner then
+				ent:SetMoveType(MOVETYPE_NONE)
+				ent:SetOwner(ply)
+				ent.Physgunner = ply
+				ply.Physgunning = ent
+				return true
+			end
 		end
-		friend = friend or ply:IsAdmin()
-		friend = friend or ent:IsBot()
-		local ret = hook.Run("PlayerCanGrabPlayer", ply, ent)
-		if ret ~= nil then
-			friend = ret
-		end
-		if friend and not ply.Physgunning and not ent.Physgunner then
-			ent:SetMoveType(MOVETYPE_NONE)
-			ent:SetOwner(ply)
-			ent.Physgunner = ply
-			ply.Physgunning = ent
-			return true
-		end
-	end
-end)
+	end)
 
-hook.Add("PhysgunDrop", tag, function(ply, ent)
-	if ent:IsPlayer() and isentity(ply) and ply:IsPlayer() then
-		ent:SetMoveType((ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) and MOVETYPE_NOCLIP or MOVETYPE_WALK)
-		ent:SetOwner()
-		ent.Physgunner = nil
-		ply.Physgunning = nil
-	end
-end)
+	hook.Add("PhysgunDrop", tag, function(ply, ent)
+		if IsValid(ply) and ply:IsPlayer() and IsValid(ent) and ent:IsPlayer() then
+			ent:SetMoveType((ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) and MOVETYPE_NOCLIP or MOVETYPE_WALK)
+			ent:SetOwner()
+			ent.Physgunner = nil
+			ply.Physgunning = nil
+		end
+	end)
+end
 
 hook.Add("PlayerDisconnected", tag, function(ply)
 	hook.Run("PhysgunDrop", tag, ply, ply.Physgunning)
