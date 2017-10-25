@@ -1,9 +1,5 @@
 
-hook.Add("Initialize", "autorestart", function()
-	hook.Remove("Initialize", "autorestart")
-
-	if not mingeban then return end
-
+hook.Add("MingebanInitialized", "autorestart", function()
 	local autorestarting = false
 	local function abort()
 		mingeban.utils.print(mingeban.colors.Cyan, "Restart cancelled, players are on.")
