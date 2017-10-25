@@ -14,6 +14,8 @@ ENT.Coords = {
 	w = 512,
 	h = 256,
 }
+ENT.MaxRange = 128
+ENT.Identifier = "default"
 
 function ENT:Initialize()
 	self:SetModel("models/hunter/plates/plate1x1.mdl")
@@ -46,6 +48,8 @@ function ENT:Initialize()
 end
 
 if SERVER then
+	util.AddNetworkString(tag)
+
 	hook.Add("PhysgunDrop", tag, function(ply, ent)
 		if ent:GetClass() == tag then
 			local gpo = ent:GetPhysicsObject()
@@ -59,6 +63,29 @@ if SERVER then
 	function ENT:Grip(b)
 		self:SetSolid(b and SOLID_VPHYSICS or SOLID_NONE)
 	end
+
+	net.Receive(tag, function(_, ply)
+		local screen = net.ReadEntity()
+		local args = net.ReadTable()
+
+		screen:Receive(ply, args)
+	end)
+end
+
+function ENT:SetScreen(id)
+	table.Merge(self, luascreen.Screens[id])
+end
+
+function ENT:IsAccessible(ply)
+	local pos, ang = self:ScreenCoords()
+	local normal = -ang:Up()
+	local maxRange = self.MaxRange
+	local p = util.IntersectRayWithPlane(ply:EyePos(), ply:GetAimVector(), pos, normal)
+
+	if not p then return end
+	if WorldToLocal(ply:GetShootPos(), Angle(0, 0, 0), pos, ang).z < 0 then return end
+
+	return p:Distance(ply:EyePos()) < maxRange
 end
 
 if CLIENT then
@@ -80,17 +107,15 @@ if CLIENT then
 		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
 
 		local normal = -ang:Up()
-		local maxRange = 128
+		local maxRange = self.MaxRange
 		local p = util.IntersectRayWithPlane(LocalPlayer():EyePos(), LocalPlayer():GetAimVector(), pos, normal)
 
 		-- if there wasn't an intersection, don't calculate anything.
 		if not p then return end
 		if WorldToLocal(LocalPlayer():GetShootPos(), Angle(0, 0, 0), pos, ang).z < 0 then return end
 
-		if maxRange > 0 then
-			if p:Distance(LocalPlayer():EyePos()) > maxRange then
-				return
-			end
+		if p:Distance(LocalPlayer():EyePos()) > maxRange then
+			return
 		end
 
 		local pos = WorldToLocal(p, Angle(0, 0, 0), pos, ang)
@@ -102,18 +127,67 @@ if CLIENT then
 		return pos.x, pos.y
 	end
 
+	function ENT:Think()
+		local x, y = self:CursorPos()
+		if x and y then
+			self.Targeted = true
+			local using = LocalPlayer():KeyDown(IN_USE) or LocalPlayer():KeyDown(IN_ATTACK)
+			if using and not self.Using then
+				self.Using = true
+				if self.OnMousePressed then
+					self:OnMousePressed()
+				end
+			elseif not using and self.Using then
+				self.Using = false
+				if self.OnMouseReleased then
+					self:OnMouseReleased()
+				end
+			end
+			LocalPlayer().Luascreen = self
+		else
+			self.Targeted = false
+			self.Using = false
+			if self.OnMouseReleased then
+				self:OnMouseReleased()
+			end
+			LocalPlayer().Luascreen = nil
+		end
+	end
+
+	function ENT:Send(...)
+		net.Start(tag)
+			net.WriteEntity(self)
+			net.WriteTable({...})
+		net.SendToServer()
+	end
+
 	function ENT:Draw()
 		self:DrawShadow(false)
 	end
 
 	local cursor = Material("icon16/cursor.png")
+	local grad = Material("vgui/gradient-d")
 	function ENT:DrawTranslucent()
 		local pos, ang = self:ScreenCoords()
 
 		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
 		cam.Start3D2D(pos, ang, self.Coords.s)
 			if self.Draw3D2D then
-				self:Draw3D2D(w, h, s)
+				local ok, err = pcall(self.Draw3D2D, w, h, s)
+				if not ok then
+					surface.SetDrawColor(Color(64, 64, 64, 255))
+					surface.DrawRect(0, 0, w, h)
+					surface.SetDrawColor(Color(32, 32, 32, 127 + math.abs(math.sin(RealTime() * 0.1)) * 127))
+					surface.SetMaterial(grad)
+					surface.DrawTexturedRect(0, 0, w, h)
+
+					surface.SetDrawColor(Color(255, 64, 0, 127))
+					surface.DrawOutlinedRect(0, 0, w, h)
+
+					surface.SetFont("DermaDefault")
+					local txtW, txtH = surface.GetTextSize(err)
+					draw.SimpleText("ERROR: " .. err, "DermaDefault", w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5, Color(255, 0, 0))
+				end
 			else
 				surface.SetDrawColor(Color(127, 64, 0, 255))
 				surface.DrawRect(0, 0, w, h)
