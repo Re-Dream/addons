@@ -18,12 +18,14 @@ pcall(function()
 		for _, folder in next, folders do
 			local _path = "addons/" .. folder .. "/lua/" .. path .. filename .. ".lua"
 			if file.Exists(_path, "GAME") then
-				path =  _path:match(".+/")
+				path = _path:match(".+/")
 				break
 			end
 		end
 
-		local exists = file.Exists(path, "GAME")
+		if path:Trim() == "" then return false, "doesn't exist" end
+
+		local exists = file.Exists((path:match("lua/(.+)") or path) .. filename .. ".lua", "LUA")
 		if not exists then return false, "doesn't exist" end
 
 		Msg("[RefreshLua] ") print("Updating " .. path .. filename .. ".lua...")

@@ -1,3 +1,6 @@
+
+if not easylua then return end
+
 local reload = theater and theater.screen
 theater = {screen = reload}
 
@@ -94,3 +97,4 @@ else
 	hook.Add("InitPostEntity", "theater", theater.spawn)
 	hook.Add("PostCleanupMap", "theater", theater.spawn)
 end
+

@@ -32,11 +32,11 @@ local function goto(from, to, istp)
 	end
 	if ent == from then return false, "Can't goto yourself" end
 
-	if not from:Alive() then
+	if from:IsPlayer() and not from:Alive() then
 		from:Spawn()
 	end
 
-	if isentity(ent) and IsValid(ent) then
+	if IsValid(ent) and ent:IsPlayer() then
 		local pos = ent:GetPos()
 		local oldPos = from:GetPos()
 		local goodPos
@@ -76,7 +76,14 @@ local function goto(from, to, istp)
 	elseif isvector(ent) then
 		from:SetPos(ent)
 		if not istp then
-			from:LookAt(ent, 0.25)
+			if from:IsPlayer() then
+				from:LookAt(ent, 0.25)
+			else
+				local gpo = from:GetPhysicsObject()
+				if IsValid(gpo) then
+					gpo:EnableMotion(false)
+				end
+			end
 			from:EmitSound("buttons/button15.wav")
 		else
 			from:EmitSound("player/" .. table.Random(teleportSounds) .. ".wav")
@@ -93,14 +100,29 @@ local go = mingeban.CreateCommand({"go", "goto"}, function(caller, line, pos, y,
 	end
 	return goto(caller, pos)
 end)
+go:SetAllowConsole(false)
 go:AddArgument(ARGTYPE_VARARGS)
 	:SetName("target")
 
-local bring = mingeban.CreateCommand("bring", function(caller, line, pos)
-	return goto(pos, caller)
+local bring = mingeban.CreateCommand("bring", function(caller, line, plys)
+	if #plys < 2 then
+		return goto(plys[1], caller)
+	else
+		for _, ent in next, plys do
+			local isPlayer = ent:IsPlayer()
+			local ok, err = goto(ent, isPlayer and caller or caller:GetEyeTrace().HitPos)
+			if ok == false then
+				mingeban.utils.print(mingeban.colors.Red, tostring(ent) .. " bring: " .. err)
+			end
+		end
+	end
 end)
-bring:AddArgument(ARGTYPE_PLAYER)
+bring:SetAllowConsole(false)
+bring:AddArgument(ARGTYPE_PLAYERS)
 	:SetName("target")
+	:SetFilter(function(caller, ent)
+		return caller:IsAdmin() and true or caller:IsFriend(ent)
+	end)
 
 local tp = mingeban.CreateCommand({"tp", "teleport", "blink"}, function(caller)
 	local traceData = util.GetPlayerTrace(caller)
@@ -151,4 +173,5 @@ local tp = mingeban.CreateCommand({"tp", "teleport", "blink"}, function(caller)
 
 	return goto(caller, trace.HitPos, true)
 end)
+tp:SetAllowConsole(false)
 

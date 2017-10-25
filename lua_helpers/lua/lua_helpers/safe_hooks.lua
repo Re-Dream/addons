@@ -6,7 +6,7 @@ Player [1][TrashAlert] ERR: addons/misc/lua/autorun/engine_protection.lua:92: ta
 
 ]]
 
---do return end
+-- do return end
 
 local maxidx = 5
 local tbl = hook.Hooks

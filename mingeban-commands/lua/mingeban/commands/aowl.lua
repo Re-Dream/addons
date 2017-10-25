@@ -52,6 +52,8 @@ concommand.Add("aowl", concommand.GetTable().mingeban)
 
 hook.Run("AowlInitialized")
 function aowlMsg(cmd, line)
-	mingeban.utils.print(mingeban.colors.Cyan, (cmd and cmd .. " " or "") .. line)
+	if hook.Run("AowlMessage", cmd, line) ~= false then
+		mingeban.utils.print(mingeban.colors.Cyan, (cmd and cmd .. " " or "") .. line)
+	end
 end
 

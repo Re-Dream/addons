@@ -1,5 +1,13 @@
 
-if CLIENT then return end
+local PLAYER = FindMetaTable("Player")
+
+if CLIENT then
+	function PLAYER:IsFriend(ply)
+		return self:GetFriendStatus(ply) == "friend"
+	end
+
+	return
+end
 
 if not file.Exists("cfg/apikey.cfg", "GAME") or file.Read("cfg/apikey.cfg", "GAME") == nil then
 	print("Error! SteamAPI library wasn't provided with any auth key!")
@@ -130,8 +138,6 @@ function steamapi.GetFamilySharing(ply, callback)
 		if callback then callback(ply) end
 	end)
 end
-
-local PLAYER = FindMetaTable("Player")
 
 function PLAYER:GetFriends()
 	if not self.FriendsList then

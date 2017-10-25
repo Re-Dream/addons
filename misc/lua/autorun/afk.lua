@@ -13,7 +13,6 @@ function PLAYER:AFKTime()
 end
 
 if SERVER then
-
 	util.AddNetworkString(tag)
 
 	net.Receive(tag, function(_, ply)
@@ -30,22 +29,20 @@ if SERVER then
 	hook.Add("AFK", "AFKSound", function(ply, is)
 		ply:EmitSound(not is and "replay/cameracontrolmodeentered.wav" or "replay/cameracontrolmodeexited.wav")
 	end)
-
 elseif CLIENT then
-
-	afk.Mouse = {x = 0, y = 0}
+	afk.Mouse = { x = 0, y = 0 }
 	afk.Focus = system.HasFocus()
 	afk.Is = false
-	afk.Network = true
 
-	hook.Add("Initialize", tag, function()
-		afk.Start = true
-	end)
-
-	local function Input()
-		if not afk.When or not afk.Start then return end
+	hook.Add("RenderScene", tag, function()
+		if LocalPlayer() == NULL or not LocalPlayer() then return end
 		afk.When = CurTime() + afk.AFKTime:GetInt()
-		if afk.Is and afk.Network then
+		hook.Remove("RenderScene", tag)
+	end)
+	local function Input()
+		if not afk.When then return end
+		afk.When = CurTime() + afk.AFKTime:GetInt()
+		if afk.Is then
 			net.Start(tag)
 				net.WriteBool(false)
 			net.SendToServer()
@@ -53,7 +50,7 @@ elseif CLIENT then
 		afk.Is = false
 	end
 	hook.Add("StartCommand", tag, function(ply, cmd)
-		if ply ~= LocalPlayer() or not afk.When or not afk.Start then return end
+		if ply ~= LocalPlayer() or not afk.When then return end
 		local mouseMoved = (system.HasFocus() and (afk.Mouse.x ~= gui.MouseX() or afk.Mouse.y ~= gui.MouseY()) or false)
 		if  mouseMoved or
 			cmd:GetMouseX() ~= 0 or
@@ -65,11 +62,9 @@ elseif CLIENT then
 		end
 		if afk.When < CurTime() and not afk.Is then
 			afk.Is = true
-			if afk.Network then
-				net.Start(tag)
-					net.WriteBool(true)
-				net.SendToServer()
-			end
+			net.Start(tag)
+				net.WriteBool(true)
+			net.SendToServer()
 		end
 	end)
 	hook.Add("KeyPress", tag, Input)
@@ -80,8 +75,6 @@ elseif CLIENT then
 	end
 
 	net.Receive(tag, function()
-		if not afk.Network then return end
-
 		local ply = Entity(net.ReadUInt(8))
 		local is = net.ReadBool()
 		ply.isAFK = is
@@ -90,7 +83,7 @@ elseif CLIENT then
 	end)
 
 	surface.CreateFont(tag, {
-		font = "Roboto Condensed",
+		font = "Roboto Cn",
 		size = 36,
 		italic = true,
 		weight = 800,
@@ -122,7 +115,6 @@ elseif CLIENT then
 	afk.Draw = CreateConVar("cl_afk_hud_draw", "1", { FCVAR_ARCHIVE }, "Should we draw the AFK HUD?")
 	hook.Add("HUDPaint", tag, function()
 		if not afk.Draw:GetBool() then return end
-		if not afk.When then afk.When = CurTime() + afk.AFKTime:GetInt() end
 		afk.Focus = system.HasFocus()
 		if not afk.Is then a = 0 return end
 
