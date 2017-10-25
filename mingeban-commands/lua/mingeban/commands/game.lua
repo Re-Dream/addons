@@ -1,8 +1,6 @@
 
 if SERVER then
-	mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
-		if not IsValid(caller) then return end
-
+	local kill = mingeban.CreateCommand({"kill", "wrist", "suicide"}, function(caller, line)
 		local ok = hook.Run("CanPlayerSuicide", ply)
 		if ok == false then
 			return false, "Can't suicide"
@@ -11,42 +9,45 @@ if SERVER then
 		caller:KillSilent()
 		caller:CreateRagdoll()
 	end)
+	kill:SetAllowConsole(false)
 
-	mingeban.CreateCommand({"revive", "respawn"}, function(caller)
-		if not IsValid(caller) then return end
-
+	local revive = mingeban.CreateCommand({"revive", "respawn"}, function(caller)
 		local oldPos, oldAng = caller:GetPos(), caller:EyeAngles()
 		caller:Spawn()
 		caller:SetPos(oldPos)
 		caller:SetEyeAngles(oldAng)
 	end)
+	revive:SetAllowConsole(false)
 
-	mingeban.CreateCommand("cmd", function(caller, line)
-		if not IsValid(caller) then return end
-
+	local cmd = mingeban.CreateCommand("cmd", function(caller, line)
 		caller:SendLua(string.format("LocalPlayer():ConCommand(%q)", line))
 	end)
+	cmd:SetAllowConsole(false)
 
-	mingeban.CreateCommand({"vol", "volume"}, function(caller, line)
-		if not IsValid(caller) then return end
-
+	local vol = mingeban.CreateCommand({"vol", "volume"}, function(caller, line)
 		caller:ConCommand("mingeban cmd volume " .. line)
 	end)
+	vol:SetAllowConsole(false)
 
-	mingeban.CreateCommand("retry", function(caller)
-		if not IsValid(caller) then return end
-
+	local retry = mingeban.CreateCommand("retry", function(caller)
 		caller:ConCommand("retry")
 	end)
+	retry:SetAllowConsole(false)
+
+	local maps = mingeban.CreateCommand("maps", function(caller)
+		for _, map in next, (file.Find("maps/*.bsp", "GAME")) do
+			caller:PrintMessage(HUD_PRINTCONSOLE, map)
+		end
+	end)
+	maps:SetAllowConsole(false)
 
 	util.AddNetworkString("mingeban-command-tool")
 	local tool = mingeban.CreateCommand("tool", function(caller, line, tool)
-		if not IsValid(caller) then return end
-
 		net.Start("mingeban-command-tool")
 			net.WriteString(tool)
 		net.Send(caller)
 	end)
+	tool:SetAllowConsole(false)
 	tool:AddArgument(ARGTYPE_STRING)
 		:SetName("tool")
 elseif CLIENT then

@@ -5,8 +5,6 @@ local w = Color(194, 210, 225)
 local g = Color(127, 255, 127)
 local function doLinkOpenFunc(link)
 	return function(caller)
-		if not IsValid(caller) then return end
-
 		if not caller.ChatAddText or not caller.OpenURL then
 			return false, "ChatAddText / OpenURL missing?"
 		end
@@ -17,7 +15,7 @@ local function doLinkOpenFunc(link)
 	end
 end
 
-mingeban.CreateCommand({"steam", "steamgroup", "group"}, doLinkOpenFunc("https://steamcommunity.com/groups/Re-Dream"))
-mingeban.CreateCommand({"rocket", "liftoff", "cp"}, doLinkOpenFunc("https://gmlounge.us/redream/rcon"))
-mingeban.CreateCommand("discord", doLinkOpenFunc("https://discord.gg/9Gc8DeA"))
+mingeban.CreateCommand({"steam", "steamgroup", "group"}, doLinkOpenFunc("https://steamcommunity.com/groups/Re-Dream")):SetAllowConsole(false)
+mingeban.CreateCommand({"rocket", "liftoff", "cp"}, doLinkOpenFunc("https://gmlounge.us/redream/rcon")):SetAllowConsole(false)
+mingeban.CreateCommand("discord", doLinkOpenFunc("https://discord.gg/9Gc8DeA")):SetAllowConsole(false)
 

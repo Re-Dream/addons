@@ -18,14 +18,6 @@ cexec:AddArgument(ARGTYPE_PLAYERS)
 cexec:AddArgument(ARGTYPE_STRING)
 	:SetName("command")
 
-mingeban.CreateCommand("maps", function(caller)
-	if not IsValid(caller) then return end
-
-	for _, map in next, (file.Find("maps/*.bsp", "GAME")) do
-		caller:PrintMessage(HUD_PRINTCONSOLE, map)
-	end
-end)
-
 -- kick
 
 local kick = mingeban.CreateCommand("kick", function(caller, line, ply, reason)
