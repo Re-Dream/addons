@@ -25,8 +25,4 @@ if SERVER then
 		ent:SetPos(pos)
 		ent:Spawn()
 	end
-elseif CLIENT then
-	function PLAYER:GetCoins()
-		return PLAYER:GetNWInt("Coins")
-	end
 end
