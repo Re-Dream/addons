@@ -3,7 +3,7 @@ local PLAYER = FindMetaTable("Player")
 
 if CLIENT then
 	function PLAYER:IsFriend(ply)
-		return self:GetFriendStatus(ply) == "friend"
+		return ply:GetFriendStatus() == "friend"
 	end
 
 	return

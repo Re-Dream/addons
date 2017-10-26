@@ -174,7 +174,39 @@ function Player:PerformLayout()
 	self:RefreshAvatar()
 end
 
+Player.Friend = Material("icon16/user_green.png")
+Player.Shield = Material("icon16/shield.png")
+Player.Wrench = Material("icon16/wrench.png")
+Player.NoClip = Material("icon16/collision_off.png")
+local building = {
+	weapon_physgun = true,
+	gmod_tool = true,
+}
+Player.Tags = {
+	Admin = {
+		display = function(ply)
+			if ply:IsAdmin() then
+				return "admin", Player.Shield
+			end
+		end
+	},
+	Building = {
+		display = function(ply)
+			if IsValid(ply:GetActiveWeapon()) and building[ply:GetActiveWeapon():GetClass()] then
+				return "building", Player.Wrench
+			end
+		end
+	},
+	NoClip = {
+		display = function(ply)
+			if ply:GetMoveType() == MOVETYPE_NOCLIP then
+				return "noclip", Player.NoClip
+			end
+		end
+	},
+}
 function Player:Paint(w, h)
+	local lply = LocalPlayer()
 	local ply = self.Player
 	local isAFK = (IsValid(ply) and ply.IsAFK) and ply:IsAFK() or false
 
@@ -184,6 +216,37 @@ function Player:Paint(w, h)
 	if self.Info:IsHovered() then
 		surface.SetDrawColor(Color(255, 255, 255, self.Info.Depressed and 40 or 90))
 		surface.DrawRect(0, 0, w, h)
+	end
+
+	local x = w - self.Info.Ping:GetWide() - 4
+	for _, tag in next, self.Tags do
+		local text, icon = tag.display(ply)
+		if text and icon then
+			if self.Info:IsHovered() then
+				surface.SetFont("DermaDefault")
+				local txtW, txtH = surface.GetTextSize(text)
+				x = x - txtW
+				surface.SetTextColor(Color(0, 0, 0, 192))
+				surface.SetTextPos(x, h * 0.5 - txtH * 0.5)
+				surface.DrawText(text)
+				x = x - 4
+			end
+
+			x = x - 16
+			surface.SetDrawColor(Color(255, 255, 255, 192))
+			surface.SetMaterial(icon)
+			surface.DrawTexturedRect(x, h * 0.5 - 8, 16, 16)
+
+			x = x - 4
+		end
+	end
+
+	if lply ~= ply and lply:IsFriend(ply) then
+		DisableClipping(true)
+			surface.SetDrawColor(Color(255, 255, 255, 127))
+			surface.SetMaterial(self.Friend)
+			surface.DrawTexturedRect(-16 - 4, h * 0.5 - 8, 16, 16)
+		DisableClipping(false)
 	end
 
 	return true

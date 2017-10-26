@@ -43,8 +43,10 @@ function scoreboard:GetContentSize()
 	return w, h
 end
 
-include("scoreboard/team_panel.lua")
-include("scoreboard/player_panel.lua")
+if not istable(GAMEMODE) then
+	include("scoreboard/team_panel.lua")
+	include("scoreboard/player_panel.lua")
+end
 
 local wantsToClose = false
 local activeFrame
@@ -392,6 +394,7 @@ function scoreboard:RefreshPlayers(id)
 			pnl:SetZPos(-id)
 			pnl:Dock(TOP)
 			pnl:DockMargin(0, 2, 0, 0)
+			pnl:NoClipping(false)
 			self.Teams[id] = pnl
 		end
 
@@ -409,7 +412,7 @@ function scoreboard:RefreshPlayers(id)
 		end
 
 		for _, _pnl in next, pnl:GetChildren() do
-			if not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id then
+			if pnl:GetClassName() == tag .. "Player" and (not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id) then
 				pnl[_pnl.UserID] = nil
 				_pnl:SetVisible(false)
 				_pnl:SetParent() -- ugly hack to call PerformLayout
