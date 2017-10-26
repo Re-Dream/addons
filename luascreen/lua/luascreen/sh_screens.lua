@@ -6,8 +6,10 @@ luascreen.Screens = {}
 function luascreen.RegisterScreen(id, scr)
 	local found = false
 	for _, ent in next, ents.FindByClass(tag) do
-		found = true
-		table.Merge(ent, scr)
+		if ent.Identifier == id then
+			found = true
+			table.Merge(ent, scr)
+		end
 	end
 	if found then
 		luascreen.Print("refreshed \"" .. id .. "\" screens")

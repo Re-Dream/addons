@@ -1,10 +1,5 @@
 
-local ENT
-if istable(GAMEMODE) then
-	ENT = {}
-else
-	ENT = _G.ENT
-end
+local ENT = _G.ENT or {}
 
 ENT.Identifier = "motd"
 ENT.ScreenWidth = 1175

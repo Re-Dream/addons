@@ -3,7 +3,7 @@ AddCSLuaFile()
 
 local tag = "lua_screen"
 
-local ENT = ENT or {}
+local ENT = _G.ENT or {}
 
 ENT.ClassName = tag
 ENT.Base = "base_anim"
