@@ -34,7 +34,13 @@ if CLIENT then
 		size = 32,
 		weight = 500,
 	})
+	surface.CreateFont("lua_screen_motd_status", {
+		font = "Roboto Cn",
+		size = 24,
+		weight = 500,
+	})
 	local grad = Material("vgui/gradient-d")
+	local clock = Material("icon16/clock.png")
 	local function DrawOutlinedRect(x, y, w, h, thicc)
 		for i = 0, thicc - 1 do
 			surface.DrawOutlinedRect(x + i, y + i, w - i * 2, h - i * 2)
@@ -98,6 +104,10 @@ if CLIENT then
 		surface.SetDrawColor(Color(175, 190, 225, 225))
 		surface.DrawRect(0, 0, w, h)
 
+		surface.SetDrawColor(Color(32, 32, 32, 100 + math.abs(math.sin(RealTime() * 0.25)) * 27))
+		surface.SetMaterial(grad)
+		surface.DrawTexturedRect(0, 0, w, h)
+
 		-- logo
 		local logoW, logoH = 512, 512
 		local logoX = (w + buttW + buttX) * 0.5 - logoW * 0.5
@@ -122,13 +132,6 @@ if CLIENT then
 		surface.DrawRect(logoX + padding, logoY + padding, logoW - padding * 2, logoH - padding * 2)
 		surface.SetDrawColor(Color(255, 255, 255, a * 5))
 		surface.DrawOutlinedRect(logoX + padding, logoY + padding, logoW - padding * 2, logoH - padding * 2)
-
-		surface.SetDrawColor(Color(32, 32, 32, 100 + math.abs(math.sin(RealTime() * 0.25)) * 27))
-		surface.SetMaterial(grad)
-		surface.DrawTexturedRect(0, 0, w, h)
-
-		surface.SetDrawColor(Color(0, 64, 127, 192))
-		DrawOutlinedRect(0, 0, w, h, 5)
 
 		for k, butt in next, buttons do
 			if butt.text and (not butt.req or isfunction(butt.req) and butt.req()) then
@@ -164,6 +167,34 @@ if CLIENT then
 		local txt = "Welcome!"
 		local txtW, txtH = surface.GetTextSize(txt)
 		draw.SimpleTextOutlined(txt, "lua_screen_motd_header2", buttX + buttW * 0.5 - txtW * 0.5, buttY - buttH - 7 + math.sin(RealTime() * 2.5) * 2, Color(235, 235, 255, 255), 0, 0, 3, Color(0, 0, 0, 41))
+
+		local thicc = 5
+		surface.SetDrawColor(Color(0, 64, 127, 225))
+		surface.DrawRect(thicc, thicc, w - thicc * 2, 32)
+
+		surface.SetDrawColor(Color(255, 255, 255, 255))
+		surface.SetMaterial(clock)
+		surface.DrawTexturedRect(thicc + 4, thicc + 16 - 8, 16, 16)
+
+		surface.SetFont("lua_screen_motd_status")
+		local time = CurTime()
+		local txt = string.format("Uptime: %.2d:%.2d:%.2d",
+			math.floor(CurTime() / 60 / 60), -- hours
+			math.floor(CurTime() / 60 % 60), -- minutes
+			math.floor(CurTime() % 60) -- seconds
+		)
+		surface.SetTextColor(Color(235, 235, 255, 192))
+		surface.SetTextPos(thicc + 4 + 16 + 4, thicc + 4)
+		surface.DrawText(txt)
+
+		local txt = os.date("%H:%M:%S")
+		local txtW, txtH = surface.GetTextSize(txt)
+		surface.SetTextColor(Color(235, 235, 255, 192))
+		surface.SetTextPos(w * 0.5 - txtW * 0.5, thicc + 4)
+		surface.DrawText(txt)
+
+		surface.SetDrawColor(Color(0, 64, 127, 192))
+		DrawOutlinedRect(0, 0, w, h, thicc)
 	end
 
 	function ENT:OnMousePressed()
