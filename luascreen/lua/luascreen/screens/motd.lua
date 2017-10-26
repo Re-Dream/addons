@@ -204,7 +204,6 @@ if CLIENT then
 	local nextUse = 0
 	function ENT:OnMouseReleased()
 		if self.Hovering and self._Using and self.Choice and nextUse < RealTime() then
-			print(self.Hovering, self.Choice)
 			buttons[self.Choice].func()
 			EmitSound("garrysmod/ui_click.wav", LocalPlayer():GetEyeTrace().HitPos, LocalPlayer():EntIndex())
 			nextUse = RealTime() + 1
