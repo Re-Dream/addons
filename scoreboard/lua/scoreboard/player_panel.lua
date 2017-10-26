@@ -176,6 +176,7 @@ end
 
 Player.Friend = Material("icon16/user_green.png")
 Player.Shield = Material("icon16/shield.png")
+Player.Typing = Material("icon16/comments.png")
 Player.Wrench = Material("icon16/wrench.png")
 Player.NoClip = Material("icon16/collision_off.png")
 local building = {
@@ -187,6 +188,13 @@ Player.Tags = {
 		display = function(ply)
 			if ply:IsAdmin() then
 				return "admin", Player.Shield
+			end
+		end
+	},
+	Typing = {
+		display = function(ply)
+			if ply:IsTyping() then
+				return "typing", Player.Typing
 			end
 		end
 	},
