@@ -44,11 +44,6 @@ function ENT:Initialize()
 		+	ang:Up() * (h * s)
 		+ 	ang:Forward() * 5
 		self:SetRenderBounds(min, max)
-
-		local id = self:GetNWString("Identifier")
-		if id ~= "" and self.Identifier ~= id then
-			self:SetScreen(id)
-		end
 	end
 end
 
@@ -60,15 +55,25 @@ ENT.m_tblToolsAllowed = {}
 function ENT:SetScreen(id)
 	if luascreen.Screens[id] then
 		table.Merge(self, luascreen.Screens[id])
-		self:SetNWString("Identifier", id)
-		net.Start(tag)
-			net.WriteEntity(self)
-			net.WriteString(id)
-		net.Broadcast()
+		if SERVER then
+			net.Start(tag)
+				net.WriteEntity(self)
+				net.WriteString(id)
+			net.Broadcast()
+		end
 	else
 		ErrorNoHalt("no existing screen for identifier " .. id)
 	end
 end
+
+hook.Add("PlayerInitialSpawn", tag, function(ply)
+	for _, screen in next, ents.FindByClass(tag) do
+		net.Start(tag)
+			net.WriteEntity(screen)
+			net.WriteString(screen.Identifier)
+		net.Send(ply)
+	end
+end)
 
 function ENT:IsAccessible(ply)
 	local pos, ang = self:ScreenCoords()
