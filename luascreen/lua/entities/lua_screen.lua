@@ -49,10 +49,6 @@ function ENT:Initialize()
 		gpo:Wake()
 		gpo:EnableMotion(false)
 	end
-
-	if CLIENT then
-		self:SetBounds()
-	end
 end
 
 function ENT:CanConstruct() return false end
@@ -68,8 +64,6 @@ function ENT:SetScreen(id)
 				net.WriteEntity(self)
 				net.WriteString(id)
 			net.Broadcast()
-		elseif CLIENT then
-			self:SetBounds()
 		end
 	else
 		ErrorNoHalt("no existing screen for identifier " .. id)
@@ -256,6 +250,10 @@ if CLIENT then
 			render.SetBlend(1)
 		end
 		self:DrawShadow(false)
+		if self.LastIdentifier ~= self.Identifier then
+			self:SetBounds()
+			self.LastIdentifier = self.Identifier
+		end
 	end
 end
 

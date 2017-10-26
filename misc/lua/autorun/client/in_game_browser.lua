@@ -113,7 +113,7 @@ local browser = {
 
 vgui.Register("DBrowser", browser, "DFrame")
 
-local cv = CreateConVar("custom_browser","1",FCVAR_ARCHIVE,"use the custom ingame browser or the steam browser")
+local cv = CreateConVar("custom_browser","0",FCVAR_ARCHIVE,"use the custom ingame browser or the steam browser")
 
 gui.OpenURL = function(url)
     if cv:GetBool() then
