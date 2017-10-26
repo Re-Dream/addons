@@ -7,6 +7,7 @@ ENT.Coords = {
 	w = 1175,
 	h = 645,
 }
+ENT.MaxRange = 192
 
 if SERVER then
 	function ENT:Receive()
@@ -20,7 +21,11 @@ if CLIENT then
 		size = 64,
 		weight = 500,
 	})
-
+	surface.CreateFont("lua_screen_motd_header2", {
+		font = "Roboto Cn",
+		size = 52,
+		weight = 500,
+	})
 	surface.CreateFont("lua_screen_motd_button", {
 		font = "Roboto Cn",
 		size = 32,
@@ -58,9 +63,14 @@ if CLIENT then
 		{
 			text = "Steam Group",
 			func = function()
-				LocalPlayer():ConCommand("mingeban steamgroup")
+				LocalPlayer():ConCommand("mingeban steam")
 			end
 		},
+		{	-- logo button
+			func = function()
+				LocalPlayer():ConCommand("mingeban website")
+			end
+		}
 	}
 	local grad = Material("vgui/gradient-d")
 	local function DrawOutlinedRect(x, y, w, h, thicc)
@@ -73,57 +83,78 @@ if CLIENT then
 		return (mX < x + w and mX > x and mY < y + h and mY > y)
 	end
 	function ENT:Draw3D2D(w, h, s)
-		surface.SetDrawColor(Color(48, 48, 92, 255))
-		surface.DrawRect(0, 0, w, h)
-		surface.SetDrawColor(Color(32, 32, 32, 127 + math.abs(math.sin(RealTime() * 0.1)) * 32))
-		surface.SetMaterial(grad)
-		surface.DrawTexturedRect(0, 0, w, h)
-
-		surface.SetDrawColor(Color(192, 192, 255, 24))
-		DrawOutlinedRect(0, 0, w, h, 5)
-
-		surface.SetFont("lua_screen_motd_header")
-		local txt = "Welcome to Re-Dream!"
-		local txtW, txtH = surface.GetTextSize(txt)
-
-		surface.SetTextColor(Color(0, 0, 0, 192))
-		surface.SetTextPos(w * 0.5 - txtW * 0.5 + 4, h * 0.075 + 4)
-		surface.DrawText(txt)
-
-		surface.SetTextColor(Color(220, 220, 255, 192))
-		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.075)
-		surface.DrawText(txt)
-
-		local y = h * 0.925
+		local buttX = 64
+		local buttY = h * 0.925
 		local buttW, buttH = 256, 48
 		local mX, mY = self:CursorPos()
 		local hovering = false
+
+		-- background
+		surface.SetDrawColor(Color(210, 210, 245, 255))
+		surface.DrawRect(0, 0, w, h)
+
+		-- logo
+		local logoW, logoH = 512, 512
+		local logoX = (w + buttW + buttX) * 0.5 - logoW * 0.5
+		local logoY = h * 0.5 - logoH * 0.5
+		local _hovering = IsHovering(logoX, logoY, logoW, logoH, mX, mY)
+		hovering = hovering and hovering or _hovering
+		local a = 0
+		if _hovering and not self.Using then
+			a = 30
+		elseif _hovering and self.Using then
+			self.Choice = #buttons
+			a = 45
+		end
+
+		local logo = WebMaterial("redream_logo_transparent", "https://gmlounge.us/media/redream-logo-transparent.png")
+		surface.SetDrawColor(Color(255, 255, 255, 255))
+		surface.SetMaterial(logo)
+		surface.DrawTexturedRect(logoX, logoY, logoW, logoH)
+
+		surface.SetDrawColor(Color(255, 255, 255, a))
+		surface.DrawRect(logoX, logoY, logoW, logoH)
+		surface.SetDrawColor(Color(255, 255, 255, a * 5))
+		surface.DrawOutlinedRect(logoX, logoY, logoW, logoH)
+
+		surface.SetDrawColor(Color(32, 32, 32, 100 + math.abs(math.sin(RealTime() * 0.1)) * 27))
+		surface.SetMaterial(grad)
+		surface.DrawTexturedRect(0, 0, w, h)
+
+		surface.SetDrawColor(Color(0, 0, 127, 192))
+		DrawOutlinedRect(0, 0, w, h, 5)
+
 		for k, butt in next, buttons do
-			if not butt.req or isfunction(butt.req) and butt.req() then
-				local _x = w * 0.5 - buttW * 0.5
-				local _y = y - buttH
+			if butt.text and (not butt.req or isfunction(butt.req) and butt.req()) then
+				local _x = buttX
+				local _y = buttY - buttH
 				local _hovering = IsHovering(_x, _y, buttW, buttH, mX, mY)
-				local a = 164
+				local a = 194
 				if _hovering and not self.Using then
-					a = 194
+					a = 208
 				elseif _hovering and self.Using then
 					self.Choice = k
 					a = 224
 				end
-				surface.SetDrawColor(Color(0, 0, 0, a))
-				surface.DrawRect(w * 0.5 - buttW * 0.5, y - buttH, buttW, buttH)
+				surface.SetDrawColor(Color(0, 0, 92, a))
+				surface.DrawRect(_x, _y, buttW, buttH)
 
 				surface.SetFont("lua_screen_motd_button")
 				local txt = butt.text
 				local txtW, txtH = surface.GetTextSize(txt)
-				surface.SetTextColor(Color(220, 220, 255, 192))
-				surface.SetTextPos(w * 0.5 - txtW * 0.5, y - buttH + txtH * 0.5 - 7)
+				surface.SetTextColor(Color(220, 220, 255, 255))
+				surface.SetTextPos(_x + buttW * 0.5 - txtW * 0.5, _y + txtH * 0.5 - 7)
 				surface.DrawText(txt)
-				y = y - buttH - 8
+				buttY = buttY - buttH - 8
 				hovering = hovering and hovering or _hovering
 			end
 		end
 		self.Hovering = hovering
+
+		surface.SetFont("lua_screen_motd_header2")
+		local txt = "Welcome!"
+		local txtW, txtH = surface.GetTextSize(txt)
+		draw.SimpleTextOutlined(txt, "lua_screen_motd_header2", buttX + buttW * 0.5 - txtW * 0.5, buttY - buttH - 7, Color(225, 225, 255, 255), 0, 0, 3, Color(0, 0, 0, 41))
 	end
 
 	function ENT:OnMousePressed()
@@ -133,6 +164,7 @@ if CLIENT then
 	local nextUse = 0
 	function ENT:OnMouseReleased()
 		if self.Hovering and self._Using and self.Choice and nextUse < RealTime() then
+			print(self.Hovering, self.Choice)
 			buttons[self.Choice].func()
 			surface.PlaySound("garrysmod/balloon_pop_cute.wav")
 			nextUse = RealTime() + 1
