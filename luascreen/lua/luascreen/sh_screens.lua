@@ -38,7 +38,7 @@ if SERVER then
 		return screen
 	end
 
-	hook.Add("InitPostEntity", tag, function()
+	function luascreen.PlaceScreens()
 		if file.Exists("luascreen/placement/" .. game.GetMap() .. ".lua", "LUA") then
 			luascreen.Placement = include("luascreen/placement/" .. game.GetMap() .. ".lua")
 
@@ -47,7 +47,9 @@ if SERVER then
 				screen:Grip(false)
 			end
 		end
-	end)
+	end
+	hook.Add("InitPostEntity", tag, luascreen.PlaceScreens)
+	hook.Add("PostCleanupMap", tag, luascreen.PlaceScreens)
 end
 
 function luascreen.GetScreens(id)
