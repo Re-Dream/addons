@@ -44,10 +44,11 @@ function ENT:Initialize()
 		+	ang:Up() * (h * s)
 		+ 	ang:Forward() * 5
 		self:SetRenderBounds(min, max)
-	end
 
-	if self.Identifier ~= "default" then
-		self:SetScreen(self.Identifier)
+		local id = self:GetNWString("Identifier")
+		if id ~= "" and self.Identifier ~= id then
+			self:SetScreen(id)
+		end
 	end
 end
 
@@ -57,7 +58,16 @@ ENT.PhysgunDisabled = false
 ENT.m_tblToolsAllowed = {}
 
 function ENT:SetScreen(id)
-	table.Merge(self, luascreen.Screens[id])
+	if luascreen.Screens[id] then
+		table.Merge(self, luascreen.Screens[id])
+		self:SetNWString("Identifier", id)
+		net.Start(tag)
+			net.WriteEntity(self)
+			net.WriteString(id)
+		net.Broadcast()
+	else
+		ErrorNoHalt("no existing screen for identifier " .. id)
+	end
 end
 
 function ENT:IsAccessible(ply)
@@ -99,6 +109,13 @@ if SERVER then
 end
 
 if CLIENT then
+	net.Receive(tag, function()
+		local screen = net.ReadEntity()
+		local id = net.ReadString()
+
+		screen:SetScreen(id)
+	end)
+
 	function ENT:ScreenCoords()
 		local ang = self:GetAngles()
 		-- ang:RotateAroundAxis(ang:Right(), 90)

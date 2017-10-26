@@ -9,19 +9,20 @@ luascreen.Screens = setmetatable({}, {
 			table.Merge(ent, tbl)
 		end
 		if found then
-			luascreen.Print("refreshed screen \"" .. id .. "\"")
+			luascreen.Print("refreshed \"" .. id .. "\" screens")
 		end
-		return true
+		rawset(self, id, tbl)
 	end
 })
 for _, file in next, (file.Find("luascreen/screens/*.lua", "LUA")) do
 	AddCSLuaFile("luascreen/screens/" .. file)
 
-	local screen = include("luascreen/screens/" .. file)
-	if screen.Identifier then
-		luascreen.Screens[screen.Identifier] = screen
+	_G.ENT = {}
+	include("luascreen/screens/" .. file)
+	if ENT.Identifier then
+		luascreen.Screens[ENT.Identifier] = table.Copy(ENT)
 	else
-		ErrorNoHalt("no identifier for screen " .. file)
+		ErrorNoHalt("no identifier for file " .. file)
 	end
 end
 
@@ -30,7 +31,7 @@ if SERVER then
 		local screen = ents.Create(tag)
 		if id  then screen:SetScreen(id) end
 		if pos then	screen:SetPos(pos)   end
-		if ang then screen:SetAngles()   end
+		if ang then screen:SetAngles(ang)end
 		screen:Spawn()
 		return screen
 	end
@@ -39,12 +40,10 @@ if SERVER then
 		if file.Exists("luascreen/placement/" .. game.GetMap() .. ".lua", "LUA") then
 			luascreen.Placement = include("luascreen/placement/" .. game.GetMap() .. ".lua")
 
-			local ok, err = pcall(function()
-				for _, data in next, luascreen.Placement do
-					local screen = luascreen.SpawnScreen(data.id, data.pos, data.ang)
-					screen:Grip(false)
-				end
-			end)
+			for _, data in next, luascreen.Placement do
+				local screen = luascreen.SpawnScreen(data.id, data.pos, data.ang)
+				screen:Grip(false)
+			end
 		end
 	end)
 end
