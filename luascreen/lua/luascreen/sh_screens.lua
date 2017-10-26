@@ -1,29 +1,31 @@
 
 local tag = "lua_screen"
 
-luascreen.Screens = setmetatable({}, {
-	__newindex = function(self, id, tbl)
-		local found = false
-		for _, ent in next, ents.FindByClass(tag) do
-			found = true
-			table.Merge(ent, tbl)
-		end
-		if found then
-			luascreen.Print("refreshed \"" .. id .. "\" screens")
-		end
-		rawset(self, id, tbl)
+luascreen.Screens = {}
+
+function luascreen.RegisterScreen(id, scr)
+	local found = false
+	for _, ent in next, ents.FindByClass(tag) do
+		found = true
+		table.Merge(ent, scr)
 	end
-})
+	if found then
+		luascreen.Print("refreshed \"" .. id .. "\" screens")
+	end
+	luascreen.Screens[id] = scr
+end
+
 for _, file in next, (file.Find("luascreen/screens/*.lua", "LUA")) do
 	AddCSLuaFile("luascreen/screens/" .. file)
 
 	_G.ENT = {}
 	include("luascreen/screens/" .. file)
 	if ENT.Identifier then
-		luascreen.Screens[ENT.Identifier] = table.Copy(ENT)
+		luascreen.RegisterScreen(ENT.Identifier, table.Copy(ENT))
 	else
 		ErrorNoHalt("no identifier for file " .. file)
 	end
+	ENT = nil
 end
 
 if SERVER then

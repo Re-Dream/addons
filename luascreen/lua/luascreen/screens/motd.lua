@@ -87,11 +87,11 @@ if CLIENT then
 		local txtW, txtH = surface.GetTextSize(txt)
 
 		surface.SetTextColor(Color(0, 0, 0, 192))
-		surface.SetTextPos(w * 0.5 - txtW * 0.5 + 4, h * 0.25 - txtH + 4)
+		surface.SetTextPos(w * 0.5 - txtW * 0.5 + 4, h * 0.075 + 4)
 		surface.DrawText(txt)
 
 		surface.SetTextColor(Color(220, 220, 255, 192))
-		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.25 - txtH)
+		surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.075)
 		surface.DrawText(txt)
 
 		local y = h * 0.925
@@ -141,5 +141,5 @@ if CLIENT then
 	end
 end
 
--- luascreen.Screens[ENT.Identifier] = ENT
+-- luascreen.RegisterScreen(ENT.Identifier, ENT)
 
