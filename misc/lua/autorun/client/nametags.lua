@@ -55,13 +55,13 @@ local awayPhrases = {
 }
 hook.Add("PostDrawTranslucentRenderables", tag, function()
 	if not IsValid(lply) then lply = LocalPlayer() return end
-	local players = player.GetAll()
-	table.sort(players, function(a, b)
+	local plys = player.GetAll()
+	table.sort(plys, function(a, b)
 		local distA = (lply:GetPos() - a:GetPos()):Length()
 		local distB = (lply:GetPos() - b:GetPos()):Length()
 		return distB < distA
 	end)
-	for _, ply in next, players do
+	for _, ply in next, plys do
 		local isLply = ply:EntIndex() ~= lply:EntIndex()
 		local shouldDraw = false
 		shouldDraw = not ply:Crouching() and true or shouldDraw
