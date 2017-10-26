@@ -28,7 +28,7 @@ local function goto(from, to, istp)
 	local ent = to
 	if not ent then return end
 	if not isentity(to) and not isvector(to) then
-		ent = mingeban.utils.findEntity(to, false)[1]
+		ent = mingeban.utils.findEntity(to)[1]
 	end
 	if ent == from then return false, "Can't goto yourself" end
 
@@ -36,7 +36,7 @@ local function goto(from, to, istp)
 		from:Spawn()
 	end
 
-	if IsValid(ent) and ent:IsPlayer() then
+	if IsValid(ent) and isentity(ent) then
 		local pos = ent:GetPos()
 		local oldPos = from:GetPos()
 		local goodPos
