@@ -44,6 +44,12 @@ if CLIENT then
 			end
 		},
 		{
+			text = "Collection",
+			func = function()
+				LocalPlayer():ConCommand("mingeban collection")
+			end
+		},
+		{
 			text = "Discord",
 			func = function()
 				LocalPlayer():ConCommand("mingeban discord")

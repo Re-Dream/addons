@@ -118,7 +118,13 @@ if CLIENT then
 		local screen = net.ReadEntity()
 		local id = net.ReadString()
 
-		screen:SetScreen(id)
+		if IsValid(LocalPlayer()) then
+			screen:SetScreen(id)
+		else
+			hook.Add("InitPostEntity", tag .. "_" .. id, function()
+				Entity(screen:EntIndex()):SetScreen(id)
+			end)
+		end
 	end)
 
 	function ENT:ScreenCoords()
