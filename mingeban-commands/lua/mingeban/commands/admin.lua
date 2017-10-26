@@ -159,7 +159,7 @@ map:AddArgument(ARGTYPE_NUMBER)
 	:SetName("time")
 	:SetOptional(true)
 
-local resetmap = mingeban.CreateCommand({"resetmap", "cleanmap", "cleanup"}, function(caller, line, time)
+local resetmap = mingeban.CreateCommand({"resetmap", "cleanmap", "cleanupmap"}, function(caller, line, time)
 	local txt = "Cleanup"
 	mingeban.Countdown(time or 20, function()
 		timer.Simple(1, function()
@@ -171,6 +171,18 @@ end)
 resetmap:AddArgument(ARGTYPE_NUMBER)
 	:SetName("time")
 	:SetOptional(true)
+
+local clean = mingeban.CreateCommand({"clean", "cleanup"}, function(caller, line, plys)
+	if #plys < 2 then
+		plys[1]:ConCommand("gmod_cleanup")
+	else
+		for _, ply in next, plys do
+			ply:ConCommand("gmod_cleanup")
+		end
+	end
+	mingeban.utils.print(mingeban.colors.Cyan, tostring(caller) .. " cleaned up stuff from \"" .. table.ToString(plys) .. "\"")
+end)
+clean:AddArgument(ARGTYPE_PLAYERS)
 
 local defaultWeapons = {
 	["weapon_357"] = true,
