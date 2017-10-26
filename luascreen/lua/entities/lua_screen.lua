@@ -3,6 +3,8 @@ AddCSLuaFile()
 
 local tag = "lua_screen"
 
+local ENT = ENT or {}
+
 ENT.ClassName = tag
 ENT.Base = "base_anim"
 ENT.Type = "anim"
@@ -39,10 +41,12 @@ function ENT:SetScreen(id)
 	if luascreen.Screens[id] then
 		table.Merge(self, luascreen.Screens[id])
 		if SERVER then
-			net.Start(tag)
-				net.WriteEntity(self)
-				net.WriteString(id)
-			net.Broadcast()
+			timer.Simple(1, function() -- give the client time to know the entity came up
+				net.Start(tag)
+					net.WriteEntity(self)
+					net.WriteString(id)
+				net.Broadcast()
+			end)
 		end
 	else
 		ErrorNoHalt("no existing screen for identifier " .. id)
@@ -119,7 +123,7 @@ if SERVER then
 
 	function ENT:Grip(b)
 		self:SetSolid(b and SOLID_VPHYSICS or SOLID_NONE)
-		ENT.PhysgunDisabled = not b
+		self.PhysgunDisabled = not b
 	end
 
 	net.Receive(tag, function(_, ply)
@@ -228,5 +232,9 @@ if CLIENT then
 		end
 		self:DrawShadow(false)
 	end
+end
+
+if istable(GAMEMODE) then
+	scripted_ents.Register(tag, ENT)
 end
 
