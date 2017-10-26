@@ -189,7 +189,7 @@ if PLAYER.CheckLimit then
 	PLAYER._CheckLimit = PLAYER._CheckLimit or PLAYER.CheckLimit
 	function PLAYER:CheckLimit(str)
 		if self.Unrestricted then return true end
-		return self._CheckLimit(str)
+		return self:_CheckLimit(str)
 	end
 end
 
