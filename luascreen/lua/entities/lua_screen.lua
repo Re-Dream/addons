@@ -68,7 +68,7 @@ function ENT:SetScreen(id)
 	end
 end
 
-hook.Add("PlayerInitialSpawn", tag, function(ply)
+hook.Add("PlayerInitPostEntity", tag, function(ply)
 	for _, screen in next, ents.FindByClass(tag) do
 		net.Start(tag)
 			net.WriteEntity(screen)
@@ -120,13 +120,7 @@ if CLIENT then
 		local screen = net.ReadEntity()
 		local id = net.ReadString()
 
-		if IsValid(LocalPlayer()) then
-			screen:SetScreen(id)
-		else
-			hook.Add("InitPostEntity", tag .. "_" .. id, function()
-				Entity(screen:EntIndex()):SetScreen(id)
-			end)
-		end
+		screen:SetScreen(id)
 	end)
 
 	function ENT:ScreenCoords()
