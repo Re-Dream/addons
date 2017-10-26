@@ -20,6 +20,9 @@ if CLIENT then
 	end
 elseif SERVER then
 	require("fps")
+	hook.Add("Think", "serverfps", function()
+		SetGlobalInt("serverfps", 1 / engine.RealFrameTime())
+	end)
 
 	function cmd(cmd)
 		game.ConsoleCommand(cmd .. "\n")
@@ -39,5 +42,9 @@ elseif SERVER then
 		msg = msg:gsub("\n", ""):gsub(";", ":"):gsub("\"", "'")
 		cmd("say " .. msg)
 	end
+end
+
+function engine.ServerFPS()
+	return GetGlobalInt("serverfps")
 end
 
