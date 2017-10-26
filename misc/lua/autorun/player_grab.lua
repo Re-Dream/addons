@@ -22,7 +22,7 @@ function PLAYER:GetPhysgunning()
 end
 
 hook.Add("PhysgunPickup", tag, function(ply, ent)
-	if IsValid(ent) and ent:IsPlayer() and IsValid(ply) and ply:IsPlayer() then
+	if IsValid(ply) and IsValid(ent) and ply:IsPlayer() and ent:IsPlayer() then
 		local friend = false
 		friend = friend or (ent:IsFriend(ply) and ent:GetInfoNum("physgun_noplayergrab", 1) == 0)
 		friend = friend or ply:IsAdmin()
@@ -42,7 +42,7 @@ hook.Add("PhysgunPickup", tag, function(ply, ent)
 end)
 
 hook.Add("PhysgunDrop", tag, function(ply, ent)
-	if IsValid(ent) and ent:IsPlayer() and IsValid(ply) and ply:IsPlayer() then
+	if IsValid(ply) and IsValid(ent) and ply:IsPlayer() and ent:IsPlayer() then
 		ent:SetMoveType((ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) and MOVETYPE_NOCLIP or MOVETYPE_WALK)
 		ent:SetOwner()
 		ent.Physgunner = nil
