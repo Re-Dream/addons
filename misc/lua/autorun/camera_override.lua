@@ -1,7 +1,5 @@
 
 hook.Add("Initialize", "gmod_camera_override", function()
-	hook.Remove("Initialize", "gmod_camera_override")
-
 	local SWEP = weapons.GetStored("gmod_camera")
 
 	SWEP._Reload = SWEP._Reload or SWEP.Reload
