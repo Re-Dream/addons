@@ -114,7 +114,7 @@ if CLIENT then
 			a = 45
 		end
 
-		local logo = WebMaterial("redream_logo_transparent", "https://gmlounge.us/media/redream-logo-transparent.png")
+		local logo = WebMaterial("redream_logo_transparent_text_stroke", "https://gmlounge.us/media/redream-logo-transparent-text-stroke.png")
 		surface.SetDrawColor(Color(255, 255, 255, 255))
 		surface.SetMaterial(logo)
 		surface.DrawTexturedRect(logoX, logoY, logoW, logoH)
