@@ -7,11 +7,9 @@ else
 end
 
 ENT.Identifier = "motd"
-ENT.Coords = {
-	s = 0.15,
-	w = 1175,
-	h = 645,
-}
+ENT.ScreenWidth = 1175
+ENT.ScreenHeight = 645
+ENT.ScreenScale = 0.15
 ENT.MaxRange = 192
 
 if SERVER then
@@ -36,6 +34,12 @@ if CLIENT then
 		size = 32,
 		weight = 500,
 	})
+	local grad = Material("vgui/gradient-d")
+	local function DrawOutlinedRect(x, y, w, h, thicc)
+		for i = 0, thicc - 1 do
+			surface.DrawOutlinedRect(x + i, y + i, w - i * 2, h - i * 2)
+		end
+	end
 
 	local buttons = {
 		{
@@ -77,12 +81,6 @@ if CLIENT then
 			end
 		}
 	}
-	local grad = Material("vgui/gradient-d")
-	local function DrawOutlinedRect(x, y, w, h, thicc)
-		for i = 0, thicc - 1 do
-			surface.DrawOutlinedRect(x + i, y + i, w - i * 2, h - i * 2)
-		end
-	end
 	local function IsHovering(x, y, w, h, mX, mY)
 		if not mX or not mY then return false end
 		return (mX < x + w and mX > x and mY < y + h and mY > y)

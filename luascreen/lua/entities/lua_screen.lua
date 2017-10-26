@@ -9,30 +9,11 @@ ENT.Type = "anim"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
-ENT.Coords = {
-	s = 0.2,
-	w = 512,
-	h = 256,
-}
+ENT.ScreenWidth = 512
+ENT.ScreenHeight = 256
+ENT.ScreenScale = 0.2
 ENT.MaxRange = 128
 ENT.Identifier = "default"
-
-if CLIENT then
-	function ENT:SetBounds()
-		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
-		local pos, ang = self:GetPos(), self:GetAngles()
-		local min = -(
-			ang:Right() * (w * s)
-		+	ang:Up() * (h * s)
-		+ 	ang:Forward() * 5
-		)
-		local max =
-			ang:Right() * (w * s)
-		+	ang:Up() * (h * s)
-		+ 	ang:Forward() * 5
-		self:SetRenderBounds(min, max)
-	end
-end
 
 function ENT:Initialize()
 	self:SetModel("models/hunter/plates/plate1x1.mdl")
@@ -77,16 +58,50 @@ hook.Add("PlayerInitPostEntity", tag, function(ply)
 	end
 end)
 
-function ENT:IsAccessible(ply)
+function ENT:ScreenCoords()
+	local ang = self:GetAngles()
+	-- ang:RotateAroundAxis(ang:Right(), 90)
+	ang:RotateAroundAxis(ang:Up(), 270)
+
+	local pos = self:GetPos()
+	pos = pos - ang:Forward() * ((self.ScreenWidth * 0.5) * self.ScreenScale)
+	pos = pos - ang:Right() * ((self.ScreenHeight * 0.5) * self.ScreenScale)
+	pos = pos + ang:Up() * -2
+
+	return pos, ang
+end
+
+function ENT:CursorPos(ply)
+	if CLIENT then
+		ply = LocalPlayer()
+	end
 	local pos, ang = self:ScreenCoords()
+	local w, h, s = self.ScreenWidth, self.ScreenHeight, self.ScreenScale
+
 	local normal = -ang:Up()
 	local maxRange = self.MaxRange
 	local p = util.IntersectRayWithPlane(ply:EyePos(), ply:GetAimVector(), pos, normal)
 
+	-- if there wasn't an intersection, don't calculate anything.
 	if not p then return end
 	if WorldToLocal(ply:GetShootPos(), Angle(0, 0, 0), pos, ang).z < 0 then return end
 
-	return p:Distance(ply:EyePos()) < maxRange
+	if p:Distance(ply:EyePos()) > maxRange then
+		return
+	end
+
+	local pos = WorldToLocal(p, Angle(0, 0, 0), pos, ang)
+	pos.x = pos.x * (1 / s)
+	pos.y = -pos.y * (1 / s)
+
+	if pos.x < 0 or pos.x > w or pos.y < 0 or pos.y > h then return end
+
+	return pos.x, pos.y
+end
+
+function ENT:IsAccessible(ply)
+	local x, y = self:CursorPos(ply)
+	return x and y
 end
 
 if SERVER then
@@ -123,46 +138,30 @@ if CLIENT then
 		screen:SetScreen(id)
 	end)
 
-	function ENT:ScreenCoords()
-		local ang = self:GetAngles()
-		-- ang:RotateAroundAxis(ang:Right(), 90)
-		ang:RotateAroundAxis(ang:Up(), 270)
-
-		local pos = self:GetPos()
-		pos = pos - ang:Forward() * ((self.Coords.w * 0.5) * self.Coords.s)
-		pos = pos - ang:Right() * ((self.Coords.h * 0.5) * self.Coords.s)
-		pos = pos + ang:Up() * -2
-
-		return pos, ang
+	function ENT:Send(...)
+		net.Start(tag)
+			net.WriteEntity(self)
+			net.WriteTable({...})
+		net.SendToServer()
 	end
 
-	function ENT:CursorPos()
-		local pos, ang = self:ScreenCoords()
-		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
-
-		local normal = -ang:Up()
-		local maxRange = self.MaxRange
-		local p = util.IntersectRayWithPlane(LocalPlayer():EyePos(), LocalPlayer():GetAimVector(), pos, normal)
-
-		-- if there wasn't an intersection, don't calculate anything.
-		if not p then return end
-		if WorldToLocal(LocalPlayer():GetShootPos(), Angle(0, 0, 0), pos, ang).z < 0 then return end
-
-		if p:Distance(LocalPlayer():EyePos()) > maxRange then
-			return
-		end
-
-		local pos = WorldToLocal(p, Angle(0, 0, 0), pos, ang)
-		pos.x = pos.x * (1 / s)
-		pos.y = -pos.y * (1 / s)
-
-		if pos.x < 0 or pos.x > w or pos.y < 0 or pos.y > h then return end
-
-		return pos.x, pos.y
+	function ENT:SetDrawBounds()
+		local w, h, s = self.ScreenWidth, self.ScreenHeight, self.ScreenScale
+		local pos, ang = self:GetPos(), self:GetAngles()
+		local min = -(
+			ang:Right() * (w * s)
+		+	ang:Up() * (h * s)
+		+ 	ang:Forward() * 5
+		)
+		local max =
+			ang:Right() * (w * s)
+		+	ang:Up() * (h * s)
+		+ 	ang:Forward() * 5
+		self:SetRenderBounds(min, max)
 	end
 
 	function ENT:Think()
-		self:SetBounds()
+		self:SetDrawBounds()
 
 		local x, y = self:CursorPos()
 		if x and y then
@@ -190,13 +189,6 @@ if CLIENT then
 		end
 	end
 
-	function ENT:Send(...)
-		net.Start(tag)
-			net.WriteEntity(self)
-			net.WriteTable({...})
-		net.SendToServer()
-	end
-
 	function ENT:Draw()
 		self:DrawShadow(false)
 	end
@@ -206,8 +198,8 @@ if CLIENT then
 	function ENT:DrawTranslucent()
 		local pos, ang = self:ScreenCoords()
 
-		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
-		cam.Start3D2D(pos, ang, self.Coords.s)
+		local w, h, s = self.ScreenWidth, self.ScreenHeight, self.ScreenScale
+		cam.Start3D2D(pos, ang, s)
 			if self.Draw3D2D then
 				local ok, err = pcall(self.Draw3D2D, self, w, h, s)
 				if not ok then
