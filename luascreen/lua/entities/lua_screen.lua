@@ -1,7 +1,9 @@
 
+AddCSLuaFile()
+
 local tag = "lua_screen"
 
-local ENT = {}
+-- local ENT = {}
 
 ENT.ClassName = tag
 ENT.Base = "base_anim"
@@ -118,13 +120,7 @@ if CLIENT then
 		local screen = net.ReadEntity()
 		local id = net.ReadString()
 
-		if IsValid(LocalPlayer()) then
-			screen:SetScreen(id)
-		else
-			hook.Add("InitPostEntity", tag .. "_" .. id, function()
-				Entity(screen:EntIndex()):SetScreen(id)
-			end)
-		end
+		screen:SetScreen(id)
 	end)
 
 	function ENT:ScreenCoords()
@@ -255,5 +251,5 @@ if CLIENT then
 	end
 end
 
-scripted_ents.Register(ENT, tag)
+-- scripted_ents.Register(ENT, tag)
 
