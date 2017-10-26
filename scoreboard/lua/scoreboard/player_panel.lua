@@ -9,13 +9,53 @@ surface.CreateFont(tag .. "Player", {
 
 local Player = {}
 
+local avatars = {}
+local hovered
+local function GetAvatar(sid)
+	if not avatars[sid] then
+		local a = vgui.Create("AvatarImage", vgui.GetWorldPanel())
+		a.Avatar = true
+		a:SetSteamID(sid, 184)
+		a:SetSize(184, 184)
+		a:ParentToHUD()
+		a.Alpha = 0
+		a:SetAlpha(0)
+		function a:Think()
+			self.Alpha = Lerp(FrameTime() * 10, self.Alpha, self.Hide and 0 or 255)
+			self:SetAlpha(self.Alpha)
+			if not IsValid(hovered) then
+				self.Hide = true
+			end
+		end
+		avatars[sid] = a
+	end
+	return avatars[sid]
+end
+
+hook.Add("PostRenderVGUI", tag .. "Player", function()
+	if IsValid(hovered) then
+		local avatar = GetAvatar(hovered.Player:SteamID64())
+		avatar.Hide = false
+		local x, y = hovered:LocalToScreen(0, 0)
+		avatar:SetPos(x - avatar:GetWide(), y - avatar:GetTall() * 0.5 + hovered:GetTall() * 0.5)
+		avatar:SetPaintedManually(true)
+		avatar:PaintManual()
+		avatar:SetPaintedManually(false)
+	end
+	hovered = nil
+end)
+
 function Player:Init()
 	self.Avatar = vgui.Create("AvatarImage", self)
 	self.Avatar:Dock(LEFT)
 
 	self.Avatar.Click = vgui.Create("DButton", self.Avatar)
 	self.Avatar.Click:Dock(FILL)
-	function self.Avatar.Click:Paint(w, h)
+	function self.Avatar.Click.Paint(s, w, h)
+		if s:IsHovered() then
+			hovered = self
+		end
+
 		return true
 	end
 	function self.Avatar.Click.DoClick()
