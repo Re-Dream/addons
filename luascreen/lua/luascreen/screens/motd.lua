@@ -104,7 +104,14 @@ if CLIENT then
 		local logoW, logoH = 512, 512
 		local logoX = (w + buttW + buttX) * 0.5 - logoW * 0.5
 		local logoY = h * 0.5 - logoH * 0.5
-		local _hovering = IsHovering(logoX, logoY, logoW, logoH, mX, mY)
+
+		local logo = WebMaterial("redream_logo_transparent_text_stroke", "https://gmlounge.us/media/redream-logo-transparent-text-stroke.png")
+		surface.SetDrawColor(Color(255, 255, 255, 255))
+		surface.SetMaterial(logo)
+		surface.DrawTexturedRect(logoX, logoY, logoW, logoH)
+
+		local padding = 32
+		local _hovering = IsHovering(logoX + padding, logoY + padding, logoW - padding * 2, logoH - padding * 2, mX, mY)
 		hovering = hovering and hovering or _hovering
 		local a = 0
 		if _hovering and not self.Using then
@@ -113,16 +120,10 @@ if CLIENT then
 			self.Choice = #buttons
 			a = 45
 		end
-
-		local logo = WebMaterial("redream_logo_transparent_text_stroke", "https://gmlounge.us/media/redream-logo-transparent-text-stroke.png")
-		surface.SetDrawColor(Color(255, 255, 255, 255))
-		surface.SetMaterial(logo)
-		surface.DrawTexturedRect(logoX, logoY, logoW, logoH)
-
 		surface.SetDrawColor(Color(255, 255, 255, a))
-		surface.DrawRect(logoX, logoY, logoW, logoH)
+		surface.DrawRect(logoX + padding, logoY + padding, logoW - padding * 2, logoH - padding * 2)
 		surface.SetDrawColor(Color(255, 255, 255, a * 5))
-		surface.DrawOutlinedRect(logoX, logoY, logoW, logoH)
+		surface.DrawOutlinedRect(logoX + padding, logoY + padding, logoW - padding * 2, logoH - padding * 2)
 
 		surface.SetDrawColor(Color(32, 32, 32, 100 + math.abs(math.sin(RealTime() * 0.25)) * 27))
 		surface.SetMaterial(grad)
