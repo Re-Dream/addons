@@ -95,7 +95,9 @@ if CLIENT then
 		local hovering = false
 
 		-- background
-		surface.SetDrawColor(Color(210, 210, 245, 255))
+		surface.SetDrawColor(Color(0, 0, 0, 255))
+		surface.DrawRect(0, 0, w, h)
+		surface.SetDrawColor(Color(175, 190, 225, 225))
 		surface.DrawRect(0, 0, w, h)
 
 		-- logo
@@ -122,11 +124,11 @@ if CLIENT then
 		surface.SetDrawColor(Color(255, 255, 255, a * 5))
 		surface.DrawOutlinedRect(logoX, logoY, logoW, logoH)
 
-		surface.SetDrawColor(Color(32, 32, 32, 100 + math.abs(math.sin(RealTime() * 0.1)) * 27))
+		surface.SetDrawColor(Color(32, 32, 32, 100 + math.abs(math.sin(RealTime() * 0.25)) * 27))
 		surface.SetMaterial(grad)
 		surface.DrawTexturedRect(0, 0, w, h)
 
-		surface.SetDrawColor(Color(0, 0, 127, 192))
+		surface.SetDrawColor(Color(0, 64, 127, 192))
 		DrawOutlinedRect(0, 0, w, h, 5)
 
 		for k, butt in next, buttons do
@@ -136,12 +138,12 @@ if CLIENT then
 				local _hovering = IsHovering(_x, _y, buttW, buttH, mX, mY)
 				local a = 194
 				if _hovering and not self.Using then
-					a = 208
+					a = 218
 				elseif _hovering and self.Using then
 					self.Choice = k
-					a = 224
+					a = 230
 				end
-				surface.SetDrawColor(Color(0, 0, 92, a))
+				surface.SetDrawColor(Color(0, 46, 92, a))
 				surface.DrawRect(_x, _y, buttW, buttH)
 
 				surface.SetFont("lua_screen_motd_button")
@@ -162,7 +164,7 @@ if CLIENT then
 		surface.SetFont("lua_screen_motd_header2")
 		local txt = "Welcome!"
 		local txtW, txtH = surface.GetTextSize(txt)
-		draw.SimpleTextOutlined(txt, "lua_screen_motd_header2", buttX + buttW * 0.5 - txtW * 0.5, buttY - buttH - 7, Color(225, 225, 255, 255), 0, 0, 3, Color(0, 0, 0, 41))
+		draw.SimpleTextOutlined(txt, "lua_screen_motd_header2", buttX + buttW * 0.5 - txtW * 0.5, buttY - buttH - 7 + math.sin(RealTime() * 2.5) * 2, Color(225, 225, 255, 255), 0, 0, 3, Color(0, 0, 0, 41))
 	end
 
 	function ENT:OnMousePressed()
