@@ -184,6 +184,22 @@ local clean = mingeban.CreateCommand({"clean", "cleanup"}, function(caller, line
 end)
 clean:AddArgument(ARGTYPE_PLAYERS)
 
+local PLAYER = FindMetaTable("Player")
+if PLAYER.CheckLimit then
+	PLAYER._CheckLimit = PLAYER._CheckLimit or PLAYER.CheckLimit
+	function PLAYER:CheckLimit(str)
+		if self.Unrestricted then return true end
+		return self._CheckLimit(str)
+	end
+end
+
+local restrictions = mingeban.CreateCommand("restrictions", function(caller, line, b)
+	caller.Unrestricted = not b
+	mingeban.utils.print(mingeban.colors.Cyan, tostring(caller) .. " turned restrictions " .. (b and "on" or "off") .. " for themselves")
+end)
+restrictions:AddArgument(ARGTYPE_BOOLEAN)
+restrictions:SetAllowConsole(false)
+
 local defaultWeapons = {
 	["weapon_357"] = true,
 	["weapon_ar2"] = true,
