@@ -3,8 +3,6 @@ AddCSLuaFile()
 
 local tag = "lua_screen"
 
--- local ENT = {}
-
 ENT.ClassName = tag
 ENT.Base = "base_anim"
 ENT.Type = "anim"
@@ -201,6 +199,12 @@ if CLIENT then
 		self:DrawShadow(false)
 	end
 
+	local okSetBounds = false
+	hook.Add("PostRender", tag, function()
+		okSetBounds = true
+		hook.Remove("PostRender", tag)
+	end)
+
 	local cursor = Material("icon16/cursor.png")
 	local grad = Material("vgui/gradient-d")
 	function ENT:DrawTranslucent()
@@ -250,12 +254,10 @@ if CLIENT then
 			render.SetBlend(1)
 		end
 		self:DrawShadow(false)
-		if self.LastIdentifier ~= self.Identifier then
+		if okSetBounds and self.LastIdentifier ~= self.Identifier then
 			self:SetBounds()
 			self.LastIdentifier = self.Identifier
 		end
 	end
 end
-
--- scripted_ents.Register(ENT, tag)
 
