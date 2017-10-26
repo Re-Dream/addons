@@ -149,7 +149,7 @@ if CLIENT then
 				surface.SetFont("lua_screen_motd_button")
 				local txt = butt.text
 				local txtW, txtH = surface.GetTextSize(txt)
-				surface.SetTextColor(Color(220, 220, 255, 255))
+				surface.SetTextColor(Color(235, 235, 255, 255))
 				surface.SetTextPos(_x + buttW * 0.5 - txtW * 0.5, _y + txtH * 0.5 - 7)
 				surface.DrawText(txt)
 				buttY = buttY - buttH - 8
@@ -164,7 +164,7 @@ if CLIENT then
 		surface.SetFont("lua_screen_motd_header2")
 		local txt = "Welcome!"
 		local txtW, txtH = surface.GetTextSize(txt)
-		draw.SimpleTextOutlined(txt, "lua_screen_motd_header2", buttX + buttW * 0.5 - txtW * 0.5, buttY - buttH - 7 + math.sin(RealTime() * 2.5) * 2, Color(225, 225, 255, 255), 0, 0, 3, Color(0, 0, 0, 41))
+		draw.SimpleTextOutlined(txt, "lua_screen_motd_header2", buttX + buttW * 0.5 - txtW * 0.5, buttY - buttH - 7 + math.sin(RealTime() * 2.5) * 2, Color(235, 235, 255, 255), 0, 0, 3, Color(0, 0, 0, 41))
 	end
 
 	function ENT:OnMousePressed()
