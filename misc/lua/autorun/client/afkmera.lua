@@ -67,18 +67,19 @@ hook.Add("CalcView", tag, function(ply, basePos, baseAng, baseFov, nearZ, farZ)
 	local transitionSpeed = afkmera_transition_speed:GetFloat() or 1
 	local fov = afkmera_fov:GetFloat() or 70
 	camDist 	= math.Clamp(Lerp(FrameTime() * (10 * transitionSpeed), camDist, IsAFK and 1 or 0), 0, 1)
-	fieldOfView = Lerp(FrameTime() * (10 * transitionSpeed), fieldOfView, IsAFK and fov or baseFov)
+	if camDist <= 0.005 then return end
 
 	local dead = false
 	if ply:Health() <= 0 or ply:Crouching() or ply:InVehicle() then dead = true end
-
 	camHeight   = Lerp(FrameTime() * (10 * transitionSpeed), camHeight, dead and 1 or 0)
+
+	fieldOfView = Lerp(FrameTime() * (10 * transitionSpeed), fieldOfView, IsAFK and fov or baseFov)
 
 	local trace = ply:GetEyeTrace()
 	local badEntity = false
 	if trace.Entity ~= nil and trace.Entity ~= NULL and noAFKEntities[trace.Entity:GetClass()] then badEntity = true end
 
-	if camDist > 0.005 and not badEntity then
+	if not badEntity then
 		GetNewSequence(ply)
 
 		local rotationSpeed = afkmera_rotation_speed:GetFloat() or 1
