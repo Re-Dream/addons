@@ -175,6 +175,7 @@ function Player:PerformLayout()
 end
 
 Player.Friend = Material("icon16/user_green.png")
+Player.Self = Material("icon16/user.png")
 Player.Shield = Material("icon16/shield.png")
 Player.Typing = Material("icon16/comments.png")
 Player.Wrench = Material("icon16/wrench.png")
@@ -251,10 +252,10 @@ function Player:Paint(w, h)
 		end
 	end
 
-	if lply ~= ply and lply:IsFriend(ply) then
+	if (lply ~= ply and lply:IsFriend(ply)) or lply == ply then
 		DisableClipping(true)
 			surface.SetDrawColor(Color(255, 255, 255, 127))
-			surface.SetMaterial(self.Friend)
+			surface.SetMaterial(lply == ply and self.Self or self.Friend)
 			surface.DrawTexturedRect(-16 - 4, h * 0.5 - 8, 16, 16)
 		DisableClipping(false)
 	end
