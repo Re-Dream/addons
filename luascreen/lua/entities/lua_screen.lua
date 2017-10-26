@@ -161,17 +161,8 @@ if CLIENT then
 		return pos.x, pos.y
 	end
 
-	local okSetBounds = false
-	hook.Add("PostRender", tag, function()
-		okSetBounds = true
-		hook.Remove("PostRender", tag)
-	end)
-
 	function ENT:Think()
-		if okSetBounds and self.LastIdentifier ~= self.Identifier then
-			self:SetBounds()
-			self.LastIdentifier = self.Identifier
-		end
+		self:SetBounds()
 
 		local x, y = self:CursorPos()
 		if x and y then
