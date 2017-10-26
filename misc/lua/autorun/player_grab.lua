@@ -51,7 +51,8 @@ hook.Add("PhysgunDrop", tag, function(ply, ent)
 end)
 
 hook.Add("PlayerDisconnected", tag, function(ply)
-	hook.Run("PhysgunDrop", tag, ply, ply.Physgunning)
+	hook.Run("PhysgunDrop", ply, ply.Physgunning)
+	hook.Run("PhysgunDrop", ply.Physgunner, ply)
 end)
 
 if SERVER then
