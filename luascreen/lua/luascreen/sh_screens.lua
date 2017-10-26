@@ -50,3 +50,13 @@ if SERVER then
 	end)
 end
 
+function luascreen.GetScreens(id)
+	local tbl = {}
+	for _, ent in next, ents.FindByClass("lua_screen") do
+		if not id or ent.Identifier == id then
+			tbl[#tbl + 1] = ent
+		end
+	end
+	return tbl
+end
+

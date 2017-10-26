@@ -1,5 +1,10 @@
 
-local ENT = {}
+local ENT
+if istable(GAMEMODE) then
+	ENT = {}
+else
+	ENT = _G.ENT
+end
 
 ENT.Identifier = "motd"
 ENT.Coords = {
@@ -176,5 +181,7 @@ if CLIENT then
 	end
 end
 
-luascreen.RegisterScreen(ENT.Identifier, ENT)
+if istable(GAMEMODE) then
+	luascreen.RegisterScreen(ENT.Identifier, ENT)
+end
 
