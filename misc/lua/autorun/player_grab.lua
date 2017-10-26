@@ -42,6 +42,10 @@ hook.Add("PhysgunPickup", tag, function(ply, ent)
 end)
 
 hook.Add("PhysgunDrop", tag, function(ply, ent)
+	if isstring(ply) or isstring(ent) then
+		print("WTF??", ply, ent)
+		return
+	end
 	if IsValid(ply) and IsValid(ent) and ply:IsPlayer() and ent:IsPlayer() then
 		ent:SetMoveType((ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) and MOVETYPE_NOCLIP or MOVETYPE_WALK)
 		ent:SetOwner()

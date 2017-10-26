@@ -235,6 +235,6 @@ if CLIENT then
 end
 
 if istable(GAMEMODE) then
-	scripted_ents.Register(tag, ENT)
+	scripted_ents.Register(ENT, tag)
 end
 
