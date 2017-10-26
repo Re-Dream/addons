@@ -1,5 +1,5 @@
 
--- local ENT = {}
+local ENT = {}
 
 ENT.Identifier = "motd"
 ENT.Coords = {
@@ -149,6 +149,9 @@ if CLIENT then
 				hovering = hovering and hovering or _hovering
 			end
 		end
+		if self.Hovering ~= hovering and hovering then
+			EmitSound("garrysmod/ui_hover.wav", LocalPlayer():GetEyeTrace().HitPos, LocalPlayer():EntIndex())
+		end
 		self.Hovering = hovering
 
 		surface.SetFont("lua_screen_motd_header2")
@@ -166,12 +169,12 @@ if CLIENT then
 		if self.Hovering and self._Using and self.Choice and nextUse < RealTime() then
 			print(self.Hovering, self.Choice)
 			buttons[self.Choice].func()
-			surface.PlaySound("garrysmod/balloon_pop_cute.wav")
+			EmitSound("garrysmod/ui_click.wav", LocalPlayer():GetEyeTrace().HitPos, LocalPlayer():EntIndex())
 			nextUse = RealTime() + 1
 		end
 		self._Using = false
 	end
 end
 
--- luascreen.RegisterScreen(ENT.Identifier, ENT)
+luascreen.RegisterScreen(ENT.Identifier, ENT)
 

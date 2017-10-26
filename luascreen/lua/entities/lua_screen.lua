@@ -19,6 +19,23 @@ ENT.Coords = {
 ENT.MaxRange = 128
 ENT.Identifier = "default"
 
+if CLIENT then
+	function ENT:SetBounds()
+		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
+		local pos, ang = self:GetPos(), self:GetAngles()
+		local min = -(
+			ang:Right() * (w * s)
+		+	ang:Up() * (h * s)
+		+ 	ang:Forward() * 5
+		)
+		local max =
+			ang:Right() * (w * s)
+		+	ang:Up() * (h * s)
+		+ 	ang:Forward() * 5
+		self:SetRenderBounds(min, max)
+	end
+end
+
 function ENT:Initialize()
 	self:SetModel("models/hunter/plates/plate1x1.mdl")
 	self:SetSolid(SOLID_VPHYSICS)
@@ -34,18 +51,7 @@ function ENT:Initialize()
 	end
 
 	if CLIENT then
-		local w, h, s = self.Coords.w, self.Coords.h, self.Coords.s
-		local pos, ang = self:GetPos(), self:GetAngles()
-		local min = -(
-			ang:Right() * (w * s)
-		+	ang:Up() * (h * s)
-		+ 	ang:Forward() * 5
-		)
-		local max =
-			ang:Right() * (w * s)
-		+	ang:Up() * (h * s)
-		+ 	ang:Forward() * 5
-		self:SetRenderBounds(min, max)
+		self:SetBounds()
 	end
 end
 
@@ -62,6 +68,8 @@ function ENT:SetScreen(id)
 				net.WriteEntity(self)
 				net.WriteString(id)
 			net.Broadcast()
+		elseif CLIENT then
+			self:SetBounds()
 		end
 	else
 		ErrorNoHalt("no existing screen for identifier " .. id)
