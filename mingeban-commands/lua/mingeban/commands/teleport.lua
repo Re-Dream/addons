@@ -32,8 +32,9 @@ local function goto(from, to, istp)
 	end
 	if ent == from then return false, "Can't goto yourself" end
 
-	if from:IsPlayer() and not from:Alive() then
-		from:Spawn()
+	if from:IsPlayer() then
+		if not from:Alive() then from:Spawn() end
+		if from:InVehicle() then from:ExitVehicle() end
 	end
 
 	if IsValid(ent) and isentity(ent) then
