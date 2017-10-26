@@ -24,7 +24,7 @@ local kick = mingeban.CreateCommand("kick", function(caller, line, ply, reason)
 	local reason = reason or "byebye!!"
 	mingeban.utils.print(mingeban.colors.Red,
 		tostring(ply) .. "(" .. ply:SteamID() .. ")" ..
-		" has been kicked " ..
+		" has been kicked" ..
 		" by " .. tostring(caller) ..
 		" for reason: '" .. reason ..
 		"'."
