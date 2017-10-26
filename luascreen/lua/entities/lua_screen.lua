@@ -90,9 +90,9 @@ function ENT:CursorPos(ply)
 	if not p then return end
 	if WorldToLocal(ply:GetShootPos(), Angle(0, 0, 0), pos, ang).z < 0 then return end
 
-	if p:Distance(ply:EyePos()) > maxRange then
-		return
-	end
+	local trace = ply:GetEyeTrace()
+	if p:Distance(ply:EyePos()) > trace.HitPos:Distance(ply:EyePos()) then return end
+	if p:Distance(ply:EyePos()) > maxRange then return end
 
 	local pos = WorldToLocal(p, Angle(0, 0, 0), pos, ang)
 	pos.x = pos.x * (1 / s)
