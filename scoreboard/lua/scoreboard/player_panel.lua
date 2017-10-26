@@ -208,6 +208,8 @@ Player.Tags = {
 function Player:Paint(w, h)
 	local lply = LocalPlayer()
 	local ply = self.Player
+	if not IsValid(ply) then return true end
+
 	local isAFK = (IsValid(ply) and ply.IsAFK) and ply:IsAFK() or false
 
 	surface.SetDrawColor(isAFK and Color(225, 229, 240, 190) or Color(244, 248, 255, 190))
