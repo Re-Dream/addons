@@ -412,7 +412,7 @@ function scoreboard:RefreshPlayers(id)
 		end
 
 		for _, _pnl in next, pnl:GetChildren() do
-			if pnl:GetClassName() == tag .. "Player" and (not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id) then
+			if _pnl.ClassName == (tag .. "Player") and (not IsValid(_pnl.Player) or _pnl.Player:Team() ~= id) then
 				pnl[_pnl.UserID] = nil
 				_pnl:SetVisible(false)
 				_pnl:SetParent() -- ugly hack to call PerformLayout
