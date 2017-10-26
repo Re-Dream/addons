@@ -161,7 +161,18 @@ if CLIENT then
 		return pos.x, pos.y
 	end
 
+	local okSetBounds = false
+	hook.Add("PostRender", tag, function()
+		okSetBounds = true
+		hook.Remove("PostRender", tag)
+	end)
+
 	function ENT:Think()
+		if okSetBounds and self.LastIdentifier ~= self.Identifier then
+			self:SetBounds()
+			self.LastIdentifier = self.Identifier
+		end
+
 		local x, y = self:CursorPos()
 		if x and y then
 			self.Targeted = true
@@ -199,12 +210,6 @@ if CLIENT then
 		self:DrawShadow(false)
 	end
 
-	local okSetBounds = false
-	hook.Add("PostRender", tag, function()
-		okSetBounds = true
-		hook.Remove("PostRender", tag)
-	end)
-
 	local cursor = Material("icon16/cursor.png")
 	local grad = Material("vgui/gradient-d")
 	function ENT:DrawTranslucent()
@@ -228,21 +233,6 @@ if CLIENT then
 					local txtW, txtH = surface.GetTextSize(err)
 					draw.SimpleText("ERROR: " .. err, "DermaDefault", w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5, Color(255, 0, 0))
 				end
-			else
-				surface.SetDrawColor(Color(127, 64, 0, 255))
-				surface.DrawRect(0, 0, w, h)
-
-				surface.SetDrawColor(Color(255, 64, 0, 255))
-				surface.DrawOutlinedRect(0, 0, w, h)
-
-				draw.SimpleText("Test!", "DermaDefault", 8, 8, color_white)
-
-				local x, y = self:CursorPos()
-				if x and y then
-					surface.SetMaterial(cursor)
-					surface.SetDrawColor(Color(255, 255, 255))
-					surface.DrawTexturedRect(x - 4, y, 16, 16)
-				end
 			end
 		cam.End3D2D()
 
@@ -254,10 +244,6 @@ if CLIENT then
 			render.SetBlend(1)
 		end
 		self:DrawShadow(false)
-		if okSetBounds and self.LastIdentifier ~= self.Identifier then
-			self:SetBounds()
-			self.LastIdentifier = self.Identifier
-		end
 	end
 end
 
