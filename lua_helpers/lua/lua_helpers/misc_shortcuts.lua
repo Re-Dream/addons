@@ -19,6 +19,8 @@ if CLIENT then
 		cmd("say " .. msg)
 	end
 elseif SERVER then
+	require("fps")
+
 	function cmd(cmd)
 		game.ConsoleCommand(cmd .. "\n")
 	end
