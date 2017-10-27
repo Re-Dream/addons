@@ -39,9 +39,11 @@ if CLIENT then
 		bub.text = text
 	end)
 
+	local started = false
 	local easychat_enable = GetConVar("easychat_enable")
 	if easychat_enable and easychat_enable:GetBool() then
 		hook.Add("ECOpened", tag, function()
+			started = true
 			net.Start(tag)
 				net.WriteBool(true)
 				net.WriteData("", #(""))
@@ -49,23 +51,29 @@ if CLIENT then
 		end)
 	end
 	hook.Add("StartChat", tag, function()
+		started = true
 		net.Start(tag)
 			net.WriteBool(true)
 			net.WriteData("", #(""))
 		net.SendToServer()
-	end)
-	hook.Add("ChatTextChanged", tag, function(text)
-		net.Start(tag)
-			net.WriteBool(true)
-			local text = util.Compress(text) or ""
-			net.WriteData(text, #text)
-		net.SendToServer()
+		-- print("StartChat")
 	end)
 	hook.Add("FinishChat", tag, function()
+		started = false
 		net.Start(tag)
 			net.WriteBool(false)
 			net.WriteData("", #(""))
 		net.SendToServer()
+		-- print("FinishChat")
+	end)
+	hook.Add("ChatTextChanged", tag, function(text)
+		net.Start(tag)
+			local typing = (text ~= "" or text == "" and started) and true or false
+			net.WriteBool(typing)
+			local text = util.Compress(text) or ""
+			net.WriteData(text, #text)
+		net.SendToServer()
+		-- print("ChatTextChanged")
 	end)
 
 	local oldBubbles = {}
