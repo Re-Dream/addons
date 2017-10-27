@@ -102,12 +102,11 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 				DrawText(ply:Nick(), tag, 0, team.GetColor(ply:Team()))
 
 				if lply.IsAFK and ply:IsAFK() then
-					local AFKTime = math.abs(math.max(0, CurTime() - ply:AFKTime()))
-					local txt = string.format("%.2d:%.2d:%.2d",
-						math.floor(AFKTime / 60 / 60), -- hours
-						math.floor(AFKTime / 60 % 60), -- minutes
-						math.floor(AFKTime % 60) -- seconds
-					)
+					local AFKTime = math.max(0, CurTime() - ply:AFKTime())
+					local h = math.floor(AFKTime / 60 / 60)
+					local m = math.floor(AFKTime / 60 % 60)
+					local s = math.floor(AFKTime % 60)
+					txt = string.format("%.2d:%.2d", h >= 1 and h or m, h >= 1 and m or s)
 					local choice = math.Clamp(math.Round((RealTime() * 0.125 + ply:EntIndex()) % #awayPhrases), 1, #awayPhrases)
 					DrawText(txt .. " - " .. awayPhrases[choice] .. "...", tag .. "2", 1, Color(160, 160, 255))
 				end
