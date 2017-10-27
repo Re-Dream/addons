@@ -157,6 +157,7 @@ function Player:Init()
 	self.Info.Ping:Dock(RIGHT)
 	self.Info.Ping:SetWide(58)
 	self.Info.Ping:SetCursor("arrow")
+	self.Info.Ping:SetTooltip("Ping / AFK Time")
 	self.Info.Ping.Clock = Material("icon16/clock.png")
 	self.Info.Ping.Latency = Material("icon16/transmit_blue.png")
 	function self.Info.Ping.Paint(s, w, h)
@@ -181,9 +182,9 @@ function Player:Init()
 		if isAFK then
 			local AFKTime = math.max(0, CurTime() - ply:AFKTime())
 			local h = math.floor(AFKTime / 60 / 60)
-			local m = math.floor(AFKTime / 60 - h * 60)
-			local s = math.floor(AFKTime - m * 60 - h * 60 * 60)
-			txt = string.format("%.2d:%.2d", h > 1 and h or m, h > 1 and m or s)
+			local m = math.floor(AFKTime / 60 % 60)
+			local s = math.floor(AFKTime % 60)
+			txt = string.format("%d:%.2d", h >= 1 and h or m, h >= 1 and m or s)
 		else
 			txt = ply:Ping()
 		end
@@ -193,6 +194,38 @@ function Player:Init()
 		surface.DrawText(txt)
 
 		return true
+	end
+
+	if LocalPlayer().GetPlaytime then
+		self.Info.Playtime = vgui.Create("DButton", self.Info)
+		self.Info.Playtime:Dock(RIGHT)
+		self.Info.Playtime:SetWide(46)
+		self.Info.Playtime:SetCursor("arrow")
+		self.Info.Playtime:SetTooltip("Playtime")
+		function self.Info.Playtime.Paint(s, w, h)
+			local ply = self.Player
+			if not IsValid(ply) then return end
+
+			surface.SetFont("DermaDefault")
+			local playtime = ply:GetPlaytime()
+			local _h = math.floor(playtime / 60 / 60)
+			local _m = math.floor(playtime / 60 % 60)
+			local _s = math.floor(playtime % 60)
+			local txt
+			if _h < 1 then
+				txt = string.format("%d m", _m, _s)
+			elseif _h < 10 then
+				txt = string.format("%d:%.2d h", _h, _m)
+			else
+				txt = string.format("%d h", _h, _m)
+			end
+			local txtW, txtH = surface.GetTextSize(txt)
+			surface.SetTextPos(w * 0.5 - txtW * 0.5, h * 0.5 - txtH * 0.5)
+			surface.SetTextColor(Color(0, 0, 0, 230))
+			surface.DrawText(txt)
+
+			return true
+		end
 	end
 end
 
@@ -269,7 +302,11 @@ function Player:Paint(w, h)
 		surface.DrawRect(0, 0, w, h)
 	end
 
-	local x = w - self.Info.Ping:GetWide() - 4
+	local infoW = 0
+	for _, pnl in next, self.Info:GetChildren() do
+		infoW = infoW + pnl:GetWide()
+	end
+	local x = w - infoW - 4
 	for _, tag in next, self.Tags do
 		local text, icon = tag.display(ply)
 		if text and icon then
