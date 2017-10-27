@@ -377,7 +377,7 @@ function scoreboard:HandlePlayers()
 		end
 	end
 	for id, pnl in next, self.Teams:GetTeams() do
-		if IsValid(pnl) and pnl:IsVisible() then
+		if pnl and pnl:IsVisible() then
 			pnl:SetLone(i < 2)
 		end
 	end
