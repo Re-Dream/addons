@@ -43,7 +43,7 @@ end)
 
 hook.Add("PhysgunDrop", tag, function(ply, ent)
 	if IsValid(ply) and IsValid(ent) and ply:IsPlayer() and ent:IsPlayer() then
-		ent:SetMoveType((ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) and MOVETYPE_NOCLIP or MOVETYPE_WALK)
+		ent:SetMoveType((ply:KeyDown(IN_ATTACK2) and ply:IsAdmin()) snd MOVETYPE_NOCLIP or MOVETYPE_WALK)
 		ent:SetOwner()
 		ent.Physgunner = nil
 		ply.Physgunning = nil
@@ -51,8 +51,8 @@ hook.Add("PhysgunDrop", tag, function(ply, ent)
 end)
 
 hook.Add("PlayerDisconnected", tag, function(ply)
-	hook.Run("PhysgunDrop", ply, ply.Physgunning)
-	hook.Run("PhysgunDrop", ply.Physgunner, ply)
+	hook.GetTable().PhysgunDrop[tag](ply, ply.Physgunning)
+	hook.GetTable().PhysgunDrop[tag](ply.Physgunner, ply)
 end)
 
 if SERVER then
@@ -61,7 +61,7 @@ if SERVER then
 		if not IsValid(physgunner) then return end
 		if ply:IsFriend(physgunner) then
 			physgunner:SelectWeapon("none")
-			hook.Run("PhysgunDrop", physgunner, ply)
+			hook.GetTable().PhysgunDrop[tag](physgunner, ply)
 		else
 			return false
 		end
