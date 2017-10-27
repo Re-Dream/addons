@@ -48,7 +48,7 @@ local function removeIfError(func, name, id, ...)
 	if f.what == "C" or file.Exists(f.short_src, "GAME") then
 		print("Hook errored: '" .. name .. "' ->", id)
 		ErrorNoHalt(a .. "\n")
-		print(debug.traceback())
+		print(debug.Trace())
 		print("Could not remove hook as there could be potentially fatal consequences")
 		return
 	end
@@ -56,7 +56,7 @@ local function removeIfError(func, name, id, ...)
 	hook.Hooks[name][id] = nil
 
 	print("Removing broken Hook: '" .. name .. "' ->", id)
-	print(debug.traceback())
+	print(debug.Trace())
 	ErrorNoHalt(a .. "\n")
 end
 
