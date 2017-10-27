@@ -329,7 +329,7 @@ function Player:Paint(w, h)
 		end
 	end
 
-	if (lply ~= ply and lply:IsFriend(ply)) or lply == ply then
+	if (lply ~= ply and ply:IsFriend()) or lply == ply then
 		DisableClipping(true)
 			surface.SetDrawColor(Color(255, 255, 255, 127))
 			surface.SetMaterial(lply == ply and self.Self or self.Friend)
