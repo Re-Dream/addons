@@ -370,14 +370,14 @@ function scoreboard:HandlePlayers()
 	local i = 0
 	for id, pnl in next, self.Teams:GetTeams() do
 		if IsValid(pnl) and pnl:IsVisible() then -- #team.GetPlayers(id) > 0 then
-			if pnl.Last ~= #team.GetPlayers(id) then
+			if pnl.Last ~= #team.GetPlayers(id) or pnl.Last ~= #pnl:GetChildren() then
 				self:RefreshPlayers(id)
 			end
 			i = i + 1
 		end
 	end
 	for id, pnl in next, self.Teams:GetTeams() do
-		if pnl and pnl:IsVisible() then
+		if IsValid(pnl) and pnl:IsVisible() then
 			pnl:SetLone(i < 2)
 		end
 	end
@@ -394,7 +394,6 @@ function scoreboard:RefreshPlayers(id)
 			pnl:SetZPos(-id)
 			pnl:Dock(TOP)
 			pnl:DockMargin(0, 2, 0, 0)
-			pnl:NoClipping(false)
 			self.Teams[id] = pnl
 		end
 
