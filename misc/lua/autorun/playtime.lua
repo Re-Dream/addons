@@ -1,82 +1,59 @@
-local tag = "playtime"
-local META = FindMetaTable("Player")
 
-if SERVER then	
+local tag = "playtime"
+
+local PLAYER = FindMetaTable("Player")
+
+if SERVER then
 	util.AddNetworkString(tag)
-	
-	META.pt = nil
-	
-	META.SetPT = function(self,pt)
-		self.pt = pt
+
+	function PLAYER:GetPlaytime()
+		return self.Playtime
 	end
-	
-	META.GetPlaytime = function(self)
-		return self.pt
-	end
-	
-	playtime = {}
-	
-	function playtime.net(tbl)
-		net.Start(tag)
-		net.WriteTable(tbl)
-		net.Broadcast()
-	end
-	
-	function playtime.initplayer(ply)
-		local thiccboi = ply:GetPData(tag, 0)
-		
-		if(thiccboi == 0) then
-			ply:SetPData(tag.."_joinedin",os.time())
+	function PLAYER:LoadPlaytime()
+		if not self:GetPData(tag) then
+			self:SetPData(tag, "0")
 		end
-		
-		ply:SetPT(thiccboi)
-		
-		
-		playtime.net({
-			{ ent = ply, playtime = ply:GetPData(tag, 0) } 
-		})
-		
+		local playtime = tonumber(self:GetPData(tag))
+		self:SetNWFloat(tag, playtime)
+		self.Playtime = playtime
 	end
-	
-	timer.Create(tag,1,0,function()
-		local tbl = {}
-		
-		for _,ply in pairs(player.GetAll()) do
-			local a = os.time()-ply:GetPData(tag.."_joinedin", 0)
-			
-			ply:SetPData(tag, a)
-			table.insert(tbl, {
-				ent = ply,
-				playtime = a
-			})
-			
-			ply:SetPT(a)
+	function PLAYER:SavePlaytime()
+		self:SetPData(tag, self.Playtime)
+	end
+	timer.Create(tag, 1, 0, function()
+		for _, ply in next, player.GetAll() do
+			local addTime = ply:TimeConnected() - (ply.LastPlaytimeUpdate or 0)
+			ply.Playtime = ply.Playtime and ply.Playtime + addTime or 0
+			ply.LastPlaytimeUpdate = ply:TimeConnected()
 		end
-		
-		playtime.net(tbl)
 	end)
-	
+	timer.Create(tag .. "_saving", 60, 0, function()
+		for _, ply in next, player.GetAll() do
+			ply:SavePlaytime()
+		end
+	end)
 	hook.Add("PlayerInitialSpawn", tag, function(ply)
-		playtime.initplayer(ply)
+		ply:LoadPlaytime()
 	end)
-elseif CLIENT then
-	META.pt = nil
-	
-	META.SetPT = function(self,pt)
-		self.pt = pt
-	end
-	
-	META.GetPlaytime = function(self)
-		return self.pt
-	end
-	
-	net.Receive(tag, function()
-		local tbl = net.ReadTable()
-		
-		for k,v in pairs(tbl) do
-			if(v.ent.SetPT) then
-				v.ent:SetPT(v.playtime)
-			end
+	hook.Add("PlayerDisconnected", tag, function(ply)
+		ply:SavePlaytime()
+	end)
+	hook.Add("ShutDown", tag, function()
+		for _, ply in next, player.GetAll() do
+			ply:SavePlaytime()
 		end
 	end)
+	if istable(GAMEMODE) then
+		for _, ply in next, player.GetAll() do
+			ply:LoadPlaytime()
+		end
+	end
 end
+
+if CLIENT then
+	local now = RealTime()
+	function PLAYER:GetPlaytime()
+		return self:GetNWFloat(tag) + math.max(0, (RealTime() - now))
+	end
+end
+
