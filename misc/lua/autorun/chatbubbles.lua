@@ -92,7 +92,7 @@ if CLIENT then
 	local function PlayersByRange()
 		local plys = player.GetAll()
 		table.sort(plys, function(a, b)
-			return a:GetPos():Distance(EyePos()) < b:GetPos():Distance(EyePos())
+			return a:GetPos():Distance(EyePos()) > b:GetPos():Distance(EyePos())
 		end)
 		return plys
 	end
