@@ -41,7 +41,7 @@ else
 		else
 			self:SetPData("Nick", nick)
 		end
-		self:SetNWString("Nick", nick)
+		self:SetNWString("Nick", nick or "")
 	end
 
 	local nextChange = {}
