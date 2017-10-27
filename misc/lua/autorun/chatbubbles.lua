@@ -75,7 +75,7 @@ if CLIENT then
 		if not oldBubbles[ply] then oldBubbles[ply] = {} end
 		local oldBub = oldBubbles[ply]
 		oldBub[#oldBub + 1] = {
-			text = bub.text,
+			text = text,
 			time = RealTime(),
 			pos  = ply:EyePos(),
 			ang  = ply:EyeAngles()
