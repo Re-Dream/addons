@@ -32,7 +32,7 @@ local awayPhrases = {
 local function PlayersByRange()
 	local plys = player.GetAll()
 	table.sort(plys, function(a, b)
-		return a:GetPos():Distance(LocalPlayer():GetPos()) > b:GetPos():Distance(LocalPlayer():GetPos())
+		return a:GetPos():Distance(EyePos()) > b:GetPos():Distance(EyePos())
 	end)
 	return plys
 end
