@@ -21,14 +21,29 @@ CreateFont(tag .. "2", {
 	additive = true
 }, 12)
 
+local awayPhrases = {
+	"Zzz",
+	"Peacefully dreaming",
+	"Passed out",
+	"Gone for a walk",
+	"Brainstorming",
+	"Out of coffee"
+}
+local function PlayersByRange()
+	local plys = player.GetAll()
+	table.sort(plys, function(a, b)
+		return a:GetPos():Distance(LocalPlayer():GetPos()) < b:GetPos():Distance(LocalPlayer():GetPos())
+	end)
+	return plys
+end
 local lply
 local maxDist = 1024
-
 local h
 local function DrawText(txt, font, y, col)
 	if not h then
 		surface.SetFont(tag)
-		h = select(2, surface.GetTextSize("WAW"))
+		local _, _h = surface.GetTextSize("W")
+		h = _h
 	end
 	local y = y * h or 0
 	surface.SetFont("blur_" .. font)
@@ -45,37 +60,25 @@ local function DrawText(txt, font, y, col)
 	surface.SetTextColor(col)
 	surface.DrawText(txt)
 end
-local awayPhrases = {
-	"Zzz",
-	"Peacefully dreaming",
-	"Passed out",
-	"Gone for a walk",
-	"Brainstorming",
-	"Out of coffee"
-}
 hook.Add("PostDrawTranslucentRenderables", tag, function()
 	if not IsValid(lply) then lply = LocalPlayer() return end
-	local plys = player.GetAll()
-	table.sort(plys, function(a, b)
-		local distA = (lply:GetPos() - a:GetPos()):Length()
-		local distB = (lply:GetPos() - b:GetPos()):Length()
-		return distB < distA
-	end)
-	for _, ply in next, plys do
-		local isLply = ply:EntIndex() ~= lply:EntIndex()
+	for _, ply in next, PlayersByRange() do
+		local isLply = lply == ply
 		local shouldDraw = false
 		shouldDraw = not ply:Crouching() and true or shouldDraw
-		shouldDraw = (isLply or ply:ShouldDrawLocalPlayer()) and shouldDraw or false
+		shouldDraw = (not isLply or ply:ShouldDrawLocalPlayer()) and shouldDraw or false
 
 		local alpha = 1
-		local dist = ply:GetPos() - lply:GetShootPos()
-		alpha = dist:Length() >= maxDist and math.Clamp(1 - (dist:Length() - maxDist) / 128, 0, 1) or alpha
+		local dist = ply:GetPos():Distance(EyePos())
+		alpha = dist >= maxDist and math.Clamp(1 - (dist - maxDist) / 128, 0, 1) or alpha
 
-		if isLply then
+		--[[ can't tell what this was for
+		if not isLply then
 			local lookAng = lply:GetAimVector():Dot(dist) / dist:Length()
 			local looking = math.Clamp(lookAng / (math.pi / 8), 0, 1)
 			alpha = alpha * looking
 		end
+		]]
 
 		if shouldDraw and alpha > 0 then
 			local pos
@@ -84,26 +87,27 @@ hook.Add("PostDrawTranslucentRenderables", tag, function()
 			if bone then
 				pos = ent:GetBonePosition(bone)
 			else
-				local maxs, center = ent:OBBMaxs(), ent:OBBCenter()
-				pos = Vector(center.x, center.y, maxs.z)
+				pos = ent:EyePos()
 			end
 			pos = pos + Vector(0, 0, 22.5)
+
 			local ang = EyeAngles()
 			ang:RotateAroundAxis(ang:Right(), 90)
 			ang:RotateAroundAxis(ang:Up(), -90)
-			cam.Start3D2D(pos, ang, 0.045)
-				local txt = ply:Nick()
 
+			cam.Start3D2D(pos, ang, 0.045)
 				surface.SetAlphaMultiplier(alpha)
 
+				local txt = ply:Nick()
 				DrawText(ply:Nick(), tag, 0, team.GetColor(ply:Team()))
+
 				if lply.IsAFK and ply:IsAFK() then
 					local AFKTime = math.abs(math.max(0, CurTime() - ply:AFKTime()))
-					local h = math.floor(AFKTime / 60 / 60)
-					local m = math.floor(AFKTime / 60 - h * 60)
-					local s = math.floor(AFKTime - m * 60 - h * 60 * 60)
-					local txt = h > 1 and string.format("%.2d:%.2d:%.2d", h, m, s) or string.format("%.2d:%.2d", m, s)
-
+					local txt = string.format("%.2d:%.2d:%.2d",
+						math.floor(AFKTime / 60 / 60), -- hours
+						math.floor(AFKTime / 60 % 60), -- minutes
+						math.floor(AFKTime % 60) -- seconds
+					)
 					local choice = math.Clamp(math.Round((RealTime() * 0.125 + ply:EntIndex()) % #awayPhrases), 1, #awayPhrases)
 					DrawText(txt .. " - " .. awayPhrases[choice] .. "...", tag .. "2", 1, Color(160, 160, 255))
 				end
