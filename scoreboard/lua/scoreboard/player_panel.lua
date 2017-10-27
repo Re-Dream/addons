@@ -291,13 +291,14 @@ function Player:Paint(w, h)
 	local lply = LocalPlayer()
 	local ply = self.Player
 	if not IsValid(ply) then return true end
+	local hovered = self.Info:IsHovered() or self.Info:IsChildHovered()
 
 	local isAFK = (IsValid(ply) and ply.IsAFK) and ply:IsAFK() or false
 
 	surface.SetDrawColor(isAFK and Color(225, 229, 240, 190) or Color(244, 248, 255, 190))
 	surface.DrawRect(0, 0, w, h)
 
-	if self.Info:IsHovered() then
+	if hovered then
 		surface.SetDrawColor(Color(255, 255, 255, self.Info.Depressed and 40 or 90))
 		surface.DrawRect(0, 0, w, h)
 	end
@@ -310,7 +311,7 @@ function Player:Paint(w, h)
 	for _, tag in next, self.Tags do
 		local text, icon = tag.display(ply)
 		if text and icon then
-			if self.Info:IsHovered() then
+			if hovered then
 				surface.SetFont("DermaDefault")
 				local txtW, txtH = surface.GetTextSize(text)
 				x = x - txtW

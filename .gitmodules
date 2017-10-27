@@ -58,3 +58,7 @@
 [submodule "turbo"]
 	path = turbo
 	url = https://github.com/Re-Dream/turbo
+[submodule "impact"]
+	path = impact
+	url = https://github.com/Re-Dream/impact
+	branch = dev
