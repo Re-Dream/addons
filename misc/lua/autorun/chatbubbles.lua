@@ -20,12 +20,13 @@ if SERVER then
 	local PLAYER = FindMetaTable("Player")
 
 	function PLAYER:GetTypingMessage()
-		return ply.Typing
+		return self.Typing
 	end
 end
 
 if CLIENT then
-	local oldBubbles = {}
+	-- networking
+
 	net.Receive(tag, function()
 		local ply = net.ReadEntity()
 		local typing = net.ReadBool()
@@ -39,7 +40,7 @@ if CLIENT then
 	end)
 
 	local easychat_enable = GetConVar("easychat_enable")
-	if easychat_enable:GetBool() then
+	if easychat_enable and easychat_enable:GetBool() then
 		hook.Add("ECOpened", tag, function()
 			net.Start(tag)
 				net.WriteBool(true)
@@ -66,6 +67,8 @@ if CLIENT then
 			net.WriteData("", #(""))
 		net.SendToServer()
 	end)
+
+	local oldBubbles = {}
 	hook.Add("OnPlayerChat", tag, function(ply, text)
 		local bub = ply.Chatbubbles
 		if not bub then return end
@@ -79,6 +82,13 @@ if CLIENT then
 		}
 	end)
 
+	-- draw
+
+	surface.CreateFont(tag, {
+		font = "Roboto Cn",
+		size = 52,
+		weight = 200
+	})
 	local function PlayersByRange()
 		local plys = player.GetAll()
 		table.sort(plys, function(a, b)
@@ -116,11 +126,6 @@ if CLIENT then
 			return pos, ang, behind
 		end
 	end
-	surface.CreateFont(tag, {
-		font = "Roboto Cn",
-		size = 52,
-		weight = 200
-	})
 	local maxLength = 32
 	local MAXLength = 46
 	local function WordWrap(text)
