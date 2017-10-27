@@ -197,7 +197,7 @@ if CLIENT then
 								data.alpha = Lerp(FrameTime() * 5, data.alpha, 0)
 							end
 
-							if data.alpha <= 0.1 then
+							if data.alpha <= 0.005 then
 								table.remove(oldBubbles[ply], i)
 							else
 								surface.SetAlphaMultiplier(data.alpha)
