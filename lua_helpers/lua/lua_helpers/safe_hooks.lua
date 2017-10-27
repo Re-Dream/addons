@@ -40,24 +40,24 @@ function hook.Remove(event_name, name)
 end
 
 local function removeIfError(func, name, id, ...)
-	local ok, a, b, c, d, e, f = pcall(func, ...)
+	local ok, a, b, c, d, e, f = xpcall(func, function(err)
+		local f = debug.getinfo(func)
+
+		if f.what == "C" or file.Exists(f.short_src, "GAME") then
+			print("Hook errored: '" .. name .. "' ->", id)
+			ErrorNoHalt(err .. "\n")
+			print(debug.traceback())
+			print("Could not remove hook as there could be potentially fatal consequences")
+			return
+		end
+
+		hook.Hooks[name][id] = nil
+
+		print("Removing broken Hook: '" .. name .. "' ->", id)
+		print(debug.traceback())
+		ErrorNoHalt(err .. "\n")
+	end, ...)
 	if ok then return a, b, c, d, e, f end
-
-	local f = debug.getinfo(func)
-
-	if f.what == "C" or file.Exists(f.short_src, "GAME") then
-		print("Hook errored: '" .. name .. "' ->", id)
-		ErrorNoHalt(a .. "\n")
-		print(debug.Trace())
-		print("Could not remove hook as there could be potentially fatal consequences")
-		return
-	end
-
-	hook.Hooks[name][id] = nil
-
-	print("Removing broken Hook: '" .. name .. "' ->", id)
-	print(debug.Trace())
-	ErrorNoHalt(a .. "\n")
 end
 
 function hook.Call(name, gm, ...)
