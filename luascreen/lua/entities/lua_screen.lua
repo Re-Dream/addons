@@ -200,6 +200,8 @@ if CLIENT then
 	local cursor = Material("icon16/cursor.png")
 	local grad = Material("vgui/gradient-d")
 	function ENT:DrawTranslucent()
+		if self:WorldToLocal( LocalPlayer():EyePos() ).z < 0 then return end
+		
 		local pos, ang = self:ScreenCoords()
 
 		local w, h, s = self.ScreenWidth, self.ScreenHeight, self.ScreenScale
