@@ -24,6 +24,8 @@ if SERVER then
 		for _, ply in next, player.GetAll() do
 			local addTime = ply:TimeConnected() - (ply.LastPlaytimeUpdate or 0)
 			ply.Playtime = ply.Playtime and ply.Playtime + addTime or 0
+			ply:SetNWFloat(tag, ply.Playtime)
+
 			ply.LastPlaytimeUpdate = ply:TimeConnected()
 		end
 	end)
@@ -51,9 +53,8 @@ if SERVER then
 end
 
 if CLIENT then
-	local now = RealTime()
 	function PLAYER:GetPlaytime()
-		return self:GetNWFloat(tag) + math.max(0, (RealTime() - now))
+		return self:GetNWFloat(tag)
 	end
 end
 
