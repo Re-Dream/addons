@@ -19,9 +19,9 @@ local function GetAvatar(sid)
 		a:SetSize(184, 184)
 		a:ParentToHUD()
 		a.Alpha = 0
-		a:SetAlpha(0)
+		a:SetAlpha(a.Alpha)
 		function a:Think()
-			self.Alpha = Lerp(FrameTime() * 10, self.Alpha, self.Hide and 0 or 255)
+			self.Alpha = math.Clamp(self.Alpha + (FrameTime() * 2000) * (self.Hide and -1 or 1), 0, 255)
 			self:SetAlpha(self.Alpha)
 			if not IsValid(hovered) then
 				self.Hide = true
