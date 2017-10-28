@@ -65,15 +65,15 @@
 [submodule "misc"]
 	path = misc
 	url = https://github.com/Re-Dream/misc
-[submodule "luascreen"]
-	path = luascreen
-	url = https://github.com/Re-Dream/luascreen
 [submodule "lua_helpers"]
 	path = lua_helpers
 	url = https://github.com/Re-Dream/lua_helpers
 [submodule "scoreboard"]
 	path = scoreboard
 	url = https://github.com/Re-Dream/scoreboard
-[submodule "mingeban-commands"]
-	path = mingeban-commands
-	url = https://github.com/Re-Dream/mingeban-commands
+[submodule "mingeban_commands"]
+	path = mingeban_commands
+	url = https://github.com/Re-Dream/mingeban_commands
+[submodule "lua_screen"]
+	path = lua_screen
+	url = https://github.com/Re-Dream/lua_screen
