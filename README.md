@@ -1,4 +1,4 @@
-# Addons
-Use the .gitmodules to get addons from GitHub, Don't fork repositories unless it's going to be modified.
+# Add-ons
+Most content here consists of submodules, see .gitmodules.
 
-This uses the MIT License for addons created specifically here, not for external GitHub Garry's Mod Addons.
+This uses the MIT License for add-ons created specifically here, not for external GitHub Garry's Mod Addons.
