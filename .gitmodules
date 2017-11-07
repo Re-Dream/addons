@@ -73,3 +73,6 @@
 [submodule "stormfox"]
 	path = stormfox
 	url = https://github.com/Nak2/StormFox
+[submodule "discord_relay"]
+	path = discord_relay
+	url = https://github.com/Re-Dream/discord_relay
