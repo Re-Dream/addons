@@ -76,3 +76,6 @@
 [submodule "discord_relay"]
 	path = discord_relay
 	url = https://github.com/Re-Dream/discord_relay
+[submodule "localizedphysics"]
+	path = localizedphysics
+	url = https://github.com/DavidRalphsky/localizedphysics
