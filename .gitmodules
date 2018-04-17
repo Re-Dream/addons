@@ -79,3 +79,6 @@
 [submodule "localizedphysics"]
 	path = localizedphysics
 	url = https://github.com/DavidRalphsky/localizedphysics
+[submodule "gmod_discordrpc"]
+	path = gmod_discordrpc
+	url = https://github.com/Tenrys/gmod_discordrpc
