@@ -82,3 +82,6 @@
 [submodule "gmod_discordrpc"]
 	path = gmod_discordrpc
 	url = https://github.com/Tenrys/gmod_discordrpc
+[submodule "itemsys"]
+	path = itemsys
+	url = https://github.com/Re-Dream/itemsys.git
